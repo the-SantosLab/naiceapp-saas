@@ -71,12 +71,14 @@ class CalendarManager: ObservableObject {
     static let shared = CalendarManager()
     let store = EKEventStore()
     @Published var todayEvents: [EKEvent] = []; @Published var upcomingEvents: [EKEvent] = []; @Published var isAuthorized = false
+    @Published var remindersCount = 0
     func requestAuth() async {
         guard EKEventStore.authorizationStatus(for: .event) != .denied else { return }
-        do { if #available(iOS 17, *) { isAuthorized = try await store.requestFullAccessToEvents() } else { isAuthorized = try await store.requestAccess(to: .event) }; if isAuthorized { await loadToday(); await loadUpcoming() } } catch { isAuthorized = false }
+        do { if #available(iOS 17, *) { isAuthorized = try await store.requestFullAccessToEvents() } else { isAuthorized = try await store.requestAccess(to: .event) }; if isAuthorized { await loadToday(); await loadUpcoming(); await countReminders() } } catch { isAuthorized = false }
     }
     func loadToday() async { let cal = Calendar.current; let start = cal.startOfDay(for: Date()); let end = cal.date(byAdding: .day, value: 1, to: start)!; todayEvents = store.events(matching: store.predicateForEvents(withStart: start, end: end, calendars: nil)) }
     func loadUpcoming() async { let cal = Calendar.current; let start = Date(); let end = cal.date(byAdding: .year, value: 1, to: start)!; let all = store.events(matching: store.predicateForEvents(withStart: start, end: end, calendars: nil)); upcomingEvents = all.sorted { ($0.startDate) < ($1.startDate) }.prefix(3).map { $0 } }
+    func countReminders() async { let all = store.calendars(for: .reminder); let pred = store.predicateForIncompleteReminders(withDueDateStarting: nil, ending: Date(), calendars: all); store.fetchReminders(matching: pred) { items in Task { @MainActor in self.remindersCount = items?.count ?? 0 } } }
 }
 
 // MARK: - Service Manager
