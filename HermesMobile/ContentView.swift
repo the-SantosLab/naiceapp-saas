@@ -137,13 +137,32 @@ struct NAIceTabView: View {
 
 // MARK: - QuickLog
 struct QuickLogCard: View {
-    let mc: ModelContext; @State private var showMood = false; @State private var showHabit = false
+    let mc: ModelContext; @State private var showMood = false; @State private var showHabit = false; @State private var showExpense = false; @ObservedObject private var finance = NAFinanceService.shared
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack { Text("QUICKLOG").font(.caption.weight(.semibold)).foregroundColor(.ncSage); Spacer(); Button { showMood = true } label: { Image(systemName: "face.smiling").foregroundColor(.ncSage) }; Button { showHabit = true } label: { Image(systemName: "plus.circle").foregroundColor(.ncSage) } }
-            if !showMood && !showHabit { Text("Schnell erfassen: Wie fuhlst du dich oder was hast du gemacht?").font(.subheadline).foregroundColor(.ncMuted) }
-            if showMood { HStack(spacing: 24) { qm("good", "\u{1F60A}", "Gut"); qm("neutral", "\u{1F610}", "Neutral"); qm("bad", "\u{1F614}", "Nicht gut"); Button("X") { showMood = false }.font(.caption).foregroundColor(.ncSand) } }
-            if showHabit { HStack(spacing: 16) { qh("walk","figure.walk"); qh("water","drop.fill"); qh("reading","book.fill"); qh("workout","dumbbell.fill"); qh("meditation","brain.head.profile"); Button("X") { showHabit = false }.font(.caption).foregroundColor(.ncSand) } }
+            HStack { Text("Schnell erfassen").font(.caption.weight(.semibold)).foregroundColor(.ncSage); Spacer()
+                Button { showMood = true } label: { Image(systemName: "face.smiling").font(.subheadline).foregroundColor(.ncSage) }
+                Button { showHabit = true } label: { Image(systemName: "figure.walk").font(.subheadline).foregroundColor(.ncSage) }
+                Button { showExpense = true } label: { Image(systemName: "eurosign").font(.subheadline).foregroundColor(.ncSage) }
+            }
+            if !showMood && !showHabit && !showExpense {
+                Text("Stimmung, Gewohnheit oder Ausgabe").font(.subheadline).foregroundColor(.ncMuted)
+            }
+            if showMood {
+                HStack(spacing: 24) { qm("good", "\u{1F60A}", "Gut"); qm("neutral", "\u{1F610}", "Neutral"); qm("bad", "\u{1F614}", "Nicht gut"); Button("X") { showMood = false }.font(.caption).foregroundColor(.ncSand) }
+            }
+            if showHabit {
+                HStack(spacing: 16) { qh("walk","figure.walk"); qh("water","drop.fill"); qh("reading","book.fill"); qh("workout","dumbbell.fill"); qh("meditation","brain.head.profile"); Button("X") { showHabit = false }.font(.caption).foregroundColor(.ncSand) }
+            }
+            if showExpense {
+                HStack(spacing: 8) {
+                    Image(systemName: "eurosign.circle.fill").font(.title3).foregroundColor(.ncGold)
+                    TextField("Betrag", text: Binding(get: { "" }, set: { if let a = Double($0) { finance.addExpense(amount: a, category: "sonstiges", note: ""); showExpense = false; showExpense = false } }))
+                        .keyboardType(.decimalPad).font(.subheadline).frame(width: 80)
+                    Text("erfassen").font(.caption).foregroundColor(.ncSage)
+                    Button("X") { showExpense = false }.font(.caption).foregroundColor(.ncSand)
+                }.padding(8).background(Color.white.opacity(0.5)).cornerRadius(8)
+            }
         }.warmCard()
     }
     func qm(_ m: String, _ e: String, _ l: String) -> some View { Button { mc.insert(MoodEntry(date: Date(), mood: m, note: "")); try? mc.save(); showMood = false } label: { VStack(spacing: 4) { Text(e).font(.title2); Text(l).font(.caption2).foregroundColor(.ncMuted) } } }
