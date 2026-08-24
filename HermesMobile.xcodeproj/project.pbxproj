@@ -492,6 +492,7 @@
 		340C69C3296E2F5F3446B040 /* WhatsAppView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppView.swift; sourceTree = "<group>"; };
 		351C0F1600000000000000A1 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Shared.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
 		3B309F61E3B80BDB41121439 /* NAFinanceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAFinanceService.swift; path = NAFinanceService.swift; sourceTree = "<group>"; };
+		3BAC4432EA7A7890B3BAB966 /* NAiceActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceActivity.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01011 /* Cron.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cron.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01012 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01013 /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
@@ -500,6 +501,7 @@
 		45A0BD6E9E1847B5267226FE /* NASyncService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASyncService.swift; sourceTree = "<group>"; };
 		486FB27ABE466047F4F46E16 /* APIClient+AgentHub.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "APIClient+AgentHub.swift"; path = "AgentHub/Models/APIClient+AgentHub.swift"; sourceTree = "<group>"; };
 		488791F556304AD2AC59BC5D /* ThirdPartyNotices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ThirdPartyNotices; sourceTree = "<group>"; };
+		4A3507A39E1A2B787DD85802 /* NAiceWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidget.swift; sourceTree = "<group>"; };
 		568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppViewModel.swift; sourceTree = "<group>"; };
 		57B5FD09B6B5937573B5F9A4 /* InsightsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		585D173240AB85DED12058BE /* NARollupModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NARollupModels.swift; sourceTree = "<group>"; };
@@ -1377,6 +1379,8 @@
 				2402AA464975A9B246B36F88 /* NAWorkflowService.swift */,
 				0D575BE31D14E1C683726EB3 /* NAUpdateService.swift */,
 				0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */,
+				4A3507A39E1A2B787DD85802 /* NAiceWidget.swift */,
+				3BAC4432EA7A7890B3BAB966 /* NAiceActivity.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
