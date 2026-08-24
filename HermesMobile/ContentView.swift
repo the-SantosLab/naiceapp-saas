@@ -31,6 +31,26 @@ struct ContentView: View {
         }
     }
     private func handleOpenURL(_ url: URL) {
+        // Widget deep links
+        if url.scheme == "naice" {
+            switch url.path {
+            case "/log/mood":
+                // Navigate to mood logging – post a notification
+                NotificationCenter.default.post(name: .init("naiceOpenMood"), object: nil)
+                return
+            case "/log/expense":
+                NotificationCenter.default.post(name: .init("naiceOpenExpense"), object: nil)
+                return
+            case "/chat":
+                pendingNewChatRequest = NewChatRequest(autoStartsVoiceInput: false)
+                return
+            case "/journal":
+                NotificationCenter.default.post(name: .init("naiceOpenJournal"), object: nil)
+                return
+            default:
+                break
+            }
+        }
         if HermesDeepLink.isNewChatVoiceURL(url) { pendingNewChatRequest = NewChatRequest(autoStartsVoiceInput: true); return }
         if HermesDeepLink.isNewChatInProfileURL(url) { pendingNewChatRequest = NewChatRequest(profileName: HermesDeepLink.profileName(fromNewChatInProfile: url)); return }
         if HermesDeepLink.isNewChatURL(url) { pendingNewChatRequest = NewChatRequest(autoStartsVoiceInput: false); return }

@@ -28,6 +28,14 @@
 				<string>$(HERMES_URL_SCHEME)</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>pro.naice.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>naice</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
