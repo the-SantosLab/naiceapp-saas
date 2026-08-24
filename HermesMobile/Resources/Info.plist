@@ -73,7 +73,9 @@
 	<key>NSHealthShareUsageDescription</key>
 	<string>nAIce reads your health data (steps, heart rate, sleep) to show on your dashboard.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>nAIce uses your location to provide context-aware insights.</string>
+	<string>nAIce uses your location to show weather and suggest context-aware insights.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>nAIce needs your location in the background to send reminders when you arrive or leave places.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>nAIce needs microphone access to dictate text into the message composer.</string>
 	<key>NSCameraUsageDescription</key>
