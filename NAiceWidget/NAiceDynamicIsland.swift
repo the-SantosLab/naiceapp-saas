@@ -11,31 +11,24 @@ struct NAiceActivityAttributes: ActivityAttributes {
         var progressValue: Double
         var balanceScore: Int
     }
-
     var title: String
 }
 
-// MARK: - Live Activity View (Lock Screen)
+// MARK: - Live Activity View
 struct NAiceLiveActivityView: View {
     let context: ActivityViewContext<NAiceActivityAttributes>
 
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: context.state.statusIcon)
-                .font(.title2)
-                .foregroundColor(.green)
-
+                .font(.title2).foregroundColor(.green)
             VStack(alignment: .leading, spacing: 2) {
                 Text(context.attributes.title)
-                    .font(.headline.weight(.semibold))
-                    .foregroundColor(.primary)
+                    .font(.headline.weight(.semibold)).foregroundColor(.primary)
                 Text(context.state.statusText)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.caption).foregroundColor(.secondary)
             }
-
             Spacer()
-
             VStack(spacing: 2) {
                 ZStack {
                     Circle().stroke(Color.green.opacity(0.2), lineWidth: 3).frame(width: 28, height: 28)
@@ -45,10 +38,8 @@ struct NAiceLiveActivityView: View {
                 }
                 Text("Balance").font(.system(size: 8)).foregroundColor(.secondary)
             }
-
             if context.state.progressValue > 0 {
-                ProgressView(value: context.state.progressValue)
-                    .tint(.green).frame(width: 30)
+                ProgressView(value: context.state.progressValue).tint(.green).frame(width: 30)
             }
         }
         .padding(.horizontal, 12)
@@ -56,53 +47,47 @@ struct NAiceLiveActivityView: View {
     }
 }
 
-// MARK: - Dynamic Island
-struct NAiceDynamicIsland: DynamicIsland {
-    var context: ActivityViewContext<NAiceActivityAttributes>
-
-    var body: DynamicIsland {
-        // Expanded (when long-pressed)
-        DynamicIslandExpandedRegion(.leading) {
-            Image(systemName: context.state.statusIcon)
-                .foregroundColor(.green).font(.title3)
-        }
-        DynamicIslandExpandedRegion(.trailing) {
-            ZStack {
-                Circle().stroke(Color.green.opacity(0.2), lineWidth: 3).frame(width: 28, height: 28)
-                Circle().trim(from: 0, to: CGFloat(context.state.balanceScore) / 100)
-                    .stroke(Color.green, lineWidth: 3).frame(width: 28, height: 28).rotationEffect(.degrees(-90))
-                Text("\(context.state.balanceScore)").font(.system(size: 9, weight: .bold))
-            }
-        }
-        DynamicIslandExpandedRegion(.center) {
-            Text(context.attributes.title)
-                .font(.headline).foregroundColor(.primary)
-        }
-        DynamicIslandExpandedRegion(.bottom) {
-            HStack {
-                Text(context.state.statusText).font(.caption).foregroundColor(.secondary)
-                if context.state.progressValue > 0 {
-                    ProgressView(value: context.state.progressValue).tint(.green)
+// MARK: - Live Activity Widget
+struct NAiceLiveActivityWidget: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: NAiceActivityAttributes.self) { context in
+            NAiceLiveActivityView(context: context)
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    Image(systemName: context.state.statusIcon).foregroundColor(.green).font(.title3)
                 }
+                DynamicIslandExpandedRegion(.trailing) {
+                    ZStack {
+                        Circle().stroke(Color.green.opacity(0.2), lineWidth: 3).frame(width: 28, height: 28)
+                        Circle().trim(from: 0, to: CGFloat(context.state.balanceScore) / 100)
+                            .stroke(Color.green, lineWidth: 3).frame(width: 28, height: 28).rotationEffect(.degrees(-90))
+                        Text("\(context.state.balanceScore)").font(.system(size: 9, weight: .bold))
+                    }
+                }
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.attributes.title).font(.headline).foregroundColor(.primary)
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    HStack {
+                        Text(context.state.statusText).font(.caption).foregroundColor(.secondary)
+                        if context.state.progressValue > 0 {
+                            ProgressView(value: context.state.progressValue).tint(.green)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            } compactLeading: {
+                Image(systemName: context.state.statusIcon).foregroundColor(.green).font(.caption)
+            } compactTrailing: {
+                Text(String(context.state.statusText.prefix(15))).font(.caption2)
+            } minimal: {
+                Image(systemName: context.state.statusIcon).foregroundColor(.green)
             }
-            .padding(.horizontal)
         }
-
-        // Compact (normal pill)
-        DynamicIslandCompactRegion {
-            HStack(spacing: 4) {
-                Image(systemName: context.state.statusIcon)
-                    .foregroundColor(.green).font(.caption)
-                Text(String(context.state.statusText.prefix(15)))
-                    .font(.caption2)
-            }
-        }
-
-        // Minimal (just the icon)
-        DynamicIslandMinimalRegion {
-            Image(systemName: context.state.statusIcon)
-                .foregroundColor(.green)
-        }
+        .configurationDisplayName("nAIce Agent")
+        .description("Agent-Status auf Sperrbildschirm und Dynamic Island.")
+        .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
@@ -114,12 +99,7 @@ class NAiceActivityManager {
 
     func start(title: String = "nAIce") {
         let attrs = NAiceActivityAttributes(title: title)
-        let state = NAiceActivityAttributes.ContentState(
-            statusText: "Bereit",
-            statusIcon: "n.square.fill",
-            progressValue: 0,
-            balanceScore: NAiceWidgetData.balanceScore
-        )
+        let state = NAiceActivityAttributes.ContentState(statusText: "Bereit", statusIcon: "n.square.fill", progressValue: 0, balanceScore: 72)
         do {
             current = try Activity.request(attributes: attrs, contentState: state, pushType: nil)
         } catch {
@@ -127,13 +107,9 @@ class NAiceActivityManager {
         }
     }
 
-    func update(text: String, icon: String, progress: Double = 0) {
+    func update(text: String, icon: String, progress: Double = 0, balance: Int = 72) {
         Task {
-            let state = NAiceActivityAttributes.ContentState(
-                statusText: text, statusIcon: icon,
-                progressValue: progress,
-                balanceScore: NAiceWidgetData.balanceScore
-            )
+            let state = NAiceActivityAttributes.ContentState(statusText: text, statusIcon: icon, progressValue: progress, balanceScore: balance)
             await current?.update(using: state)
         }
     }
@@ -143,18 +119,4 @@ class NAiceActivityManager {
     }
 
     var isActive: Bool { current != nil }
-}
-
-// MARK: - Widget Extension for Live Activity
-struct NAiceLiveActivityWidget: Widget {
-    var body: some WidgetConfiguration {
-        ActivityConfiguration(for: NAiceActivityAttributes.self) { context in
-            NAiceLiveActivityView(context: context)
-        } dynamicIsland: { context in
-            NAiceDynamicIsland(context: context)
-        }
-        .configurationDisplayName("nAIce Agent")
-        .description("Agent-Status auf dem Sperrbildschirm und Dynamic Island.")
-        .supportedFamilies([.systemSmall, .systemMedium])
-    }
 }
