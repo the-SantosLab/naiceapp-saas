@@ -66,6 +66,10 @@
 	</dict>
 	<key>NSContactsUsageDescription</key>
 	<string>nAIce checks your contacts to show birthdays and suggest refreshing old connections.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>nAIce reads your calendar to show today's events and appointments.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>nAIce reads your calendar to show today's events and appointments.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>nAIce reads your health data (steps, heart rate, sleep) to show on your dashboard.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

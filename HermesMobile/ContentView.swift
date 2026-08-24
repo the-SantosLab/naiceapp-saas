@@ -70,12 +70,13 @@ class HealthManager: ObservableObject {
 class CalendarManager: ObservableObject {
     static let shared = CalendarManager()
     let store = EKEventStore()
-    @Published var todayEvents: [EKEvent] = []; @Published var isAuthorized = false
+    @Published var todayEvents: [EKEvent] = []; @Published var upcomingEvents: [EKEvent] = []; @Published var isAuthorized = false
     func requestAuth() async {
         guard EKEventStore.authorizationStatus(for: .event) != .denied else { return }
-        do { if #available(iOS 17, *) { isAuthorized = try await store.requestFullAccessToEvents() } else { isAuthorized = try await store.requestAccess(to: .event) }; if isAuthorized { await loadToday() } } catch { isAuthorized = false }
+        do { if #available(iOS 17, *) { isAuthorized = try await store.requestFullAccessToEvents() } else { isAuthorized = try await store.requestAccess(to: .event) }; if isAuthorized { await loadToday(); await loadUpcoming() } } catch { isAuthorized = false }
     }
     func loadToday() async { let cal = Calendar.current; let start = cal.startOfDay(for: Date()); let end = cal.date(byAdding: .day, value: 1, to: start)!; todayEvents = store.events(matching: store.predicateForEvents(withStart: start, end: end, calendars: nil)) }
+    func loadUpcoming() async { let cal = Calendar.current; let start = Date(); let end = cal.date(byAdding: .year, value: 1, to: start)!; let all = store.events(matching: store.predicateForEvents(withStart: start, end: end, calendars: nil)); upcomingEvents = all.sorted { ($0.startDate) < ($1.startDate) }.prefix(3).map { $0 } }
 }
 
 // MARK: - Service Manager
@@ -113,6 +114,7 @@ struct NAIceTabView: View {
             .onChange(of: scenePhase, perform: { newPhase in
                 guard newPhase == .active else { return }
                 Task {
+                    await calendar.loadUpcoming()
                     await NAiceAPI.shared.fetchWhoop()
                     await NAiceAPI.shared.fetchIdeas()
                     await NARollupService.shared.fetch()

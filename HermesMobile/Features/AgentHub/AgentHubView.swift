@@ -101,13 +101,33 @@ struct AgentHubView: View {
                     }.warmCard()
                 }
 
-                // Workouts – Rollup or Fallback
-                let woData = rollup.whoop?.workouts ?? NAiceAPI.shared.whoop?.workouts.map { aw in
-                    NAWhoopWorkout(sport: aw.sport, strain: aw.strain, max_hr: aw.maxHr, avg_hr: aw.avgHr, kj: aw.kilojoule, kcal: nil, start: nil, end: nil)
-                }
-                if let wo = woData, !wo.isEmpty {
-                    NAIceSectionLabel(icon: "figure.run", title: "Workouts")
-                    workoutRow(Array(wo.prefix(3)))
+                // Nächste drei Termine aus dem Kalender
+                let calendarEvents = CalendarManager.shared.upcomingEvents
+                NAIceSectionLabel(icon: "calendar", title: "Nachste Termine")
+                if calendarEvents.isEmpty {
+                    HStack {
+                        Image(systemName: "calendar.day.timeline.left").font(.title3).foregroundColor(.ncSand)
+                        Text("Keine anstehenden Termine").font(.subheadline).foregroundColor(.ncMuted)
+                    }.warmCard()
+                } else {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(Array(calendarEvents.enumerated()), id: \.offset) { _, event in
+                            HStack(spacing: 10) {
+                                VStack(spacing: 2) {
+                                    Text(event.startDate, style: .date).font(.caption2).foregroundColor(.ncSage)
+                                    Text(event.startDate, style: .time).font(.caption.weight(.semibold)).foregroundColor(.ncDark)
+                                }
+                                .frame(width: 70)
+                                Divider().frame(width: 2).background(Color.ncGreen)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(event.title).font(.subheadline.weight(.semibold)).foregroundColor(.ncDark).lineLimit(1)
+                                    if let loc = event.location {
+                                        Text(loc).font(.caption).foregroundColor(.ncMuted).lineLimit(1)
+                                    }
+                                }
+                            }
+                        }
+                    }.warmCard()
                 }
 
                 // Business
