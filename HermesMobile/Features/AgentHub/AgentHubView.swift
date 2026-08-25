@@ -65,22 +65,33 @@ struct AgentHubView: View {
                 // Briefings
                 if let b = rollup.crm?.briefings, let today = b.today, !today.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Briefings").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+                        Text("Briefings").font(.headline.weight(.semibold)).foregroundColor(.ncWhite)
                         ForEach(today) { briefing in
                             NavigationLink(destination: NABriefingDetailView(briefing: briefing, requestedNewChat: $requestedNewChat)) {
-                                HStack(spacing: 10) {
-                                    Image(systemName: briefing.period == "morning" ? "sunrise.fill" : briefing.period == "midday" ? "sun.max.fill" : "moon.stars.fill")
-                                        .font(.title3).foregroundColor(briefing.period == "morning" ? .ncGold : briefing.period == "midday" ? .ncGreen : .ncSage)
-                                        .frame(width: 28)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(briefing.title ?? "").font(.subheadline.weight(.medium)).foregroundColor(.ncDark).lineLimit(1)
-                                        Text(briefing.body ?? "").font(.caption).foregroundColor(.ncMuted).lineLimit(2)
+                                HStack(spacing: 12) {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(briefing.period == "morning" ? Color.ncAmber.opacity(0.15) : briefing.period == "midday" ? Color.ncNeonGreen.opacity(0.15) : Color.ncCyan.opacity(0.15))
+                                            .frame(width: 36, height: 36)
+                                        Image(systemName: briefing.period == "morning" ? "sunrise.fill" : briefing.period == "midday" ? "sun.max.fill" : "moon.stars.fill")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(briefing.period == "morning" ? .ncAmber : briefing.period == "midday" ? .ncNeonGreen : .ncCyan)
+                                    }
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(briefing.title ?? "").font(.subheadline.weight(.semibold)).foregroundColor(.ncWhite).lineLimit(1)
+                                        Text(briefing.body ?? "").font(.caption).foregroundColor(.ncGray).lineLimit(2)
                                     }
                                     Spacer()
-                                    Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption2)
+                                        .foregroundColor(.ncGray)
                                 }
-                                .padding(10)
-                                .background(Color.white.opacity(0.6)).cornerRadius(8)
+                                .padding(12)
+                                .background(Color.ncSurface, in: RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.06), lineWidth: 0.5)
+                                )
                             }
                             .buttonStyle(.plain)
                         }
@@ -353,32 +364,90 @@ struct BriefingPlaceholder: View {
     @State private var errorMessage: String?
 
     var body: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "sunrise.fill").font(.title2).foregroundColor(.ncSand)
-            Text("Amelia meldet sich bald").font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
-            Text("Morgen-, Mittags- und Abend-Briefings erscheinen hier, sobald Amelia sie fur dich erstellt.")
-                .font(.caption).foregroundColor(.ncMuted).multilineTextAlignment(.center)
+        VStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(Color.ncCyan.opacity(0.1))
+                    .frame(width: 56, height: 56)
+                Image(systemName: "sparkle")
+                    .font(.title2)
+                    .foregroundColor(.ncCyan)
+            }
+
+            VStack(spacing: 6) {
+                Text("Amelia meldet sich bald")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.ncWhite)
+                Text("Morgen-, Mittags- und Abend-Briefings erscheinen hier, sobald Amelia sie fur dich erstellt.")
+                    .font(.caption)
+                    .foregroundColor(.ncGray)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+            }
 
             if isGenerating {
-                ProgressView().scaleEffect(0.8)
-                Text("Erstelle Briefing...").font(.caption).foregroundColor(.ncMuted)
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .tint(.ncCyan)
+                    Text("Erstelle Briefing...")
+                        .font(.caption)
+                        .foregroundColor(.ncGray)
+                }
             } else {
                 Button {
                     Task { await generateBriefing() }
                 } label: {
-                    Text("Jetzt Briefing anfordern")
-                        .font(.caption.weight(.semibold)).foregroundColor(.ncGreen)
-                        .padding(.horizontal, 14).padding(.vertical, 7)
-                        .background(Color.ncGreen.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
-                        .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.ncGreen.opacity(0.15)))
+                    HStack(spacing: 6) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.caption)
+                        Text("Jetzt Briefing anfordern")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .foregroundColor(.ncCyan)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.ncCyan.opacity(0.3), lineWidth: 1)
+                    )
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.ncCyan.opacity(0.08))
+                    )
                 }
+                .buttonStyle(.plain)
             }
 
             if let err = errorMessage {
-                Text(err).font(.caption).foregroundColor(.ncRed)
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(.ncRose)
+                    Text(err)
+                        .font(.caption)
+                        .foregroundColor(.ncRose)
+                }
             }
         }
-        .warmCard()
+        .padding(20)
+        .frame(maxWidth: .infinity)
+        .background(Color.ncSurface, in: RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.white.opacity(0.08),
+                            Color.white.opacity(0.02),
+                            .clear
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
     }
 
     private func generateBriefing() async {
