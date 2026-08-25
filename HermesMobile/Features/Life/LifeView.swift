@@ -184,8 +184,9 @@ struct NAIceLifeView: View {
 
     private func dimensionRow(_ dim: LifeDimension) -> some View {
         HStack(spacing: 10) {
-            Text(dim.icon)
+            Image(systemName: dim.icon)
                 .font(.system(size: 12))
+                .foregroundColor(dim.color)
             Text(dim.label)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(.white)
