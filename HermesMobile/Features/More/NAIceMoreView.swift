@@ -43,6 +43,20 @@ struct NAIceMoreView: View {
                         integrationRow("server.rack", "Server", "health.santoslab.de")
                         integrationRow("brain.head.profile", "Agent Memory", "Aktiv")
                         integrationRow("n.square.fill", "Mac Agent", "8 Aktionen")
+                        NavigationLink(destination: FinanceDetailView()) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "creditcard.fill").font(.caption).foregroundColor(.ncSage).frame(width: 20)
+                                Text("Finanzen").font(.subheadline).foregroundColor(.ncDark)
+                                Spacer()
+                                if let r = rollup.revenue {
+                                    Text("\(r.total_eur ?? 0)€").font(.caption).foregroundColor(.ncMuted)
+                                } else {
+                                    Text("Buchhaltung").font(.caption).foregroundColor(.ncMuted)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .buttonStyle(.plain)
                     }.warmCard()
 
                     // Info
