@@ -3,9 +3,9 @@ import SwiftUI
 // MARK: - nAIce Colors (Sci-Fi / Revolut-Inspired Palette)
 extension Color {
     // Core palette
-    static let ncBg = Color(red: 0.051, green: 0.051, blue: 0.082)       // #0D0D15
-    static let ncSurface = Color(red: 0.102, green: 0.102, blue: 0.157)   // #1A1A28
-    static let ncSurface2 = Color(red: 0.149, green: 0.149, blue: 0.212)  // #262636
+    static let ncBg = Color(red: 0.0, green: 0.0, blue: 0.0)           // #000000 pure black
+    static let ncSurface = Color(red: 0.024, green: 0.024, blue: 0.043) // #06060B
+    static let ncSurface2 = Color(red: 0.055, green: 0.055, blue: 0.078) // #0E0E14
     
     // Accents
     static let ncCyan = Color(red: 0.0, green: 0.898, blue: 1.0)         // #00E5FF
@@ -84,12 +84,12 @@ extension View {
                 Color.ncBg
                 // Subtle ambient glow
                 Circle()
-                    .fill(Color.ncCyan.opacity(0.03))
-                    .blur(radius: 80)
+                    .fill(Color.ncCyan.opacity(0.02))
+                    .blur(radius: 100)
                     .offset(x: -100, y: -200)
                 Circle()
-                    .fill(Color.ncPurple.opacity(0.03))
-                    .blur(radius: 80)
+                    .fill(Color.ncPurple.opacity(0.02))
+                    .blur(radius: 100)
                     .offset(x: 100, y: 200)
             }
             .ignoresSafeArea()
