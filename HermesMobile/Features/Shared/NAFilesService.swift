@@ -4,13 +4,15 @@ import UniformTypeIdentifiers
 
 // MARK: - File Model
 struct NFile: Codable, Identifiable {
-    var id: String { name }
+    var id: String { name + path }
     let name: String
     let path: String
     let size: Int
     let mtime: Double
     let ext: String
     let type: String
+    let source: String?
+    let folder: String?
 
     var sizeLabel: String {
         if size < 1024 { return "\(size) B" }
@@ -59,17 +61,62 @@ struct NFileListResponse: Codable {
     let total: Int
 }
 
+struct NFolder: Identifiable, Hashable {
+    var id: String { name }
+    let name: String
+    let fileCount: Int
+}
+
 // MARK: - File Service
 @MainActor
 class NAFilesService: ObservableObject {
     static let shared = NAFilesService()
 
     @Published var files: [NFile] = []
+    @Published var folders: [NFolder] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var downloadedFiles: [String: Data] = [:] // cache
+    @Published var downloadedFiles: [String: Data] = [:]
+    @Published var activeFilter: FileFilter = .all
+    @Published var selectedFolder: String?
+
+    enum FileFilter: String, CaseIterable {
+        case all = "Alle"
+        case uploads = "Uploads"
+        case ki = "KI-Erstellt"
+        case workspace = "Workspace"
+
+        var serverValue: String? {
+            switch self {
+            case .all: return nil
+            case .uploads: return "upload"
+            case .ki: return "ki"
+            case .workspace: return "workspace"
+            }
+        }
+    }
 
     private let baseURL = "https://health.santoslab.de/api/naice/files"
+
+    var filteredFiles: [NFile] {
+        var result = files
+        // Filter by source
+        if let sv = activeFilter.serverValue {
+            result = result.filter { $0.source == sv }
+        }
+        // Filter by folder
+        if let folder = selectedFolder, !folder.isEmpty {
+            result = result.filter { $0.folder == folder }
+        }
+        return result
+    }
+
+    var currentFolderFiles: [NFile] {
+        if let folder = selectedFolder, !folder.isEmpty {
+            return files.filter { $0.folder == folder }
+        }
+        return filteredFiles
+    }
 
     func fetchFiles() async {
         isLoading = true
@@ -79,10 +126,32 @@ class NAFilesService: ObservableObject {
             let (data, _) = try await URLSession.shared.data(from: url)
             let response = try JSONDecoder().decode(NFileListResponse.self, from: data)
             files = response.files
+            buildFolders()
         } catch {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+
+    func fetchFilesInFolder(_ folder: String) async {
+        isLoading = true
+        selectedFolder = folder
+        do {
+            let urlStr = baseURL + "?folder=" + folder.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            let url = URL(string: urlStr)!
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let response = try JSONDecoder().decode(NFileListResponse.self, from: data)
+            files = response.files
+            buildFolders()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    func buildFolders() {
+        let folderDict = Dictionary(grouping: files) { $0.folder ?? "" }
+        folders = folderDict.filter { !$0.key.isEmpty }.map { NFolder(name: $0.key, fileCount: $0.value.count) }.sorted { $0.name < $1.name }
     }
 
     func downloadFile(_ file: NFile) async -> Data? {
@@ -98,13 +167,31 @@ class NAFilesService: ObservableObject {
         }
     }
 
-    func uploadFile(name: String, data: Data) async -> Bool {
+    func uploadFile(name: String, data: Data, folder: String = "") async -> Bool {
         let urlStr = baseURL + "/upload"
         guard let url = URL(string: urlStr) else { return false }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["name": name, "content": data.base64EncodedString(), "encoding": "base64"]
+        var bodyDict: [String: Any] = ["name": name, "content": data.base64EncodedString(), "encoding": "base64"]
+        if !folder.isEmpty { bodyDict["folder"] = folder }
+        request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)
+        do {
+            let (_, _) = try await URLSession.shared.data(for: request)
+            await fetchFiles()
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    func createFolder(name: String, parent: String = "") async -> Bool {
+        let urlStr = baseURL + "/folder/create"
+        guard let url = URL(string: urlStr) else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["name": name, "parent": parent]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         do {
             let (_, _) = try await URLSession.shared.data(for: request)
@@ -115,19 +202,20 @@ class NAFilesService: ObservableObject {
         }
     }
 
-    var categories: [(String, [NFile])] {
-        let grouped = Dictionary(grouping: files) { $0.type }
-        let order = ["pdf", "docx", "html", "md", "txt", "image", "other"]
-        return order.compactMap { key in
-            guard let items = grouped[key], !items.isEmpty else { return nil }
-            return (key, items)
-        }
-    }
-
-    var searchResults: (String) -> [NFile] {
-        return { query in
-            guard !query.isEmpty else { return self.files }
-            return self.files.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    func moveFile(file: NFile, toFolder: String) async -> Bool {
+        let urlStr = baseURL + "/move"
+        guard let url = URL(string: urlStr) else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["path": file.path, "folder": toFolder]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        do {
+            let (_, _) = try await URLSession.shared.data(for: request)
+            await fetchFiles()
+            return true
+        } catch {
+            return false
         }
     }
 }
