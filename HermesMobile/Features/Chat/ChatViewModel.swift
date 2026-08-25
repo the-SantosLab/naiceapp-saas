@@ -117,7 +117,7 @@ final class ListenRemoteControlController: ListenRemoteControlControlling {
     func update(_ snapshot: ListenNowPlayingSnapshot) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
             MPMediaItemPropertyTitle: snapshot.title,
-            MPMediaItemPropertyArtist: "Hermex",
+            MPMediaItemPropertyArtist: "nAIce",
             MPMediaItemPropertyPlaybackDuration: max(0, snapshot.duration),
             MPNowPlayingInfoPropertyElapsedPlaybackTime: max(0, snapshot.elapsedTime),
             MPNowPlayingInfoPropertyPlaybackRate: snapshot.isPlaying ? snapshot.speed.rawValue : 0,
