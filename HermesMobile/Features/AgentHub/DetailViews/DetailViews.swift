@@ -188,119 +188,218 @@ struct HealthDetailView: View {
 // MARK: - Work Detail View
 struct WorkDetailView: View {
     @ObservedObject private var rollup = NARollupService.shared
+    @ObservedObject private var finance = NAFinanceService.shared
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Arbeit").font(.title2.weight(.bold)).foregroundColor(.ncDark)
-                Text("Deine Business-Ubersicht von Amelia.").font(.subheadline).foregroundColor(.ncMuted)
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 20) {
+                // Header
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Arbeit").font(.title2.weight(.bold)).foregroundColor(.white)
+                        Text("Deine Business-Ubersicht von Amelia.").font(.subheadline).foregroundColor(.gray)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
 
                 // Deals
                 if let d = rollup.deals, d.active_deals > 0 {
-                    hSection("eurosign", "Deals", "\(d.active_deals) aktiv · \(d.total_value_eur) €")
-                    ForEach(d.deals?.prefix(5) ?? []) { deal in
-                        HStack(spacing: 12) {
-                            Circle().fill(Color.ncGreen).frame(width: 8, height: 8)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(deal.name).font(.subheadline.weight(.semibold)).foregroundColor(.ncDark)
-                                Text(deal.status ?? "").font(.caption).foregroundColor(.ncMuted)
+                    glassSection(icon: "creditcard.fill", title: "Deals", subtitle: "\(d.active_deals) aktiv · \(d.total_value_eur) €") {
+                        ForEach(d.deals?.prefix(5) ?? []) { deal in
+                            HStack(spacing: 12) {
+                                Circle().fill(Color.ncNeonGreen).frame(width: 8, height: 8)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(deal.name).font(.subheadline.weight(.semibold)).foregroundColor(.white)
+                                    Text(deal.status ?? "").font(.caption).foregroundColor(.gray)
+                                }
+                                Spacer()
+                                Text("\(deal.value) €").font(.subheadline.weight(.bold)).foregroundColor(.ncNeonGreen)
                             }
-                            Spacer()
-                            Text("\(deal.value) €").font(.subheadline.weight(.bold)).foregroundColor(.ncGreen)
-                        }.warmCard()
+                            .padding(10)
+                            .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+                        }
+                    }
+                }
+
+                // Revenue (Einnahmen)
+                if let rev = rollup.revenue, !(rev.entries?.isEmpty ?? true) {
+                    glassSection(icon: "eurosign.circle.fill", title: "Einnahmen", subtitle: "\(rev.total_eur ?? 0)€ gesamt") {
+                        // Stats
+                        HStack(spacing: 10) {
+                            statBox("Gesamt", "\(rev.total_eur ?? 0)€", .ncNeonGreen)
+                            statBox("Dieser Monat", "\(rev.this_month ?? 0)€", .ncCyan)
+                            statBox("Letzter Monat", "\(rev.last_month ?? 0)€", .ncAmber)
+                        }
+
+                        // Monthly Chart
+                        if let monthly = rev.monthly, !monthly.isEmpty {
+                            Text("Monatliche Einnahmen").font(.caption.weight(.semibold)).foregroundColor(.gray).padding(.top, 4)
+                            HStack(alignment: .bottom, spacing: 6) {
+                                ForEach(monthly) { m in
+                                    let maxVal = monthly.map { $0.total ?? 0 }.max() ?? 1
+                                    let pct = Double(m.total ?? 0) / Double(max(1, maxVal))
+                                    VStack(spacing: 3) {
+                                        RoundedRectangle(cornerRadius: 4).fill(Color.ncNeonGreen).frame(width: 24, height: max(8, CGFloat(pct) * 50))
+                                        Text(m.month?.suffix(2) ?? "").font(.system(size: 8)).foregroundColor(.gray)
+                                    }
+                                }
+                            }
+                            .frame(height: 64)
+                            .padding(8)
+                            .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 8))
+                        }
+
+                        // Entries
+                        if let entries = rev.entries, !entries.isEmpty {
+                            Text("Zahlungseingange").font(.caption.weight(.semibold)).foregroundColor(.gray).padding(.top, 4)
+                            VStack(spacing: 4) {
+                                ForEach(entries) { entry in
+                                    HStack(spacing: 10) {
+                                        Circle().fill(Color.ncNeonGreen).frame(width: 6, height: 6)
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            Text(entry.client ?? entry.label ?? "").font(.subheadline.weight(.medium)).foregroundColor(.white)
+                                            if let k = entry.kind { Text(k.replacingOccurrences(of: "_", with: " ").capitalized).font(.caption2).foregroundColor(.gray) }
+                                        }
+                                        Spacer()
+                                        Text("\(entry.amount ?? 0)€").font(.subheadline.weight(.bold)).foregroundColor(.ncNeonGreen)
+                                    }
+                                    .padding(8)
+                                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 8))
+                                }
+                            }
+                        }
                     }
                 }
 
                 // Business
                 if let b = rollup.business {
-                    if let f = b.foodloop {
-                        hSection("fork.knife", "foodloop", "\(f.total) Kontakte")
-                        if let stats = f.statuses {
-                            bizStats(stats)
+                    glassSection(icon: "briefcase.fill", title: "Business", subtitle: "") {
+                        if let f = b.foodloop {
+                            hSection("fork.knife", "foodloop", "\(f.total) Kontakte")
+                            if let stats = f.statuses { bizStats(stats) }
+                            Text("Heiss: \(f.hot ?? 0) Kontakte").font(.caption).foregroundColor(.ncRose)
+                                .padding(.leading, 4)
                         }
-                        Text("Heiss: \(f.hot ?? 0) Kontakte").font(.caption).foregroundColor(.ncRed)
-                            .padding(.leading, 4)
-                    }
-                    if let n = b.naice {
-                        hSection("brain.head.profile", "nAIce", "\(n.total) Kontakte")
-                        if let stats = n.statuses {
-                            bizStats(stats)
+                        if let n = b.naice {
+                            hSection("brain.head.profile", "nAIce", "\(n.total) Kontakte")
+                            if let stats = n.statuses { bizStats(stats) }
+                            Text("Gepitcht: \(n.statuses?["pitched"] ?? 0)").font(.caption).foregroundColor(.ncCyan)
+                                .padding(.leading, 4)
                         }
-                        Text("Gepitcht: \(n.statuses?["pitched"] ?? 0)").font(.caption).foregroundColor(.ncSage)
-                            .padding(.leading, 4)
                     }
                 }
 
                 // Tasks
                 if let t = rollup.tasks, t.active > 0 {
-                    hSection("checklist", "Aufgaben", "\(t.active) offen")
-                    ForEach(t.tasks?.prefix(5) ?? []) { task in
-                        HStack(spacing: 12) {
-                            Image(systemName: task.priority == "high" ? "exclamationmark.circle.fill" : "circle")
-                                .foregroundColor(task.priority == "high" ? .ncRed : .ncSage)
-                                .font(.title3)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(task.title).font(.subheadline).foregroundColor(.ncDark).lineLimit(2)
-                                HStack(spacing: 8) {
-                                    if let p = task.project { Text(p).font(.caption2).foregroundColor(.ncSage) }
-                                    if let d = task.deadline { Text("Frist: \(d)").font(.caption2).foregroundColor(.ncMuted) }
+                    glassSection(icon: "checklist", title: "Aufgaben", subtitle: "\(t.active) offen") {
+                        ForEach(t.tasks?.prefix(5) ?? []) { task in
+                            HStack(spacing: 12) {
+                                Image(systemName: task.priority == "high" ? "exclamationmark.circle.fill" : "circle")
+                                    .foregroundColor(task.priority == "high" ? .ncRose : .ncGray).font(.system(size: 14))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(task.title).font(.subheadline).foregroundColor(.white).lineLimit(2)
+                                    HStack(spacing: 8) {
+                                        if let p = task.project { Text(p).font(.caption2).foregroundColor(.ncCyan) }
+                                        if let d = task.deadline { Text("Frist: \(d)").font(.caption2).foregroundColor(.gray) }
+                                    }
                                 }
+                                Spacer()
                             }
-                            Spacer()
-                        }.warmCard()
+                            .padding(10)
+                            .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+                        }
                     }
                 }
 
                 // AI-Tipp
-                VStack(spacing: 8) {
-                    Text("AI-Tipp").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+                glassSection(icon: "sparkle", title: "AI-Tipp", subtitle: "") {
                     if let flags = rollup.summary?.flags, !flags.isEmpty {
                         ForEach(flags) { flag in
                             HStack(spacing: 8) {
                                 Image(systemName: flag.level == "red" ? "exclamationmark.triangle.fill" : "exclamationmark.circle.fill")
-                                    .foregroundColor(flag.level == "red" ? .ncRed : .ncGold)
-                                    .font(.caption)
-                                Text(flag.text).font(.caption).foregroundColor(.ncMuted)
+                                    .foregroundColor(flag.level == "red" ? .ncRose : .ncAmber).font(.caption)
+                                Text(flag.text).font(.caption).foregroundColor(.gray)
                             }
                         }
                     } else {
-                        Text("Amelia analysiert deine Daten. Offne den Chat fur Details.").font(.subheadline).foregroundColor(.ncMuted)
+                        Text("Amelia analysiert deine Daten. Offne den Chat fur Details.").font(.subheadline).foregroundColor(.gray)
                     }
-                }.warmCard()
+                }
 
                 if rollup.isLoading {
-                    VStack(spacing: 12) { ProgressView(); Text("Amelia ladt...").font(.subheadline).foregroundColor(.ncMuted) }.warmCard()
+                    VStack(spacing: 12) { ProgressView().tint(.ncCyan); Text("Amelia ladt...").font(.subheadline).foregroundColor(.gray) }
+                        .padding(20).frame(maxWidth: .infinity)
+                        .background(Color(red: 0.02, green: 0.02, blue: 0.04), in: RoundedRectangle(cornerRadius: 16))
                 }
             }
-            .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 24)
+            .padding(.bottom, 30)
         }
-        .warmBackground()
-        .navigationTitle("Arbeit")
-        .navigationBarTitleDisplayMode(.large)
+        .background(Color.black.ignoresSafeArea())
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
-    func hSection(_ icon: String, _ title: String, _ subtitle: String) -> some View {
+    // MARK: - Glass Section
+    @ViewBuilder
+    private func glassSection(icon: String, title: String, subtitle: String, @ViewBuilder content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: icon).font(.caption).foregroundColor(.ncCyan)
+                Text(title).font(.subheadline.weight(.semibold)).foregroundColor(.white)
+                if !subtitle.isEmpty {
+                    Spacer()
+                    Text(subtitle).font(.caption).foregroundColor(.gray)
+                }
+            }
+            content()
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+        .padding(.horizontal, 16)
+    }
+
+    private func hSection(_ icon: String, _ title: String, _ subtitle: String) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: icon).font(.title3).foregroundColor(.ncSage)
-            Text(title).font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+            Image(systemName: icon).font(.system(size: 10)).foregroundColor(.ncCyan)
+            Text(title).font(.subheadline.weight(.semibold)).foregroundColor(.white)
             Spacer()
-            Text(subtitle).font(.caption).foregroundColor(.ncMuted)
+            Text(subtitle).font(.caption).foregroundColor(.gray)
         }
         .padding(.top, 4).padding(.bottom, 2)
     }
 
-    func bizStats(_ statuses: [String: Int]) -> some View {
+    private func bizStats(_ statuses: [String: Int]) -> some View {
         let sorted = statuses.sorted { $0.value > $1.value }
         return VStack(spacing: 4) {
             ForEach(sorted.prefix(6), id: \.key) { key, val in
                 HStack(spacing: 8) {
-                    Text(key.replacingOccurrences(of: "_", with: " ").capitalized)
-                        .font(.caption).foregroundColor(.ncMuted)
+                    Text(key.replacingOccurrences(of: "_", with: " ").capitalized).font(.caption).foregroundColor(.gray)
                     Spacer()
-                    Text("\(val)").font(.caption.weight(.semibold)).foregroundColor(.ncDark)
+                    Text("\(val)").font(.caption.weight(.semibold)).foregroundColor(.white)
                 }
             }
-        }.warmCard()
+        }
+        .padding(10)
+        .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func statBox(_ label: String, _ value: String, _ color: Color) -> some View {
+        VStack(spacing: 4) {
+            Text(value).font(.system(size: 15, weight: .bold)).foregroundColor(color)
+            Text(label).font(.system(size: 9)).foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(8)
+        .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
     }
 }
 
