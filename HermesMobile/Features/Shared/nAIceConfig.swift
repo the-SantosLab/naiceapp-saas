@@ -96,3 +96,21 @@ func area(_ icon: String, _ title: String, _ color: Color, _ dest: AnyView) -> s
         .warmCard()
     }.buttonStyle(PlainButtonStyle())
 }
+
+// MARK: - nAIce Constants (centralized URLs)
+struct NAConstants {
+    static let baseURL = URL(string: "https://health.santoslab.de")!
+    static let rollupURL = baseURL.appending(path: "/api/rollup")
+    static let whatsappBase = baseURL.appending(path: "/api/whatsapp")
+    static let whoopSummary = URL(string: "https://health.santoslab.de/whoop/summary")!
+    static let ideasEndpoint = URL(string: "https://health.santoslab.de/api/naice/ideas")!
+    static let syncEndpoint = URL(string: "https://health.santoslab.de/api/naice/sync")!
+    static let versionEndpoint = URL(string: "https://health.santoslab.de/api/naice/version")!
+    static let widgetData = URL(string: "https://health.santoslab.de/api/naice/widget-data")!
+    static let macBase = URL(string: "https://health.santoslab.de/api/mac")!
+    static let pushRegister = URL(string: "https://health.santoslab.de/api/naice/push/register")!
+    static let appStoreURL = URL(string: "https://agent.santoslab.de/naice-app/")!
+    static let websiteURL = URL(string: "https://santoslab.de")!
+    static let naiceAppURL = URL(string: "https://naice.app")!
+    static let appVersion = "20260825.0630"
+}

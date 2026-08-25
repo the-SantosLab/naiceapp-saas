@@ -77,20 +77,13 @@ struct AgentHubView: View {
                     }
                 }
 
-                // WHOOP Dashboard – Rollup (neu) or altes System (Fallback)
+                // WHOOP – nur Rollup (kein NAiceAPI.shared Fallback mehr)
                 if let w = rollup.whoop {
-                    NAIceSectionLabel(icon: "heart.circle.fill", title: "Gesundheit (Amelia)")
+                    NAIceSectionLabel(icon: "heart.circle.fill", title: "Gesundheit")
                     VStack(alignment: .leading, spacing: 14) {
                         recoveryRow(w)
                         Divider().foregroundColor(.ncSand.opacity(0.3))
                         sleepRow(w)
-                    }.warmCard()
-                } else if let w = NAiceAPI.shared.whoop, w.connected {
-                    NAIceSectionLabel(icon: "heart.circle.fill", title: "Gesundheit")
-                    VStack(alignment: .leading, spacing: 14) {
-                        RecoveryCard(whoop: w)
-                        Divider().foregroundColor(.ncSand.opacity(0.3))
-                        SleepBreakdownCard(whoop: w)
                     }.warmCard()
                 } else if rollup.isLoading || NAiceAPI.shared.isLoading {
                     VStack(spacing: 12) { ProgressView(); Text("Lade Gesundheitsdaten...").font(.subheadline).foregroundColor(.ncMuted) }.warmCard()
@@ -101,33 +94,19 @@ struct AgentHubView: View {
                     }.warmCard()
                 }
 
-                // Nächste drei Termine aus dem Kalender
-                let calendarEvents = CalendarManager.shared.upcomingEvents
-                NAIceSectionLabel(icon: "calendar", title: "Nachste Termine")
-                if calendarEvents.isEmpty {
-                    HStack {
-                        Image(systemName: "calendar.day.timeline.left").font(.title3).foregroundColor(.ncSand)
-                        Text("Keine anstehenden Termine").font(.subheadline).foregroundColor(.ncMuted)
-                    }.warmCard()
-                } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(Array(calendarEvents.enumerated()), id: \.offset) { _, event in
-                            HStack(spacing: 10) {
-                                VStack(spacing: 2) {
-                                    Text(event.startDate, style: .date).font(.caption2).foregroundColor(.ncSage)
-                                    Text(event.startDate, style: .time).font(.caption.weight(.semibold)).foregroundColor(.ncDark)
-                                }
-                                .frame(width: 70)
-                                Divider().frame(width: 2).background(Color.ncGreen)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(event.title).font(.subheadline.weight(.semibold)).foregroundColor(.ncDark).lineLimit(1)
-                                    if let loc = event.location {
-                                        Text(loc).font(.caption).foregroundColor(.ncMuted).lineLimit(1)
-                                    }
-                                }
+                // Kalender-Termine (vom Rollup-Server)
+                if let c = rollup.calendar, c.count > 0 {
+                    NAIceSectionLabel(icon: "calendar", title: "Termine")
+                    ForEach(c.events?.prefix(3) ?? []) { event in
+                        HStack(spacing: 12) {
+                            Image(systemName: "calendar.circle").font(.title3).foregroundColor(.ncSage)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(event.title).font(.subheadline).foregroundColor(.ncDark)
+                                if let s = event.start { Text(s).font(.caption).foregroundColor(.ncMuted) }
                             }
-                        }
-                    }.warmCard()
+                            Spacer()
+                        }.warmCard()
+                    }
                 }
 
                 // Business
@@ -150,15 +129,18 @@ struct AgentHubView: View {
                         Text("\(d.total_value_eur) €").font(.title3.weight(.bold)).foregroundColor(.ncGreen)
                     }.warmCard()
                     ForEach(d.deals?.prefix(3) ?? []) { deal in
-                        HStack(spacing: 12) {
-                            Circle().fill(Color.ncGreen).frame(width: 8, height: 8)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(deal.name).font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
-                                Text(deal.status ?? "").font(.caption).foregroundColor(.ncMuted)
+                        NavigationLink(destination: DealDetailView(deal: deal)) {
+                            HStack(spacing: 12) {
+                                Circle().fill(Color.ncGreen).frame(width: 8, height: 8)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(deal.name).font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
+                                    Text(deal.status ?? "").font(.caption).foregroundColor(.ncMuted)
+                                }
+                                Spacer()
+                                Text("\(deal.value) €").font(.subheadline.weight(.bold)).foregroundColor(.ncGreen)
+                                Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
                             }
-                            Spacer()
-                            Text("\(deal.value) €").font(.subheadline.weight(.bold)).foregroundColor(.ncGreen)
-                        }.warmCard()
+                        }.warmCard().buttonStyle(.plain)
                     }
                 }
 
@@ -173,21 +155,6 @@ struct AgentHubView: View {
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(task.title).font(.subheadline).foregroundColor(.ncDark).lineLimit(2)
                                 if let d = task.deadline { Text("Frist: \(d)").font(.caption).foregroundColor(.ncMuted) }
-                            }
-                            Spacer()
-                        }.warmCard()
-                    }
-                }
-
-                // Calendar
-                if let c = rollup.calendar, c.count > 0 {
-                    NAIceSectionLabel(icon: "calendar", title: "Termine")
-                    ForEach(c.events?.prefix(3) ?? []) { event in
-                        HStack(spacing: 12) {
-                            Image(systemName: "calendar.circle").font(.title3).foregroundColor(.ncSage)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(event.title).font(.subheadline).foregroundColor(.ncDark)
-                                if let s = event.start { Text(s).font(.caption).foregroundColor(.ncMuted) }
                             }
                             Spacer()
                         }.warmCard()
@@ -264,7 +231,6 @@ struct AgentHubView: View {
                     Text(String(format: "%.1fh", s.net_hours)).font(.title3.weight(.bold)).foregroundColor(.ncDark)
                     if let e = s.efficiency_pct { Text("(\(Int(e))%)").font(.caption).foregroundColor(.ncMuted) }
                 }
-                // Sleep phases bar
                 if s.deep_minutes + s.rem_minutes + s.light_minutes + s.awake_minutes > 0 {
                     let total = Double(s.deep_minutes + s.rem_minutes + s.light_minutes + s.awake_minutes)
                     HStack(spacing: 3) {
@@ -282,31 +248,10 @@ struct AgentHubView: View {
                     HStack {
                         Text("Strain: \(String(format: "%.1f", w.strain ?? 0))").font(.caption).foregroundColor(.ncMuted)
                         Spacer()
-                        if let avg = w.avg_hr { Text("Puls Ø: \(avg)").font(.caption).foregroundColor(.ncMuted) }
+                        if let avg = w.avg_hr { Text("Puls O: \(avg)").font(.caption).foregroundColor(.ncMuted) }
                     }
                 }
             }
-        }
-    }
-
-    private func workoutRow(_ workouts: [NAWhoopWorkout]) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(workouts.indices, id: \.self) { i in
-                    let wo = workouts[i]
-                    VStack(spacing: 6) {
-                        Image(systemName: sportIcon(wo.sport)).font(.title2).foregroundColor(.ncGreen)
-                        Text(wo.sport.capitalized).font(.caption).foregroundColor(.ncDark)
-                        HStack(spacing: 2) {
-                            Image(systemName: "bolt.fill").font(.system(size: 8)).foregroundColor(.ncGold)
-                            Text(String(format: "%.1f", wo.strain)).font(.caption2.weight(.semibold)).foregroundColor(.ncDark)
-                        }
-                    }
-                    .frame(width: 72, height: 80)
-                    .background(Color.ncPaper, in: RoundedRectangle(cornerRadius: 12))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.ncSand.opacity(0.4)))
-                }
-            }.padding(.horizontal, 4)
         }
     }
 
@@ -332,18 +277,6 @@ struct AgentHubView: View {
         HStack(spacing: 4) {
             Circle().fill(c).frame(width: 6, height: 6)
             Text(t).font(.system(size: 9)).foregroundColor(.ncMuted)
-        }
-    }
-
-    private func sportIcon(_ s: String) -> String {
-        switch s.lowercased() {
-        case "walking": return "figure.walk"
-        case "running": return "figure.run"
-        case "cycling": return "bicycle"
-        case "swimming": return "figure.pool.swim"
-        case "fitness": return "dumbbell.fill"
-        case "yoga": return "figure.mind.and.body"
-        default: return "figure.mixed.cardio"
         }
     }
 }
