@@ -113,7 +113,7 @@ struct NAIceLifeView: View {
 
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                             areaTile(icon: "heart.fill", label: "Gesundheit", color: .ncRose, detail: healthText(), dest: AnyView(HealthDetailView()))
-                            areaTile(icon: "eurosign", label: "Finanzen", color: .ncAmber, detail: "\(Int(finance.monthlyTotal))€ diesen Monat", dest: AnyView(FinanceDetailView()))
+                            areaTile(icon: "creditcard.fill", label: "Finanzen", color: .ncAmber, detail: "\(Int(finance.monthlyTotal))€ diesen Monat", dest: AnyView(FinanceDetailView()))
                             areaTile(icon: "person.2.fill", label: "Menschen", color: .ncNeonGreen, detail: "\(contacts.contacts.count) Kontakte", dest: AnyView(RelationsDetailView()))
                             areaTile(icon: "arrow.trianglehead.clockwise", label: "Gewohnheiten", color: .ncCyan, detail: "\(habits.filter { Calendar.current.isDateInToday($0.date) }.count) heute", dest: AnyView(NAIceHabitsView()))
                         }
@@ -240,7 +240,7 @@ struct QuickLogSection: View {
             .padding(.horizontal, 4)
 
             VStack(spacing: 10) {
-                QuickLogRow(icon: "face.smiling", label: "Stimmung", done: false, action: {
+                QuickLogRow(icon: "face.smiling.fill", label: "Stimmung", done: false, action: {
                     let h = HabitLog(date: Date(), habit: "mood", isCompleted: true, note: "gut")
                     mc.insert(h)
                 })
@@ -250,7 +250,7 @@ struct QuickLogSection: View {
                     mc.insert(h)
                 })
 
-                QuickLogRow(icon: "eurosign", label: "Ausgabe", done: false, action: {
+                QuickLogRow(icon: "creditcard.fill", label: "Ausgabe", done: false, action: {
                     let e = Expense(date: Date(), amount: 0, category: "sonstiges", note: "")
                     mc.insert(e)
                 })

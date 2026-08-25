@@ -90,7 +90,7 @@ struct RadarChart: View {
         LifeDimension(id: "b", icon: "briefcase.fill", label: "Arbeit", score: 60, trend: .flat, detail: "60%"),
         LifeDimension(id: "c", icon: "person.2.fill", label: "Beziehungen", score: 40, trend: .down, detail: "40%"),
         LifeDimension(id: "d", icon: "house.fill", label: "Alltag", score: 90, trend: .up, detail: "90%"),
-        LifeDimension(id: "e", icon: "eurosign", label: "Finanzen", score: 50, trend: .flat, detail: "50%"),
+        LifeDimension(id: "e", icon: "creditcard.fill", label: "Finanzen", score: 50, trend: .flat, detail: "50%"),
         LifeDimension(id: "f", icon: "lightbulb.fill", label: "Kreativität", score: 70, trend: .up, detail: "70%"),
     ])
     .padding()

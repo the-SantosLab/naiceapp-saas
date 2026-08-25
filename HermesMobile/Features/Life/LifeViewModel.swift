@@ -96,7 +96,7 @@ class LifeViewModel: ObservableObject {
             LifeDimension(id: "work", icon: "briefcase.fill", label: "Arbeit", score: workScore, trend: activeDeals > 0 ? .up : .flat, detail: "\(activeDeals) Deals · \(activeTasks) Tasks"),
             LifeDimension(id: "relations", icon: "person.2.fill", label: "Beziehungen", score: relationsScore, trend: waUnread == 0 ? .up : .down, detail: "\(waUnread) WhatsApp offen"),
             LifeDimension(id: "daily", icon: "house.fill", label: "Alltag", score: dailyScore, trend: todayEvents > 0 ? .up : .flat, detail: "\(todayEvents) Termine heute"),
-            LifeDimension(id: "finance", icon: "eurosign", label: "Finanzen", score: financeScore, trend: revenue > 10000 ? .up : .flat, detail: "\(revenue)€ Umsatz"),
+            LifeDimension(id: "finance", icon: "creditcard.fill", label: "Finanzen", score: financeScore, trend: revenue > 10000 ? .up : .flat, detail: "\(revenue)€ Umsatz"),
             LifeDimension(id: "creativity", icon: "lightbulb.fill", label: "Kreativität", score: creativeScore, trend: journalThisWeek > 3 ? .up : .flat, detail: "\(journalThisWeek) Journal-Einträge")
         ]
         self.dimensions = dims
