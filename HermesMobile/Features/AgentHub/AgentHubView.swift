@@ -62,6 +62,33 @@ struct AgentHubView: View {
                     }
                 }.warmCard()
 
+                // Briefings
+                if let b = rollup.crm?.briefings, let today = b.today, !today.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Briefings").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+                        ForEach(today) { briefing in
+                            NavigationLink(destination: NABriefingDetailView(briefing: briefing, requestedNewChat: $requestedNewChat)) {
+                                HStack(spacing: 10) {
+                                    Image(systemName: briefing.period == "morning" ? "sunrise.fill" : briefing.period == "midday" ? "sun.max.fill" : "moon.stars.fill")
+                                        .font(.title3).foregroundColor(briefing.period == "morning" ? .ncGold : briefing.period == "midday" ? .ncGreen : .ncSage)
+                                        .frame(width: 28)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(briefing.title ?? "").font(.subheadline.weight(.medium)).foregroundColor(.ncDark).lineLimit(1)
+                                        Text(briefing.body ?? "").font(.caption).foregroundColor(.ncMuted).lineLimit(2)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
+                                }
+                                .padding(10)
+                                .background(Color.white.opacity(0.6)).cornerRadius(8)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                } else {
+                    BriefingPlaceholder(requestedNewChat: $requestedNewChat)
+                }
+
                 // Summary Flags (Amelia's Warnungen)
                 if !rollup.flags.isEmpty {
                     ForEach(rollup.flags) { flag in
@@ -315,6 +342,34 @@ struct AgentHubView: View {
             Circle().fill(c).frame(width: 6, height: 6)
             Text(t).font(.system(size: 9)).foregroundColor(.ncMuted)
         }
+    }
+}
+
+// MARK: - Briefing Placeholder
+struct BriefingPlaceholder: View {
+    @Binding var requestedNewChat: NewChatRequest?
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "sunrise.fill").font(.title2).foregroundColor(.ncSand)
+            Text("Amelia meldet sich bald").font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
+            Text("Morgen-, Mittags- und Abend-Briefings erscheinen hier, sobald Amelia sie fur dich erstellt.")
+                .font(.caption).foregroundColor(.ncMuted).multilineTextAlignment(.center)
+            Button {
+                let context = "Erstelle ein kurzes Briefing fur mich. Wie sieht mein Tag aus?"
+                requestedNewChat = NewChatRequest(
+                    profileName: "santos-copilot",
+                    initialDraft: context
+                )
+            } label: {
+                Text("Jetzt Briefing anfordern")
+                    .font(.caption.weight(.semibold)).foregroundColor(.ncGreen)
+                    .padding(.horizontal, 14).padding(.vertical, 7)
+                    .background(Color.ncGreen.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
+                    .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.ncGreen.opacity(0.15)))
+            }
+        }
+        .warmCard()
     }
 }
 

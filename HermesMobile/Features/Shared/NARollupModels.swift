@@ -186,6 +186,7 @@ struct NARollupCRM: Codable {
     let revenue_eur: Int?
     let cold_calls_pending: Int?
     let alerts: [NAAgentAlert]?
+    let briefings: NABriefings?
 }
 
 struct NAAgentAlert: Codable, Identifiable {
@@ -257,4 +258,20 @@ struct NCRMColdCalls: Codable {
     let total: Int
     let follow_up: Int?
     let done: Int?
+}
+
+// MARK: - Briefing Models
+struct NABriefing: Codable, Identifiable {
+    let id: Int?
+    let period: String?  // "morning" | "midday" | "evening"
+    let title: String?
+    let body: String?
+    let created: Int?
+}
+
+struct NABriefings: Codable {
+    let today: [NABriefing]?
+    let latest_morning: NABriefing?
+    let latest_midday: NABriefing?
+    let latest_evening: NABriefing?
 }
