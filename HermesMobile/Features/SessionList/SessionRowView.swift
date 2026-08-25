@@ -153,7 +153,21 @@ struct SessionRowView: View {
                     .foregroundStyle(Color.accentColor)
                     .accessibilityHidden(true)
             }
+
+            if isReadOnly {
+                Text("Read-only")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.ncSand)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.ncSand.opacity(0.15), in: RoundedRectangle(cornerRadius: 6))
+                    .accessibilityHidden(true)
+            }
         }
+    }
+
+    private var isReadOnly: Bool {
+        session.readOnly == true || session.isReadOnly == true
     }
 
     private func relativeDateText(_ text: String) -> some View {
