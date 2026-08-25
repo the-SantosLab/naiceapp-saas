@@ -35,33 +35,6 @@ struct AgentHubView: View {
                     }.padding(.horizontal, 4)
                 }
 
-                // Chat mit Amelia (mit vollem Kontext + Action-Fähigkeit)
-                Button {
-                    let context = NAContextBuilder.buildFullContext(
-                        moods: moods, habits: habits, expenses: expenses,
-                        health: HealthManager.shared,
-                        calendar: CalendarManager.shared,
-                        whoop: rollup.whoop,
-                        rollup: rollup.rollup,
-                        contacts: NAContactService.shared
-                    )
-                    requestedNewChat = NewChatRequest(
-                        profileName: "santos-copilot",
-                        initialDraft: context
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "message.fill").font(.title3).foregroundColor(.white)
-                            .frame(width: 36, height: 36).background(Color.ncGreen, in: RoundedRectangle(cornerRadius: 10))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Mit Amelia chatten").font(.subheadline.weight(.semibold)).foregroundColor(.ncDark)
-                            Text("App-Kontext wird mitgesendet").font(.caption).foregroundColor(.ncMuted)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right").font(.caption).foregroundColor(.ncSand)
-                    }
-                }.warmCard()
-
                 // Briefings
                 if let b = rollup.crm?.briefings, let today = b.today, !today.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {

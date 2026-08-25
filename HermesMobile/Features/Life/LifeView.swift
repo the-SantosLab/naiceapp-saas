@@ -125,35 +125,6 @@ struct NAIceLifeView: View {
                             .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
                     )
                     .padding(.horizontal, 16)
-
-                    // Section 7: Apple Badges
-                    VStack(spacing: 8) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "apple.logo")
-                                .font(.caption)
-                                .foregroundColor(.ncCyan)
-                            Text("Verknüpfte Dienste")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundColor(.white)
-                            Spacer()
-                        }
-                        .padding(.horizontal, 4)
-
-                        HStack(spacing: 6) {
-                            naBadge("heart.fill", "Health", health.isAuthorized)
-                            naBadge("calendar", "Kalender", calendarManager.isAuthorized)
-                            naBadge("person.2.fill", "Kontakte", services.contactsAuthorized)
-                            naBadge("location.fill", "Standort", services.locationAuthorized)
-                            naBadge("bell.fill", "Erinnerungen", services.remindersAuthorized)
-                        }
-                    }
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
-                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
-                    )
-                    .padding(.horizontal, 16)
                 }
                 .padding(.bottom, 30)
             }
