@@ -16,6 +16,7 @@
 		05814DEA5DE4690F730B1E15 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EC010A2D940B0E42287A4 /* InsightsViewModel.swift */; };
 		0765B9A12229D83851384211 /* WorkoutScrollRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8A3B65E2196486BD26194A /* WorkoutScrollRow.swift */; };
 		07D922D2B9848EEA60C4C2C3 /* CardsOfTheMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */; };
+		096013A76B8A0238C7F8A0BF /* NAIceTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0143F869FA91749C03CCDDD2 /* NAIceTasksView.swift */; };
 		0D82B28493C6401D98DA9C0E /* SlashCommandExecutorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6809B8F1391248A4AA77C453 /* SlashCommandExecutorTests.swift */; };
 		0DE1B30EF6B91B5A9D543B33 /* NAiceContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B22429E07FCB1A1DB490B70 /* NAiceContext.swift */; };
 		103200000000000000000002 /* DefaultProfilePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103200000000000000000001 /* DefaultProfilePickerView.swift */; };
@@ -261,6 +262,7 @@
 		C05100000000000000000002 /* ChatMessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05100000000000000000012 /* ChatMessageActions.swift */; };
 		C05100000000000000000003 /* ChatGoalControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05100000000000000000013 /* ChatGoalControls.swift */; };
 		C05100000000000000000004 /* ChatTranscriptSupportingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05100000000000000000014 /* ChatTranscriptSupportingViews.swift */; };
+		C05722EC9A5DCEE91A0252B9 /* BusinessOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF451D7E79A66AC572524122 /* BusinessOverview.swift */; };
 		C06000000000000000000001 /* ToolCallDisplayFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06000000000000000000002 /* ToolCallDisplayFormatter.swift */; };
 		C08800000000000000000001 /* SessionHaptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08800000000000000000002 /* SessionHaptics.swift */; };
 		C08800000000000000000003 /* SessionHapticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08800000000000000000004 /* SessionHapticsTests.swift */; };
@@ -403,6 +405,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0143F869FA91749C03CCDDD2 /* NAIceTasksView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAIceTasksView.swift; path = AgentHub/DetailViews/NAIceTasksView.swift; sourceTree = "<group>"; };
 		01AC42267845CE6609F75223 /* RecoveryCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecoveryCard.swift; path = AgentHub/Cards/RecoveryCard.swift; sourceTree = "<group>"; };
 		031031031031031031031002 /* MarkdownMathSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMathSegmenter.swift; sourceTree = "<group>"; };
 		031031031031031031031004 /* MarkdownMathRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMathRendererTests.swift; sourceTree = "<group>"; };
@@ -749,6 +752,7 @@
 		D7C3A6878D4C92A894FFDB3B /* NACryptoService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NACryptoService.swift; path = NACryptoService.swift; sourceTree = "<group>"; };
 		DA51F6C9BE72018CBD91F41D /* SleepBreakdownCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SleepBreakdownCard.swift; path = AgentHub/Cards/SleepBreakdownCard.swift; sourceTree = "<group>"; };
 		DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceDynamicIsland.swift; sourceTree = "<group>"; };
+		DF451D7E79A66AC572524122 /* BusinessOverview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BusinessOverview.swift; path = AgentHub/DetailViews/BusinessOverview.swift; sourceTree = "<group>"; };
 		E6ED7B24D7511807FD577DDD /* ContactDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContactDetailView.swift; path = AgentHub/DetailViews/ContactDetailView.swift; sourceTree = "<group>"; };
 		EE8A3B65E2196486BD26194A /* WorkoutScrollRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutScrollRow.swift; path = AgentHub/Cards/WorkoutScrollRow.swift; sourceTree = "<group>"; };
 		F02DB651B910BACB7824C787 /* JournalDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JournalDetailView.swift; path = AgentHub/DetailViews/JournalDetailView.swift; sourceTree = "<group>"; };
@@ -1349,6 +1353,8 @@
 				E6ED7B24D7511807FD577DDD /* ContactDetailView.swift */,
 				F02DB651B910BACB7824C787 /* JournalDetailView.swift */,
 				82626C6BEC28AF7D30A136F6 /* DealDetailView.swift */,
+				DF451D7E79A66AC572524122 /* BusinessOverview.swift */,
+				0143F869FA91749C03CCDDD2 /* NAIceTasksView.swift */,
 			);
 			name = DetailViews;
 			sourceTree = "<group>";
@@ -1915,6 +1921,8 @@
 				D123E596F72D4D22FF9919C1 /* NAIceMoreView.swift in Sources */,
 				BD06643F50325F2FCECB4F76 /* JournalDetailView.swift in Sources */,
 				C3F0829E2D769F36F2573F94 /* DealDetailView.swift in Sources */,
+				C05722EC9A5DCEE91A0252B9 /* BusinessOverview.swift in Sources */,
+				096013A76B8A0238C7F8A0BF /* NAIceTasksView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

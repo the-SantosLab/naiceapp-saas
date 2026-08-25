@@ -1,15 +1,18 @@
 import SwiftUI
 
-// MARK: - Rewritten More Tab
+// MARK: - Rewritten More Tab mit echten Daten
 struct NAIceMoreView: View {
     @State private var showVoiceBar = false
+    @ObservedObject private var waVM = WhatsAppViewModel.shared
+    @ObservedObject private var rollup = NARollupService.shared
+    @State private var pushRegistered = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Mehr").font(.title2.weight(.bold)).foregroundColor(.ncDark)
-                    Text("Alle Integrationen und Optionen.").font(.subheadline).foregroundColor(.ncMuted)
+                    Text("Alle Integrationen, Optionen und Infos.").font(.subheadline).foregroundColor(.ncMuted)
 
                     // Apple Dienste
                     VStack(alignment: .leading, spacing: 8) {
@@ -19,6 +22,7 @@ struct NAIceMoreView: View {
                         integrationRow("person.2.fill", "Kontakte", NAContactService.shared.contacts.isEmpty ? "Nicht verbunden" : "\(NAContactService.shared.contacts.count) Kontakte")
                         integrationRow("mic.fill", "Spracherkennung", NAVoiceService.shared.isAuthorized ? "Bereit" : "Nicht autorisiert")
                         integrationRow("lock.fill", "Verschl. Notizen", NACryptoService.shared.isUnlocked ? "Entsperrt" : "Gesperrt")
+                        integrationRow("bell.fill", "Push", pushRegistered ? "Registriert" : "Nicht registriert")
                     }.warmCard()
 
                     // KI & Agent
@@ -26,35 +30,53 @@ struct NAIceMoreView: View {
                         Text("✨ KI & Agent").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
                         integrationRow("arrow.trianglehead.clockwise", "KI-Workflows", "\(NAWorkflowService.shared.workflows.count) aktiv")
                         integrationRow("waveform", "Sprach-Befehle", "Bereit", action: { showVoiceBar = true })
-                        integrationRow("message.fill", "WhatsApp-Tracker", "\(WhatsAppViewModel.shared.totalUnread) offen")
-                    }.warmCard()
-
-                    // Finanzen
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("💰 Finanzen").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        integrationRow("eurosign", "Budget", "\(NAFinanceService.shared.budgets.count) Kategorien")
-                        integrationRow("cart.fill", "Ausgaben", "\(NAFinanceService.shared.expenses.count) erfasst")
+                        integrationRow("message.fill", "WhatsApp", "\(waVM.totalUnread) offen")
+                        if let t = rollup.tasks {
+                            integrationRow("checklist", "Business-Tasks", "\(t.active) aktiv")
+                        }
                     }.warmCard()
 
                     // Server
                     VStack(alignment: .leading, spacing: 8) {
                         Text("🖥 Server").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        integrationRow("server.rack", "Server", "Verbunden")
-                        integrationRow("brain.head.profile", "Memory", "Aktiv")
+                        integrationRow("server.rack", "Server", "health.santoslab.de")
+                        integrationRow("brain.head.profile", "Agent Memory", "Aktiv")
+                        integrationRow("n.square.fill", "Mac Agent", "8 Aktionen")
                     }.warmCard()
 
-                    // App Info
+                    // Info
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("ℹ️ App").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+                        Text("ℹ️ Info").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
                         HStack {
                             Text("Version").font(.subheadline).foregroundColor(.ncDark)
                             Spacer()
-                            Text("20260825.0200").font(.subheadline).foregroundColor(.ncMuted)
+                            Text(NAConstants.appVersion).font(.subheadline).foregroundColor(.ncMuted)
+                        }
+                        HStack {
+                            Text("Build").font(.subheadline).foregroundColor(.ncDark)
+                            Spacer()
+                            Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "–").font(.subheadline).foregroundColor(.ncMuted)
+                        }
+                        HStack {
+                            Text("Server").font(.subheadline).foregroundColor(.ncDark)
+                            Spacer()
+                            Text("health.santoslab.de").font(.subheadline).foregroundColor(.ncMuted)
                         }
                         Button("Nach Updates suchen") {
                             Task { await NAUpdateService.shared.checkForUpdates() }
                         }
                         .font(.subheadline).foregroundColor(.ncGreen)
+                    }.warmCard()
+
+                    // Rechtliches
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("⚖️ Rechtliches").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+                        Link("santoslab.de", destination: NAConstants.websiteURL)
+                            .font(.subheadline).foregroundColor(.ncGreen)
+                        Link("nAIce.app", destination: NAConstants.naiceAppURL)
+                            .font(.subheadline).foregroundColor(.ncGreen)
+                        Link("App installieren", destination: NAConstants.appStoreURL)
+                            .font(.subheadline).foregroundColor(.ncGreen)
                     }.warmCard()
 
                     // Quick Actions
@@ -66,6 +88,11 @@ struct NAIceMoreView: View {
                             Task { await NAWorkflowService.shared.checkTriggers() }
                         }
                         .font(.subheadline).foregroundColor(.ncGreen)
+                        Button("Push registrieren") {
+                            UIApplication.shared.registerForRemoteNotifications()
+                            pushRegistered = true
+                        }
+                        .font(.subheadline).foregroundColor(.ncGreen)
                     }.warmCard()
                 }
                 .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 24)
@@ -74,9 +101,7 @@ struct NAIceMoreView: View {
             .navigationTitle("Mehr")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .sheet(isPresented: $showVoiceBar) {
-            VoiceCommandBar()
-        }
+        .sheet(isPresented: $showVoiceBar) { VoiceCommandBar() }
     }
 
     func integrationRow(_ icon: String, _ label: String, _ status: String, action: (() -> Void)? = nil) -> some View {

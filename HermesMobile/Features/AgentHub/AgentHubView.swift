@@ -112,6 +112,13 @@ struct AgentHubView: View {
                 // Business
                 if let b = rollup.business {
                     NAIceSectionLabel(icon: "briefcase.fill", title: "Business")
+                    NavigationLink(destination: BusinessOverview()) {
+                        HStack(spacing: 8) {
+                            Text("Alle Projekte").font(.subheadline).foregroundColor(.ncGreen)
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.caption).foregroundColor(.ncSand)
+                        }
+                    }.buttonStyle(.plain)
                     if let f = b.foodloop {
                         bizCard("foodloop", f.total, f.hot ?? 0, f.statuses ?? [:])
                     }
