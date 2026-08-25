@@ -272,7 +272,7 @@ struct SessionListView: View {
                     }
                 )
             )
-            .focusedSceneValue(\.hermexSceneActions, sceneActions)
+            .focusedSceneValue(\.nAIceSceneActions, sceneActions)
     }
 
     @ViewBuilder
@@ -939,8 +939,8 @@ struct SessionListView: View {
         searchFieldIsFocused = true
     }
 
-    private var sceneActions: HermexSceneActions {
-        HermexSceneActions(
+    private var sceneActions: nAIceSceneActions {
+        nAIceSceneActions(
             canCreateNewChat: !viewModel.isViewingCachedData && !navigationState.isCreatingNewChat,
             createNewChat: openNewChatFromKeyboard,
             searchSessions: openSearchFromKeyboard

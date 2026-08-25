@@ -1,25 +1,25 @@
 import SwiftUI
 import SwiftData
 
-struct HermexSceneActions {
+struct nAIceSceneActions {
     let canCreateNewChat: Bool
     let createNewChat: () -> Void
     let searchSessions: () -> Void
 }
 
-private struct HermexSceneActionsKey: FocusedValueKey {
-    typealias Value = HermexSceneActions
+private struct nAIceSceneActionsKey: FocusedValueKey {
+    typealias Value = nAIceSceneActions
 }
 
 extension FocusedValues {
-    var hermexSceneActions: HermexSceneActions? {
-        get { self[HermexSceneActionsKey.self] }
-        set { self[HermexSceneActionsKey.self] = newValue }
+    var nAIceSceneActions: nAIceSceneActions? {
+        get { self[nAIceSceneActionsKey.self] }
+        set { self[nAIceSceneActionsKey.self] = newValue }
     }
 }
 
-struct HermexCommands: Commands {
-    @FocusedValue(\.hermexSceneActions) private var actions
+struct nAIceCommands: Commands {
+    @FocusedValue(\.nAIceSceneActions) private var actions
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button("New Chat") { actions?.createNewChat() }
@@ -85,7 +85,7 @@ final class HabitDefinition {
 // MARK: - App
 
 @main
-struct HermesMobileApp: App {
+struct nAIceApp: App {
     @State private var authManager = AuthManager()
     @AppStorage(AppTheme.storageKey) private var appThemeRawValue = AppTheme.system.rawValue
 
@@ -95,6 +95,6 @@ struct HermesMobileApp: App {
                 .preferredColorScheme(AppTheme.storedValue(appThemeRawValue).colorScheme)
         }
         .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self])
-        .commands { HermexCommands(); SidebarCommands() }
+        .commands { nAIceCommands(); SidebarCommands() }
     }
 }
