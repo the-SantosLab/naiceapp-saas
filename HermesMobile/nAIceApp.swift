@@ -156,7 +156,7 @@ struct nAIceApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(authManager: authManager)
-                .preferredColorScheme(AppTheme.storedValue(appThemeRawValue).colorScheme)
+                .preferredColorScheme(.dark)
         }
         .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self])
         .commands { nAIceCommands(); SidebarCommands() }

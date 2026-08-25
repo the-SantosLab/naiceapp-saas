@@ -1,44 +1,116 @@
 import SwiftUI
 
-// MARK: - nAIce Colors
+// MARK: - nAIce Colors (Sci-Fi / Revolut-Inspired Palette)
 extension Color {
-    static let ncCream = Color(red: 0.984, green: 0.957, blue: 0.886)
-    static let ncPaper = Color(red: 1.0, green: 0.973, blue: 0.906)
-    static let ncSand = Color(red: 0.910, green: 0.863, blue: 0.769)
-    static let ncSage = Color(red: 0.541, green: 0.608, blue: 0.478)
-    static let ncGreen = Color(red: 0.239, green: 0.353, blue: 0.278)
-    static let ncGreenLight = Color(red: 0.353, green: 0.478, blue: 0.396)
-    static let ncDark = Color(red: 0.102, green: 0.078, blue: 0.051)
-    static let ncMuted = Color(red: 0.541, green: 0.510, blue: 0.439)
-    static let ncRed = Color(red: 0.761, green: 0.231, blue: 0.231)
-    static let ncGold = Color(red: 0.769, green: 0.635, blue: 0.396)
+    // Core palette
+    static let ncBg = Color(red: 0.051, green: 0.051, blue: 0.082)       // #0D0D15
+    static let ncSurface = Color(red: 0.102, green: 0.102, blue: 0.157)   // #1A1A28
+    static let ncSurface2 = Color(red: 0.149, green: 0.149, blue: 0.212)  // #262636
+    
+    // Accents
+    static let ncCyan = Color(red: 0.0, green: 0.898, blue: 1.0)         // #00E5FF
+    static let ncPurple = Color(red: 0.486, green: 0.227, blue: 0.929)   // #7C3AED
+    static let ncNeonGreen = Color(red: 0.0, green: 0.902, blue: 0.463)  // #00E676
+    static let ncBlue = Color(red: 0.231, green: 0.510, blue: 0.965)     // #3B82F6
+    static let ncAmber = Color(red: 0.961, green: 0.620, blue: 0.043)    // #F59E0B
+    static let ncRose = Color(red: 0.937, green: 0.267, blue: 0.267)     // #EF4444
+    
+    // Neutrals
+    static let ncWhite = Color(red: 0.965, green: 0.965, blue: 0.980)    // #F6F6FA
+    static let ncGray = Color(red: 0.420, green: 0.439, blue: 0.502)     // #6B7280
+    static let ncGray2 = Color(red: 0.294, green: 0.314, blue: 0.376)    // #4B5060
+    
+    // Keep old names aliased to new values for backward compatibility
+    static let ncCream = Color(red: 0.051, green: 0.051, blue: 0.082)    // was warm cream, now dark bg
+    static let ncPaper = Color(red: 0.102, green: 0.102, blue: 0.157)    // was warm paper, now glass surface
+    static let ncSand = Color(red: 0.420, green: 0.439, blue: 0.502)     // was sand, now gray
+    static let ncSage = Color(red: 0.0, green: 0.898, blue: 1.0)        // was sage green, now cyan
+    static let ncGreen = Color(red: 0.0, green: 0.902, blue: 0.463)     // was dark green, now neon green
+    static let ncGreenLight = Color(red: 0.231, green: 0.510, blue: 0.965) // was light green, now blue
+    static let ncDark = Color(red: 0.965, green: 0.965, blue: 0.980)    // was dark brown, now white
+    static let ncMuted = Color(red: 0.420, green: 0.439, blue: 0.502)   // stays muted gray
+    static let ncRed = Color(red: 0.937, green: 0.267, blue: 0.267)     // was muted red, now rose
+    static let ncGold = Color(red: 0.961, green: 0.620, blue: 0.043)    // was gold, now amber
 }
 
-// MARK: - Warm Card Style
-struct WarmCardStyle: ViewModifier {
+// MARK: - Glass Card Style (Sci-Fi)
+struct GlassCardStyle: ViewModifier {
     func body(content: Content) -> some View {
-        content.padding(16)
+        content
+            .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.ncPaper)
+            .background(
+                ZStack {
+                    Color.ncSurface
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(lineWidth: 0.5)
+                        .foregroundColor(.white.opacity(0.06))
+                }
+            )
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.ncSand.opacity(0.4), lineWidth: 0.5))
-            .shadow(color: .black.opacity(0.03), radius: 3, y: 1)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                .white.opacity(0.12),
+                                .white.opacity(0.03),
+                                .clear
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: .ncCyan.opacity(0.05), radius: 8, y: 4)
     }
 }
 
+// MARK: - Glow Effect
 extension View {
-    func warmCard() -> some View { modifier(WarmCardStyle()) }
-    func warmBackground() -> some View { self.background(Color.ncCream.ignoresSafeArea()) }
+    func glow(color: Color = .ncCyan, radius: CGFloat = 12) -> some View {
+        self.overlay(self, alignment: .center)
+            .shadow(color: color.opacity(0.4), radius: radius)
+    }
 }
 
-// MARK: - Section Label
+// MARK: - View Extensions
+extension View {
+    func warmCard() -> some View { modifier(GlassCardStyle()) }
+    func warmBackground() -> some View {
+        self.background(
+            ZStack {
+                Color.ncBg
+                // Subtle ambient glow
+                Circle()
+                    .fill(Color.ncCyan.opacity(0.03))
+                    .blur(radius: 80)
+                    .offset(x: -100, y: -200)
+                Circle()
+                    .fill(Color.ncPurple.opacity(0.03))
+                    .blur(radius: 80)
+                    .offset(x: 100, y: 200)
+            }
+            .ignoresSafeArea()
+        )
+    }
+}
+
+// MARK: - Section Label (Sci-Fi)
 struct NAIceSectionLabel: View {
     let icon: String
     let title: String
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: icon).font(.caption).foregroundColor(.ncSage)
-            Text(title).font(.caption.weight(.semibold)).foregroundColor(.ncSage).textCase(.uppercase)
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(.ncCyan)
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundColor(.ncGray)
+                .textCase(.uppercase)
+                .tracking(1.2)
         }
         .padding(.horizontal, 4)
         .padding(.top, 24)
@@ -59,29 +131,29 @@ func timeGreeting() -> String {
 }
 
 func recoveryColor(_ s: Int) -> Color {
-    s >= 67 ? .ncGreen : s >= 34 ? .ncGold : .ncRed
+    s >= 67 ? .ncNeonGreen : s >= 34 ? .ncAmber : .ncRose
 }
 
 func wm(_ i: String, _ v: String, _ l: String) -> some View {
     VStack(spacing: 4) {
-        Image(systemName: i).font(.caption).foregroundColor(.ncSage)
-        Text(v).font(.caption.weight(.bold)).foregroundColor(.ncDark)
-        Text(l).font(.system(size: 8)).foregroundColor(.ncMuted)
+        Image(systemName: i).font(.caption).foregroundColor(.ncCyan)
+        Text(v).font(.caption.weight(.bold)).foregroundColor(.ncWhite)
+        Text(l).font(.system(size: 8)).foregroundColor(.ncGray)
     }.frame(maxWidth: .infinity)
 }
 
 func mini(_ i: String, _ v: String, _ l: String) -> some View {
     VStack(spacing: 4) {
-        Image(systemName: i).font(.caption).foregroundColor(.ncSage)
-        Text(v).font(.caption.weight(.bold)).foregroundColor(.ncDark)
-        Text(l).font(.caption2).foregroundColor(.ncMuted)
+        Image(systemName: i).font(.caption).foregroundColor(.ncCyan)
+        Text(v).font(.caption.weight(.bold)).foregroundColor(.ncWhite)
+        Text(l).font(.caption2).foregroundColor(.ncGray)
     }.frame(maxWidth: .infinity)
 }
 
 func legend(_ l: String, _ c: Color) -> some View {
     HStack(spacing: 3) {
         Circle().fill(c).frame(width: 6, height: 6)
-        Text(l).font(.system(size: 9)).foregroundColor(.ncMuted)
+        Text(l).font(.system(size: 9)).foregroundColor(.ncGray)
     }
 }
 
@@ -89,7 +161,7 @@ func area(_ icon: String, _ title: String, _ color: Color, _ dest: AnyView) -> s
     NavigationLink(destination: dest) {
         VStack(spacing: 8) {
             Image(systemName: icon).font(.title2).foregroundColor(color)
-            Text(title).font(.caption.weight(.semibold)).foregroundColor(.ncDark)
+            Text(title).font(.caption.weight(.semibold)).foregroundColor(.ncWhite)
         }
         .frame(maxWidth: .infinity)
         .padding(12)
