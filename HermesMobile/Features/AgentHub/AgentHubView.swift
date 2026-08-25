@@ -348,6 +348,9 @@ struct AgentHubView: View {
 // MARK: - Briefing Placeholder
 struct BriefingPlaceholder: View {
     @Binding var requestedNewChat: NewChatRequest?
+    @ObservedObject private var rollup = NARollupService.shared
+    @State private var isGenerating = false
+    @State private var errorMessage: String?
 
     var body: some View {
         VStack(spacing: 10) {
@@ -355,21 +358,49 @@ struct BriefingPlaceholder: View {
             Text("Amelia meldet sich bald").font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
             Text("Morgen-, Mittags- und Abend-Briefings erscheinen hier, sobald Amelia sie fur dich erstellt.")
                 .font(.caption).foregroundColor(.ncMuted).multilineTextAlignment(.center)
-            Button {
-                let context = "Erstelle ein kurzes Briefing fur mich. Wie sieht mein Tag aus?"
-                requestedNewChat = NewChatRequest(
-                    profileName: "santos-copilot",
-                    initialDraft: context
-                )
-            } label: {
-                Text("Jetzt Briefing anfordern")
-                    .font(.caption.weight(.semibold)).foregroundColor(.ncGreen)
-                    .padding(.horizontal, 14).padding(.vertical, 7)
-                    .background(Color.ncGreen.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
-                    .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.ncGreen.opacity(0.15)))
+
+            if isGenerating {
+                ProgressView().scaleEffect(0.8)
+                Text("Erstelle Briefing...").font(.caption).foregroundColor(.ncMuted)
+            } else {
+                Button {
+                    Task { await generateBriefing() }
+                } label: {
+                    Text("Jetzt Briefing anfordern")
+                        .font(.caption.weight(.semibold)).foregroundColor(.ncGreen)
+                        .padding(.horizontal, 14).padding(.vertical, 7)
+                        .background(Color.ncGreen.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
+                        .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.ncGreen.opacity(0.15)))
+                }
+            }
+
+            if let err = errorMessage {
+                Text(err).font(.caption).foregroundColor(.ncRed)
             }
         }
         .warmCard()
+    }
+
+    private func generateBriefing() async {
+        isGenerating = true
+        errorMessage = nil
+        do {
+            guard let url = URL(string: "https://health.santoslab.de/api/crm/briefing/generate") else { return }
+            var req = URLRequest(url: url)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let body = ["period": "morning"]
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            let (_, resp) = try await URLSession.shared.data(for: req)
+            guard let http = resp as? HTTPURLResponse, http.statusCode < 400 else {
+                throw URLError(.badServerResponse)
+            }
+            // Refresh rollup to show the new briefing
+            await rollup.fetch()
+        } catch {
+            errorMessage = "Fehler: \(error.localizedDescription)"
+        }
+        isGenerating = false
     }
 }
 
