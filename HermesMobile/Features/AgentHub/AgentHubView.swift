@@ -153,6 +153,35 @@ struct AgentHubView: View {
                     }
                 }
 
+                // CRM
+                if let c = rollup.crm, let total = c.total_clients, total > 0 {
+                    NAIceSectionLabel(icon: "person.3.fill", title: "CRM")
+                    NavigationLink(destination: NACRMDetailView()) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "person.3.fill").font(.title3).foregroundColor(.ncSage).frame(width: 28)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(total) Kunden").font(.subheadline.weight(.semibold)).foregroundColor(.ncDark)
+                                Text("\(c.active ?? 0) aktiv · \(c.won_deals ?? 0) gewonnen · \(c.total_value_eur ?? 0)€ Wert").font(.caption).foregroundColor(.ncMuted)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
+                        }
+                    }.warmCard().buttonStyle(.plain)
+                    
+                    if let alerts = c.alerts, !alerts.isEmpty {
+                        ForEach(alerts.prefix(2)) { alert in
+                            HStack(spacing: 10) {
+                                Image(systemName: "exclamationmark.triangle.fill").font(.caption).foregroundColor(.ncRed)
+                                Text(alert.title ?? "").font(.caption).foregroundColor(.ncDark).lineLimit(1)
+                                Spacer()
+                            }
+                            .padding(10)
+                            .background(Color.ncRed.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.ncRed.opacity(0.15)))
+                        }
+                    }
+                }
+
                 // Tasks
                 if let t = rollup.tasks, t.active > 0 {
                     NAIceSectionLabel(icon: "checklist", title: "Aufgaben")

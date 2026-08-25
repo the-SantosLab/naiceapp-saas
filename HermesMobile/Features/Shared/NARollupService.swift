@@ -49,6 +49,7 @@ class NARollupService: ObservableObject {
     var business: NABusinessRollup? { rollup?.business }
     var tasks: NATasksRollup? { rollup?.tasks }
     var deals: NADealsRollup? { rollup?.deals }
+    var crm: NARollupCRM? { rollup?.crm }
     var summary: NASummary? { rollup?.summary }
     var journal: NAJournalRollup? { rollup?.journal }
     var calendar: NACalendarRollup? { rollup?.calendar }

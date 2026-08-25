@@ -124,6 +124,7 @@
 		4C78B1D4EE15FB7E5D769A60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
 		5417A7400000000000000092 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = 5417A7400000000000000091 /* SwiftMath */; };
 		54CAEBE2C4329017C4D999DD /* NAFinanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B309F61E3B80BDB41121439 /* NAFinanceService.swift */; };
+		553CBCE7FAC71D41BF9B3B47 /* NACRMDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */; };
 		56063D74CA7FC2BAFD989D68 /* nAIceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */; };
 		62AD82AB1A8D358CB53E66E6 /* NAiceWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */; };
 		64AE36FBAE436BF5C5083453 /* AgentHubModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */; };
@@ -571,6 +572,7 @@
 		ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = nAIceConfig.swift; sourceTree = "<group>"; };
 		AFF7FD2ADF98C38AB17E8704 /* NAVoiceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAVoiceService.swift; sourceTree = "<group>"; };
 		B0CFC99991D03AF7E2CA3538 /* LifeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LifeView.swift; path = Life/LifeView.swift; sourceTree = "<group>"; };
+		B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NACRMDetailView.swift; path = AgentHub/DetailViews/NACRMDetailView.swift; sourceTree = "<group>"; };
 		B5A100000000000000000010 /* SharedDraftStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDraftStore.swift; sourceTree = "<group>"; };
 		B5A100000000000000000011 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		B5A100000000000000000012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1369,6 +1371,7 @@
 				82626C6BEC28AF7D30A136F6 /* DealDetailView.swift */,
 				DF451D7E79A66AC572524122 /* BusinessOverview.swift */,
 				0143F869FA91749C03CCDDD2 /* NAIceTasksView.swift */,
+				B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */,
 			);
 			name = DetailViews;
 			sourceTree = "<group>";
@@ -1944,6 +1947,7 @@
 				3A4252DC2A2D04F26A15EAD4 /* NAFilesService.swift in Sources */,
 				A2AD66A6D6FEAF61A9DBE719 /* NFileViewer.swift in Sources */,
 				C5C877CB6E6C2B1B8CAC6F5C /* NAIceFilesView.swift in Sources */,
+				553CBCE7FAC71D41BF9B3B47 /* NACRMDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

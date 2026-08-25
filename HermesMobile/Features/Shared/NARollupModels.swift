@@ -12,6 +12,7 @@ struct NARollup: Codable {
     let tasks: NATasksRollup?
     let deals: NADealsRollup?
     let summary: NASummary?
+    let crm: NARollupCRM?
 }
 
 struct NAWhoopRollup: Codable {
@@ -173,4 +174,86 @@ struct NASummaryFlag: Codable, Identifiable {
     var id: String { text }
     let level: String
     let text: String
+}
+
+// MARK: - CRM Models
+struct NARollupCRM: Codable {
+    let total_clients: Int?
+    let total_value_eur: Int?
+    let won_deals: Int?
+    let active: Int?
+    let revenue_eur: Int?
+    let cold_calls_pending: Int?
+    let alerts: [NAAgentAlert]?
+}
+
+struct NAAgentAlert: Codable, Identifiable {
+    let id: Int?
+    let title: String?
+    let summary: String?
+    let created: Int?
+}
+
+// MARK: - CRM API Models (for direct API calls)
+struct NCRMClient: Codable, Identifiable {
+    let id: String
+    let name: String
+    let company: String?
+    let email: String?
+    let phone: String?
+    let segment: String?
+    let stage: String?
+    let status: String?
+    let value: Int?
+    let notes: String?
+    let created: Int?
+    let updated: Int?
+}
+
+struct NCRMClientList: Codable {
+    let ts: String?
+    let clients: [NCRMClient]
+    let total: Int
+    let total_value_eur: Int?
+    let won_deals: Int?
+    let active: Int?
+    let contacted: Int?
+    let new: Int?
+}
+
+struct NCRMRevenueEntry: Codable, Identifiable {
+    let id: String?
+    let client_id: String?
+    let label: String?
+    let amount: Int?
+    let kind: String?
+    let at: Int?
+}
+
+struct NCRMRevenue: Codable {
+    let ts: String?
+    let entries: [NCRMRevenueEntry]
+    let total_eur: Int?
+}
+
+struct NCRMColdCall: Codable, Identifiable {
+    let id: String?
+    let client_id: String?
+    let name: String?
+    let company: String?
+    let phone: String?
+    let pitch: String?
+    let result: String?
+    let notes: String?
+    let status: String?
+    let called_at: Int?
+    let created: Int?
+}
+
+struct NCRMColdCalls: Codable {
+    let ts: String?
+    let calls: [NCRMColdCall]
+    let total: Int
+    let follow_up: Int?
+    let done: Int?
 }
