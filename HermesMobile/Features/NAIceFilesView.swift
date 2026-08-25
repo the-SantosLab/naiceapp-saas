@@ -19,8 +19,8 @@ struct NAIceFilesView: View {
                 .warmBackground()
                 .navigationTitle(fs.selectedFolder != nil && !fs.selectedFolder!.isEmpty ? fs.selectedFolder! : "Dateien")
                 .navigationBarTitleDisplayMode(.inline)
-                .refreshable { await fs.fetchFiles() }
-                .task { await fs.fetchFiles() }
+                .refreshable { await fs.fetchFiles(); await fs.fetchFolders() }
+                .task { await fs.fetchFiles(); await fs.fetchFolders() }
                 .navigationDestination(isPresented: $showFileViewer) {
                     if let f = selectedFile { NFileViewer(file: f) }
                 }
@@ -198,8 +198,10 @@ struct NAIceFilesView: View {
     }
 
     private func buildFolderList() -> [NFolder] {
-        let folderDict = Dictionary(grouping: fs.filteredFiles) { $0.folder ?? "" }
-        return folderDict.filter { !$0.key.isEmpty }.map { NFolder(name: $0.key, fileCount: $0.value.count) }.sorted { $0.name < $1.name }
+        return fs.serverFolders.map { name in
+            let count = fs.files.filter { $0.folder == name || $0.folder == "uploads/" + name }.count
+            return NFolder(name: name, fileCount: count)
+        }
     }
 
     // MARK: - File Row with Context Menu

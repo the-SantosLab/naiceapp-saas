@@ -79,6 +79,7 @@ class NAFilesService: ObservableObject {
     @Published var downloadedFiles: [String: Data] = [:]
     @Published var activeFilter: FileFilter = .all
     @Published var selectedFolder: String?
+    @Published var serverFolders: [String] = []
 
     enum FileFilter: String, CaseIterable {
         case all = "Alle"
@@ -131,6 +132,17 @@ class NAFilesService: ObservableObject {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+
+    func fetchFolders() async {
+        let urlStr = baseURL + "/folders"
+        guard let url = URL(string: urlStr) else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let result = try JSONDecoder().decode([String: [String]].self, from: data)
+            // Filter out subpaths with / and the bare 'uploads' folder
+            serverFolders = (result["folders"] ?? []).filter { !$0.contains("/") && $0 != "uploads" }
+        } catch {}
     }
 
     func fetchFilesInFolder(_ folder: String) async {
