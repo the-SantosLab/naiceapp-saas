@@ -1,8 +1,28 @@
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 // MARK: - App Delegate (Push Notifications)
 class NAIceAppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        // Request notification permission
+        Task {
+            do {
+                let center = UNUserNotificationCenter.current()
+                let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+                print("[PUSH] Permission granted: \(granted)")
+                if granted {
+                    await MainActor.run {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
+            } catch {
+                print("[PUSH] Permission error: \(error.localizedDescription)")
+            }
+        }
+        return true
+    }
+
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenHex = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         print("[PUSH] Device token: \(tokenHex)")

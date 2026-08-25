@@ -134,7 +134,7 @@ struct NAIceTabView: View {
             NavigationStack { NAIceTasksView() }.tabItem { Label(Tab.tasks.title, systemImage: Tab.tasks.icon) }.badge(rollup.tasks?.active ?? 0 > 0 ? rollup.tasks!.active : 0).tag(Tab.tasks)
             SessionListView(authManager: authManager, server: server, pendingSharedImport: $ps, pendingDeepLinkedSessionID: $pd, requestedNewChat: $pn).tabItem { Label(Tab.agent.title, systemImage: Tab.agent.icon) }.tag(Tab.agent)
             NavigationStack { NAIceMoreView() }.tabItem { Label(Tab.more.title, systemImage: Tab.more.icon) }.tag(Tab.more)
-        }.tint(Color.ncGreen).task { await health.requestAuth(); await calendar.requestAuth(); await services.requestAll(); await NAiceAPI.shared.fetchIdeas(); await NARollupService.shared.fetch(); await waVM.fetchPending(); UIApplication.shared.registerForRemoteNotifications() }
+        }.tint(Color.ncGreen).task { await health.requestAuth(); await calendar.requestAuth(); await services.requestAll(); await NAiceAPI.shared.fetchIdeas(); await NARollupService.shared.fetch(); await waVM.fetchPending() }
             .onChange(of: scenePhase, perform: { newPhase in
                 guard newPhase == .active else { return }
                 Task {

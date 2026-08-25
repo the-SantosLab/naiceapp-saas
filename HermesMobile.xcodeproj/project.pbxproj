@@ -124,6 +124,7 @@
 		449476080681804409012356 /* WhatsAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340C69C3296E2F5F3446B040 /* WhatsAppView.swift */; };
 		4C78B1D4EE15FB7E5D769A60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
 		5417A7400000000000000092 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = 5417A7400000000000000091 /* SwiftMath */; };
+		545C8D3258D235795A7D9B03 /* HermesLiveActivityWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A04500000000000000000017 /* HermesLiveActivityWidget.appex */; };
 		54CAEBE2C4329017C4D999DD /* NAFinanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B309F61E3B80BDB41121439 /* NAFinanceService.swift */; };
 		553CBCE7FAC71D41BF9B3B47 /* NACRMDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */; };
 		56063D74CA7FC2BAFD989D68 /* nAIceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */; };
@@ -403,6 +404,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				62AD82AB1A8D358CB53E66E6 /* NAiceWidget.appex in Embed App Extensions */,
+				545C8D3258D235795A7D9B03 /* HermesLiveActivityWidget.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
