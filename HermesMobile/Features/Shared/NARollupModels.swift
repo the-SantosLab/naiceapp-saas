@@ -13,6 +13,7 @@ struct NARollup: Codable {
     let deals: NADealsRollup?
     let summary: NASummary?
     let crm: NARollupCRM?
+    let revenue: NARevenueRollup?
 }
 
 struct NAWhoopRollup: Codable {
@@ -274,4 +275,27 @@ struct NABriefings: Codable {
     let latest_morning: NABriefing?
     let latest_midday: NABriefing?
     let latest_evening: NABriefing?
+}
+
+// MARK: - Revenue Models
+struct NARevenueRollup: Codable {
+    let total_eur: Int?
+    let entries: [NARevenueEntry]?
+    let monthly: [NAMonthlyRevenue]?
+    let this_month: Int?
+    let last_month: Int?
+}
+
+struct NARevenueEntry: Codable, Identifiable {
+    let label: String?
+    let amount: Int?
+    let kind: String?
+    let client: String?
+    var id: String { label ?? UUID().uuidString }
+}
+
+struct NAMonthlyRevenue: Codable, Identifiable {
+    let month: String?
+    let total: Int?
+    var id: String { month ?? UUID().uuidString }
 }
