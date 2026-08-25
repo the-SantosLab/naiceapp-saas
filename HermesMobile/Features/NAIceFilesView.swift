@@ -9,7 +9,10 @@ struct NAIceFilesView: View {
     @State private var showUpload = false
     @State private var showCreateFolder = false
     @State private var newFolderName = ""
-    @State private var showFolderContext = false
+    @State private var showRenameFolder = false
+    @State private var renameFolderName = ""
+    @State private var folderToEdit: String?
+    @State private var showDeleteConfirm = false
     @State private var showMoveFile = false
     @State private var moveTargetFolder = ""
 
@@ -17,7 +20,7 @@ struct NAIceFilesView: View {
         NavigationStack {
             content
                 .warmBackground()
-                .navigationTitle(fs.selectedFolder != nil && !fs.selectedFolder!.isEmpty ? fs.selectedFolder! : "Dateien")
+                .navigationTitle(fs.selectedFolder ?? "Dateien")
                 .navigationBarTitleDisplayMode(.inline)
                 .refreshable { await fs.fetchFiles(); await fs.fetchFolders() }
                 .task { await fs.fetchFiles(); await fs.fetchFolders() }
@@ -25,33 +28,28 @@ struct NAIceFilesView: View {
                     if let f = selectedFile { NFileViewer(file: f) }
                 }
                 .sheet(isPresented: $showUpload) { NFileUploadSheet() }
-                .sheet(isPresented: $showCreateFolder) {
-                    createFolderSheet
-                }
+                .sheet(isPresented: $showCreateFolder) { createFolderSheet }
+                .sheet(isPresented: $showRenameFolder) { renameFolderSheet }
         }
     }
 
-    // MARK: - Create Folder Sheet
+    // MARK: - Create Folder
     private var createFolderSheet: some View {
         NavigationStack {
             Form {
                 Section("Ordner-Name") {
                     TextField("z.B. Rechnungen", text: $newFolderName)
                 }
-                if let parent = fs.selectedFolder, !parent.isEmpty {
-                    Section("In") {
-                        Text(parent).font(.subheadline).foregroundColor(.ncMuted)
-                    }
-                }
             }
             .navigationTitle("Ordner erstellen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { Button("Abbrechen") { showCreateFolder = false; newFolderName = "" } }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { showCreateFolder = false; newFolderName = "" } }
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Erstellen") {
                         Task {
                             await fs.createFolder(name: newFolderName, parent: fs.selectedFolder ?? "")
+                            await fs.fetchFolders()
                             showCreateFolder = false
                             newFolderName = ""
                         }
@@ -62,18 +60,45 @@ struct NAIceFilesView: View {
         }
     }
 
+    // MARK: - Rename Folder
+    private var renameFolderSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Ordner-Name") {
+                    TextField("Name", text: $renameFolderName)
+                }
+            }
+            .navigationTitle("Ordner umbenennen")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { showRenameFolder = false } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Speichern") {
+                        Task {
+                            if let folder = folderToEdit {
+                                await fs.renameFolder(from: folder, to: renameFolderName)
+                                await fs.fetchFolders()
+                            }
+                            showRenameFolder = false
+                        }
+                    }
+                    .disabled(renameFolderName.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+
+    // MARK: - Main Content
     @ViewBuilder
     private var content: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                // Header
                 HStack {
                     Text("Dateien").font(.title2.weight(.bold)).foregroundColor(.ncDark)
                     Spacer()
                     Text("\(fs.filteredFiles.count)").font(.subheadline).foregroundColor(.ncMuted)
                 }
 
-                // Search
                 HStack {
                     Image(systemName: "magnifyingglass").font(.caption).foregroundColor(.ncSand)
                     TextField("Suchen...", text: $searchText).font(.subheadline)
@@ -102,7 +127,7 @@ struct NAIceFilesView: View {
                     }
                 }
 
-                // Action Buttons Row
+                // Action Buttons
                 HStack(spacing: 8) {
                     Button { showUpload = true } label: {
                         HStack(spacing: 4) {
@@ -122,13 +147,11 @@ struct NAIceFilesView: View {
                         .padding(.horizontal, 12).padding(.vertical, 8)
                         .background(Color.ncSage.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
                     }
-                    if let folder = fs.selectedFolder, !folder.isEmpty {
-                        Button {
-                            fs.selectedFolder = nil
-                        } label: {
+                    if fs.selectedFolder != nil {
+                        Button { fs.selectedFolder = nil } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "arrow.left").font(.caption)
-                                Text("Zurück").font(.caption.weight(.medium))
+                                Text("Zuruck").font(.caption.weight(.medium))
                             }
                             .foregroundColor(.ncMuted)
                             .padding(.horizontal, 12).padding(.vertical, 8)
@@ -137,38 +160,23 @@ struct NAIceFilesView: View {
                     }
                 }
 
-                // Loading
                 if fs.isLoading && fs.files.isEmpty {
                     VStack(spacing: 12) { ProgressView(); Text("Lade Dateien...").font(.subheadline).foregroundColor(.ncMuted) }.warmCard()
                 } else {
                     let displayFiles = filteredBySearch()
 
-                    // Show folders when in root
-                    if fs.selectedFolder == nil || fs.selectedFolder!.isEmpty {
+                    if fs.selectedFolder == nil {
                         let folderList = buildFolderList()
                         if !folderList.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Ordner").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
                                 ForEach(folderList) { folder in
-                                    Button {
-                                        fs.selectedFolder = folder.name
-                                    } label: {
-                                        HStack(spacing: 10) {
-                                            Image(systemName: "folder.fill").font(.title3).foregroundColor(.ncSage).frame(width: 28)
-                                            Text(folder.name).font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
-                                            Spacer()
-                                            Text("\(folder.fileCount)").font(.caption).foregroundColor(.ncMuted)
-                                            Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
-                                        }
-                                        .padding(10)
-                                        .background(Color.white.opacity(0.6)).cornerRadius(8)
-                                    }.buttonStyle(.plain)
+                                    folderRow(folder)
                                 }
                             }
                         }
                     }
 
-                    // Files
                     if displayFiles.isEmpty {
                         HStack { Image(systemName: "doc").font(.title2).foregroundColor(.ncSand); Text("Keine Dateien").font(.subheadline).foregroundColor(.ncMuted) }.warmCard()
                     } else {
@@ -179,7 +187,7 @@ struct NAIceFilesView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(catLabel(key)).font(.headline.weight(.semibold)).foregroundColor(.ncDark)
                                     ForEach(items) { file in
-                                        fileContextRow(file)
+                                        fileRow(file)
                                     }
                                 }
                             }
@@ -191,6 +199,89 @@ struct NAIceFilesView: View {
         }
     }
 
+    // MARK: - Folder Row
+    private func folderRow(_ folder: NFolder) -> some View {
+        Button {
+            fs.selectedFolder = folder.name
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "folder.fill").font(.title3).foregroundColor(.ncSage).frame(width: 28)
+                Text(folder.name).font(.subheadline.weight(.medium)).foregroundColor(.ncDark)
+                Spacer()
+                Text("\(folder.fileCount)").font(.caption).foregroundColor(.ncMuted)
+                Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
+            }
+            .padding(10)
+            .background(Color.white.opacity(0.6)).cornerRadius(8)
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button("Umbenennen") {
+                folderToEdit = folder.name
+                renameFolderName = folder.name
+                showRenameFolder = true
+            }
+            Button("Loschen", role: .destructive) {
+                folderToEdit = folder.name
+                showDeleteConfirm = true
+            }
+        }
+        .alert("Ordner loschen?", isPresented: $showDeleteConfirm) {
+            Button("Loschen", role: .destructive) {
+                Task {
+                    if let folder = folderToEdit {
+                        await fs.deleteFolder(folder)
+                        await fs.fetchFolders()
+                        await fs.fetchFiles()
+                    }
+                }
+            }
+            Button("Abbrechen", role: .cancel) {}
+        } message: {
+            Text("Der Ordner wird geloscht. Dateien bleiben erhalten.")
+        }
+    }
+
+    // MARK: - File Row
+    private func fileRow(_ file: NFile) -> some View {
+        Button {
+            selectedFile = file
+            showFileViewer = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: file.icon).font(.title3).foregroundColor(file.color).frame(width: 28)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(file.name).font(.subheadline.weight(.medium)).foregroundColor(.ncDark).lineLimit(1)
+                    HStack(spacing: 8) {
+                        Text(file.sizeLabel).font(.caption2).foregroundColor(.ncMuted)
+                        Text(file.dateLabel).font(.caption2).foregroundColor(.ncMuted)
+                        if let s = file.source {
+                            Text(sourceLabel(s)).font(.caption2).foregroundColor(sourceColor(s))
+                        }
+                    }
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
+            }
+            .padding(10)
+            .background(Color.white.opacity(0.6)).cornerRadius(8)
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button("Offnen") { selectedFile = file; showFileViewer = true }
+            Button("Teilen") {
+                let url = URL(string: "https://health.santoslab.de/api/naice/files/download?path=" + file.path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+                let av = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = scene.windows.first,
+                   let root = window.rootViewController {
+                    root.present(av, animated: true)
+                }
+            }
+        }
+    }
+
+    // MARK: - Helpers
     private func filteredBySearch() -> [NFile] {
         let base = fs.filteredFiles
         guard !searchText.isEmpty else { return base }
@@ -204,71 +295,15 @@ struct NAIceFilesView: View {
         }
     }
 
-    // MARK: - File Row with Context Menu
-    private func fileContextRow(_ file: NFile) -> some View {
-        Button { selectedFile = file; showFileViewer = true } label: {
-            fileRow(file)
-        }
-        .buttonStyle(.plain)
-        .contextMenu {
-            Button("Öffnen") { selectedFile = file; showFileViewer = true }
-            Button("In Ordner verschieben") {
-                selectedFile = file
-                showMoveFile = true
-            }
-            Divider()
-            Button("Teilen") {
-                let url = URL(string: "https://health.santoslab.de/api/naice/files/download?path=" + file.path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
-                let av = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = scene.windows.first,
-                   let root = window.rootViewController {
-                    root.present(av, animated: true)
-                }
-            }
-        }
-        .confirmationDialog("In Ordner verschieben", isPresented: $showMoveFile, titleVisibility: .visible) {
-            let folderList = buildFolderList()
-            ForEach(folderList) { folder in
-                Button(folder.name) {
-                    if let file = selectedFile {
-                        Task { await fs.moveFile(file: file, toFolder: "/opt/naice-agent-data/uploads/" + folder.name) }
-                    }
-                }
-            }
-            Button("Abbrechen", role: .cancel) {}
-        }
-    }
-
-    private func fileRow(_ file: NFile) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: file.icon).font(.title3).foregroundColor(file.color).frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(file.name).font(.subheadline.weight(.medium)).foregroundColor(.ncDark).lineLimit(1)
-                HStack(spacing: 8) {
-                    Text(file.sizeLabel).font(.caption2).foregroundColor(.ncMuted)
-                    Text(file.dateLabel).font(.caption2).foregroundColor(.ncMuted)
-                    if let s = file.source {
-                        Text(sourceLabel(s)).font(.caption2).foregroundColor(sourceColor(s))
-                    }
-                }
-            }
-            Spacer()
-            Image(systemName: "chevron.right").font(.caption2).foregroundColor(.ncSand)
-        }
-        .padding(10)
-        .background(Color.white.opacity(0.6)).cornerRadius(8)
-    }
-
     private func catLabel(_ t: String) -> String {
         switch t {
-        case "pdf": return "📄 PDFs"
-        case "docx": return "📝 Dokumente"
-        case "html": return "🌐 HTML"
-        case "md": return "📋 Markdown"
-        case "txt": return "📃 Text"
-        case "image": return "🖼️ Bilder"
-        default: return "📦 Sonstiges"
+        case "pdf": return "PDFs"
+        case "docx": return "Dokumente"
+        case "html": return "HTML"
+        case "md": return "Markdown"
+        case "txt": return "Text"
+        case "image": return "Bilder"
+        default: return "Sonstiges"
         }
     }
 

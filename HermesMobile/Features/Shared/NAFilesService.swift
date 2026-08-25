@@ -230,4 +230,36 @@ class NAFilesService: ObservableObject {
             return false
         }
     }
+
+    func renameFolder(from: String, to: String) async -> Bool {
+        let urlStr = baseURL + "/folder/rename"
+        guard let url = URL(string: urlStr) else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["from": from, "to": to]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        do {
+            let (_, _) = try await URLSession.shared.data(for: request)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    func deleteFolder(_ name: String) async -> Bool {
+        let urlStr = baseURL + "/folder/delete"
+        guard let url = URL(string: urlStr) else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["name": name]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        do {
+            let (_, _) = try await URLSession.shared.data(for: request)
+            return true
+        } catch {
+            return false
+        }
+    }
 }

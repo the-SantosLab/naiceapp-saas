@@ -420,7 +420,7 @@
 		0485E1E1FFB64A24BB729CD4 /* SlashCommandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandTests.swift; sourceTree = "<group>"; };
 		0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardsOfTheMoment.swift; sourceTree = "<group>"; };
 		0D1CE5F12B9E4D4D9E5A01C1 /* SlashCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandExecutor.swift; sourceTree = "<group>"; };
-		0D575BE31D14E1C683726EB3 /* NAUpdateService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAUpdateService.swift; path = NAUpdateService.swift; sourceTree = "<group>"; };
+		0D575BE31D14E1C683726EB3 /* NAUpdateService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAUpdateService.swift; sourceTree = "<group>"; };
 		103200000000000000000001 /* DefaultProfilePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultProfilePickerView.swift; sourceTree = "<group>"; };
 		105050000000000000000002 /* ComposerModelPickerSectionExpansionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerModelPickerSectionExpansionState.swift; sourceTree = "<group>"; };
 		105050000000000000000004 /* ComposerModelPickerSectionExpansionStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerModelPickerSectionExpansionStateTests.swift; sourceTree = "<group>"; };
@@ -503,27 +503,27 @@
 		22AB000000000000000000F1 /* WorkspaceRegistryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceRegistryViewModel.swift; sourceTree = "<group>"; };
 		22AB000000000000000000F2 /* WorkspaceManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceManagerView.swift; sourceTree = "<group>"; };
 		22AB000000000000000000F3 /* WorkspaceRegistryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceRegistryViewModelTests.swift; sourceTree = "<group>"; };
-		2402AA464975A9B246B36F88 /* NAWorkflowService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAWorkflowService.swift; path = NAWorkflowService.swift; sourceTree = "<group>"; };
+		2402AA464975A9B246B36F88 /* NAWorkflowService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWorkflowService.swift; sourceTree = "<group>"; };
 		2604B1A5A2028EE86CC8F4DB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftUI.framework; sourceTree = SDKROOT; };
 		26AB000000000000000000F1 /* ProvidersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvidersViewModel.swift; sourceTree = "<group>"; };
 		26AB000000000000000000F2 /* ProvidersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvidersView.swift; sourceTree = "<group>"; };
 		26AB000000000000000000F3 /* APIClientProvidersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientProvidersTests.swift; sourceTree = "<group>"; };
 		26AB000000000000000000F4 /* ProvidersViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvidersViewModelTests.swift; sourceTree = "<group>"; };
 		2A27F126BDB5B9FE2F7272D8 /* WhatsAppModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppModels.swift; sourceTree = "<group>"; };
-		2B22429E07FCB1A1DB490B70 /* NAiceContext.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAiceContext.swift; path = NAiceContext.swift; sourceTree = "<group>"; };
+		2B22429E07FCB1A1DB490B70 /* NAiceContext.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceContext.swift; sourceTree = "<group>"; };
 		2BE8F2B38F094C4C9EB18300 /* SkillsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsViewModelTests.swift; sourceTree = "<group>"; };
-		2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = NAiceWidget.appex; path = NAiceWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NAiceWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D067B3957F4996F92E721A /* NAJournalService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAJournalService.swift; sourceTree = "<group>"; };
 		340C69C3296E2F5F3446B040 /* WhatsAppView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppView.swift; sourceTree = "<group>"; };
 		351C0F1600000000000000A1 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Shared.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
-		3B309F61E3B80BDB41121439 /* NAFinanceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAFinanceService.swift; path = NAFinanceService.swift; sourceTree = "<group>"; };
+		3B309F61E3B80BDB41121439 /* NAFinanceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFinanceService.swift; sourceTree = "<group>"; };
 		3BAC4432EA7A7890B3BAB966 /* NAiceActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceActivity.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01011 /* Cron.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cron.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01012 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01013 /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01014 /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01015 /* TaskDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailViewModel.swift; sourceTree = "<group>"; };
-		43D7807F9197CBA48B60BCA2 /* NAIceFilesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAIceFilesView.swift; path = NAIceFilesView.swift; sourceTree = "<group>"; };
+		43D7807F9197CBA48B60BCA2 /* NAIceFilesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIceFilesView.swift; sourceTree = "<group>"; };
 		45A0BD6E9E1847B5267226FE /* NASyncService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASyncService.swift; sourceTree = "<group>"; };
 		486FB27ABE466047F4F46E16 /* APIClient+AgentHub.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "APIClient+AgentHub.swift"; path = "AgentHub/Models/APIClient+AgentHub.swift"; sourceTree = "<group>"; };
 		48811DAC9B4F4C328A5F8C49 /* NAiceWidgetExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidgetExtension.swift; sourceTree = "<group>"; };
@@ -532,14 +532,14 @@
 		568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppViewModel.swift; sourceTree = "<group>"; };
 		57B5FD09B6B5937573B5F9A4 /* InsightsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		585D173240AB85DED12058BE /* NARollupModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NARollupModels.swift; sourceTree = "<group>"; };
-		587F223184FD4B8DAC13027A /* NAJournalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NAJournalService.swift; path = NAJournalService.swift; sourceTree = "<group>"; };
+		587F223184FD4B8DAC13027A /* NAJournalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAJournalService.swift; sourceTree = "<group>"; };
 		598FD5DD1FF20E28ABDD0A43 /* IdeasCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IdeasCard.swift; path = AgentHub/Cards/IdeasCard.swift; sourceTree = "<group>"; };
 		5D9DCD6C3FAEA0D39B31AE55 /* AgentHubView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubView.swift; path = AgentHub/AgentHubView.swift; sourceTree = "<group>"; };
 		5DA59130ED4141049177576C /* SlashCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommand.swift; sourceTree = "<group>"; };
 		611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubModels.swift; path = AgentHub/Models/AgentHubModels.swift; sourceTree = "<group>"; };
 		63F7BCFA84BB0E549E0CE361 /* NAContactService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAContactService.swift; sourceTree = "<group>"; };
 		6809B8F1391248A4AA77C453 /* SlashCommandExecutorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandExecutorTests.swift; sourceTree = "<group>"; };
-		6B5ACB472A3949B1B4D161F6 /* JournalCheckinCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JournalCheckinCard.swift; path = JournalCheckinCard.swift; sourceTree = "<group>"; };
+		6B5ACB472A3949B1B4D161F6 /* JournalCheckinCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalCheckinCard.swift; sourceTree = "<group>"; };
 		6D2E2D0145071523FC3BD8F2 /* NAWeatherService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWeatherService.swift; sourceTree = "<group>"; };
 		72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7680D72A0B1646090D1AE45E /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = SDKROOT; };
@@ -569,7 +569,7 @@
 		A710739233F64F4FA4C2B710 /* ComposerVoiceInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerVoiceInputController.swift; sourceTree = "<group>"; };
 		A710739233F64F4FA4C2B711 /* ComposerVoiceDraftComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerVoiceDraftComposerTests.swift; sourceTree = "<group>"; };
 		ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = nAIceConfig.swift; sourceTree = "<group>"; };
-		AFF7FD2ADF98C38AB17E8704 /* NAVoiceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAVoiceService.swift; path = NAVoiceService.swift; sourceTree = "<group>"; };
+		AFF7FD2ADF98C38AB17E8704 /* NAVoiceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAVoiceService.swift; sourceTree = "<group>"; };
 		B0CFC99991D03AF7E2CA3538 /* LifeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LifeView.swift; path = Life/LifeView.swift; sourceTree = "<group>"; };
 		B5A100000000000000000010 /* SharedDraftStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDraftStore.swift; sourceTree = "<group>"; };
 		B5A100000000000000000011 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -756,7 +756,7 @@
 		CC3CC1C2B875235B55609590 /* NALocationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NALocationService.swift; sourceTree = "<group>"; };
 		D0M1C000000000000000000A /* MarkdownMathLayoutCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMathLayoutCacheTests.swift; sourceTree = "<group>"; };
 		D3B9DECD19660A3282C1F47B /* AgentHubViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubViewModel.swift; path = AgentHub/AgentHubViewModel.swift; sourceTree = "<group>"; };
-		D7C3A6878D4C92A894FFDB3B /* NACryptoService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NACryptoService.swift; path = NACryptoService.swift; sourceTree = "<group>"; };
+		D7C3A6878D4C92A894FFDB3B /* NACryptoService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACryptoService.swift; sourceTree = "<group>"; };
 		DA51F6C9BE72018CBD91F41D /* SleepBreakdownCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SleepBreakdownCard.swift; path = AgentHub/Cards/SleepBreakdownCard.swift; sourceTree = "<group>"; };
 		DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceDynamicIsland.swift; sourceTree = "<group>"; };
 		DF22AF4C99DC3882E3A8ADFD /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
@@ -823,7 +823,6 @@
 			children = (
 				C14EE0F07846E19EAFBF2FF6 /* NAIceMoreView.swift */,
 			);
-			name = More;
 			path = More;
 			sourceTree = "<group>";
 		};
@@ -835,7 +834,6 @@
 				DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */,
 				8ACDC6D12C6462690E0C7BA3 /* Info.plist */,
 			);
-			name = NAiceWidget;
 			path = NAiceWidget;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -1334,7 +1332,6 @@
 				568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */,
 				340C69C3296E2F5F3446B040 /* WhatsAppView.swift */,
 			);
-			name = WhatsApp;
 			path = WhatsApp;
 			sourceTree = "<group>";
 		};
@@ -2144,6 +2141,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = GX89CS2T99;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2211,6 +2209,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = GX89CS2T99;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2244,6 +2243,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = GX89CS2T99;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HermesMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -2256,7 +2256,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2273,6 +2273,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = GX89CS2T99;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HermesMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -2285,7 +2286,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
