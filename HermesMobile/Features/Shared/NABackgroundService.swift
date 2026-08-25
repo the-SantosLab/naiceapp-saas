@@ -23,7 +23,6 @@ class NABackgroundService {
         task.expirationHandler = { task.setTaskCompleted(success: false) }
 
         Task {
-            await NAiceAPI.shared.fetchWhoop()
             await NARollupService.shared.fetch()
             await WhatsAppViewModel.shared.fetchPending()
             await NAWorkflowService.shared.checkTriggers()

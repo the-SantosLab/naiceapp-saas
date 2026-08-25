@@ -20,7 +20,7 @@ struct AgentHubView: View {
                 // Letzter Sync
                 HStack {
                     Image(systemName: "arrow.triangle.2.circlepath").font(.caption).foregroundColor(.ncSage)
-                    Text("Rollup: \(rollup.rollup?.ts.prefix(16) ?? (NAiceAPI.shared.whoop != nil ? "WHOOP aktiv" : "–"))").font(.system(size: 10)).foregroundColor(.ncMuted)
+                    Text("Rollup: \(rollup.rollup?.ts.prefix(16) ?? "–")").font(.system(size: 10)).foregroundColor(.ncMuted)
                     Spacer()
                     if rollup.isLoading {
                         ProgressView().scaleEffect(0.6)
@@ -219,8 +219,6 @@ struct AgentHubView: View {
     }
 
     private func refreshAll() async {
-        await NAiceAPI.shared.fetchWhoop()
-        await NAiceAPI.shared.fetchIdeas()
         await rollup.fetch()
         await NAJournalService.shared.fetch()
     }

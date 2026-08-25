@@ -14,8 +14,6 @@ class AgentHubViewModel {
     private let api = NAiceAPI.shared
 
     func refresh() async {
-        await api.fetchWhoop()
-        whoop = api.whoop
         await api.fetchIdeas()
         ideas = api.ideas
     }
