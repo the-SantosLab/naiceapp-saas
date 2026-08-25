@@ -151,10 +151,11 @@ struct NADealsRollup: Codable {
 }
 
 struct NADeal: Codable, Identifiable {
-    var id: String { name }
+    var id: String { clientId ?? name }
     let name: String
     let value: Int
     let status: String?
+    let clientId: String?
 }
 
 struct NASummary: Codable {

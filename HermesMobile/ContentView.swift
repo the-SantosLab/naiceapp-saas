@@ -4,6 +4,7 @@ import HealthKit
 import EventKit
 import Contacts
 import CoreLocation
+import UIKit
 
 // MARK: - ContentView (Container)
 struct ContentView: View {

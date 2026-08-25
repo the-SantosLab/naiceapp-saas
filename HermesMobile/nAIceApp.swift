@@ -1,6 +1,49 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - App Delegate (Push Notifications)
+class NAIceAppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenHex = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        print("[PUSH] Device token: \(tokenHex)")
+        // Send to server
+        guard let url = URL(string: "https://health.santoslab.de/api/push/register") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = ["token": tokenHex, "user_id": "johannes", "platform": "ios"]
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        URLSession.shared.dataTask(with: req) { _, _, error in
+            if let error = error {
+                print("[PUSH] Registration failed: \(error.localizedDescription)")
+            } else {
+                print("[PUSH] Token registered on server")
+            }
+        }.resume()
+        // Store locally for More-Tab display
+        PushRegistrar.shared.didRegister = true
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("[PUSH] Failed to register: \(error.localizedDescription)")
+        PushRegistrar.shared.registrationError = error.localizedDescription
+    }
+}
+
+// MARK: - Push Registrar (for More-Tab status)
+@MainActor
+class PushRegistrar: ObservableObject {
+    static let shared = PushRegistrar()
+    @Published var didRegister = false
+    @Published var registrationError: String?
+    var isRegistered: Bool { didRegister }
+    var statusText: String {
+        if didRegister { return "Registriert ✅" }
+        if let err = registrationError { return "Fehler: \(err)" }
+        return "Nicht registriert"
+    }
+}
+
 struct nAIceSceneActions {
     let canCreateNewChat: Bool
     let createNewChat: () -> Void
@@ -86,6 +129,7 @@ final class HabitDefinition {
 
 @main
 struct nAIceApp: App {
+    @UIApplicationDelegateAdaptor(NAIceAppDelegate.self) var appDelegate
     @State private var authManager = AuthManager()
     @AppStorage(AppTheme.storageKey) private var appThemeRawValue = AppTheme.system.rawValue
 

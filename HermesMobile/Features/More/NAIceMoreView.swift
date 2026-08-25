@@ -5,6 +5,7 @@ struct NAIceMoreView: View {
     @State private var showVoiceBar = false
     @ObservedObject private var waVM = WhatsAppViewModel.shared
     @ObservedObject private var rollup = NARollupService.shared
+    @ObservedObject private var pushReg = PushRegistrar.shared
     @State private var pushRegistered = false
 
     var body: some View {
@@ -22,7 +23,7 @@ struct NAIceMoreView: View {
                         integrationRow("person.2.fill", "Kontakte", NAContactService.shared.contacts.isEmpty ? "Nicht verbunden" : "\(NAContactService.shared.contacts.count) Kontakte")
                         integrationRow("mic.fill", "Spracherkennung", NAVoiceService.shared.isAuthorized ? "Bereit" : "Nicht autorisiert")
                         integrationRow("lock.fill", "Verschl. Notizen", NACryptoService.shared.isUnlocked ? "Entsperrt" : "Gesperrt")
-                        integrationRow("bell.fill", "Push", pushRegistered ? "Registriert" : "Nicht registriert")
+                        integrationRow("bell.fill", "Push", pushReg.statusText)
                     }.warmCard()
 
                     // KI & Agent
@@ -93,6 +94,13 @@ struct NAIceMoreView: View {
                             pushRegistered = true
                         }
                         .font(.subheadline).foregroundColor(.ncGreen)
+                        if pushReg.registrationError != nil {
+                            Button("Erneut registrieren") {
+                                pushReg.registrationError = nil
+                                UIApplication.shared.registerForRemoteNotifications()
+                            }
+                            .font(.subheadline).foregroundColor(.ncRed)
+                        }
                     }.warmCard()
                 }
                 .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 24)
