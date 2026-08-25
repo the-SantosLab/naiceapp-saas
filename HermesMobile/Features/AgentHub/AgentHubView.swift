@@ -207,6 +207,7 @@ struct AgentHubView: View {
                     area("person.2.fill", "Beziehungen", .ncSage, AnyView(RelationsDetailView()))
                     area("lightbulb.fill", "Kreativitat", .ncGold, AnyView(CreativityDetailView(naice: NAiceAPI.shared)))
                     area("house.fill", "Alltag", .ncDark, AnyView(DailyDetailView()))
+                    area("folder.fill", "Dateien", .ncSage, AnyView(NAIceFilesView()))
                 }
             }
             .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 24)
