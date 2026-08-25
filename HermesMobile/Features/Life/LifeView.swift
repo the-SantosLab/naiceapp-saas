@@ -47,7 +47,7 @@ struct NAIceLifeView: View {
                     }
 
                     // Gesundheit
-                    NavigationLink(destination: HealthDetailView(naice: NAiceAPI.shared)) {
+                    NavigationLink(destination: HealthDetailView()) {
                         HStack(spacing: 10) {
                             Image(systemName: "heart.fill").font(.title3).foregroundColor(.ncGreen)
                             VStack(alignment: .leading, spacing: 2) {

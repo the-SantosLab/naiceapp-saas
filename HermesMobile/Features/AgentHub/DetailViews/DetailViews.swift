@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Health Detail View
 struct HealthDetailView: View {
-    @ObservedObject var naice: NAiceAPI
+    @ObservedObject private var rollup = NARollupService.shared
     @ObservedObject var health = HealthManager.shared
 
     var body: some View {
@@ -11,29 +11,30 @@ struct HealthDetailView: View {
                 Text("Gesundheit").font(.title2.weight(.bold)).foregroundColor(.ncDark)
                 Text("Deine Vitaldaten auf einen Blick.").font(.subheadline).foregroundColor(.ncMuted)
 
-                if !(naice.whoop?.connected ?? false) {
-                    Link(destination: URL(string: "https://health.santoslab.de/auth/whoop")!) {
-                        Text("Whoop verbinden").foregroundColor(.white)
-                            .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .background(Color.ncGreen, in: RoundedRectangle(cornerRadius: 14))
-                    }
-                }
-
-                if let w = naice.whoop, w.connected {
+                if let w = rollup.whoop {
                     VStack(spacing: 12) {
                         HStack {
                             Text("Whoop Recovery").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
                             Spacer()
-                            Text("\(w.recoveryScore)%").font(.largeTitle.weight(.bold))
-                                .foregroundColor(w.recoveryScore > 60 ? .ncGreen : .ncRed)
+                            if let r = w.recovery {
+                                Text("\(r.score)%").font(.largeTitle.weight(.bold))
+                                    .foregroundColor(recoveryColor(r.score))
+                            }
                         }
-                        ProgressView(value: Double(w.recoveryScore) / 100)
-                            .tint(w.recoveryScore > 60 ? .ncGreen : .ncRed)
+                        if let r = w.recovery {
+                            ProgressView(value: Double(r.score) / 100)
+                                .tint(recoveryColor(r.score))
+                        }
                         Divider()
-                        hRow("HRV", "\(Int(w.hrv)) ms")
-                        hRow("Ruhepuls", "\(w.restingHeartRate) bpm")
-                        hRow("Strain", String(format: "%.1f", w.strain))
-                        hRow("Schlaf", String(format: "%.1f h", w.sleepHours))
+                        if let r = w.recovery { hRow("HRV", "\(r.hrv) ms") }
+                        if let r = w.recovery { hRow("Ruhepuls", "\(r.rhr) bpm") }
+                        if let cy = w.cycle { hRow("Strain", String(format: "%.1f", cy.strain ?? 0)) }
+                        if let s = w.sleep { hRow("Schlaf", String(format: "%.1f h", s.net_hours ?? 0)) }
+                    }.warmCard()
+                } else {
+                    VStack(spacing: 10) {
+                        Text("WHOOP-Daten werden geladen...").font(.subheadline).foregroundColor(.ncMuted)
+                        ProgressView().scaleEffect(0.8)
                     }.warmCard()
                 }
 

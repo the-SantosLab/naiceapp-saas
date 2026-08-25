@@ -240,7 +240,7 @@ struct AgentHubView: View {
                 // Lebensbereiche
                 NAIceSectionLabel(icon: "square.grid.2x2", title: "Meine Bereiche")
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    area("heart.fill", "Gesundheit", .ncRed, AnyView(HealthDetailView(naice: NAiceAPI.shared)))
+                    area("heart.fill", "Gesundheit", .ncRed, AnyView(HealthDetailView()))
                     area("briefcase.fill", "Arbeit", .ncGreen, AnyView(WorkDetailView()))
                     area("person.2.fill", "Beziehungen", .ncSage, AnyView(RelationsDetailView()))
                     area("lightbulb.fill", "Kreativitat", .ncGold, AnyView(CreativityDetailView(naice: NAiceAPI.shared)))
