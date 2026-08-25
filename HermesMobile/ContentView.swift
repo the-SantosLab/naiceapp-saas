@@ -153,6 +153,14 @@ struct NAIceTabView: View {
                     await waVM.fetchPending()
                 }
             })
+            .overlay(alignment: .bottom) {
+                if NAgentActionHandler.shared.showConfirmation {
+                    NAgentActionConfirmationView()
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .padding(.bottom, 16)
+                }
+            }
+            .animation(.spring(response: 0.3), value: NAgentActionHandler.shared.showConfirmation)
     }
 }
 

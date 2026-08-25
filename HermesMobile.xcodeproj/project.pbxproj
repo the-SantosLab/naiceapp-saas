@@ -118,6 +118,7 @@
 		3F91D2A54B9A4F66A2C01003 /* TasksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F91D2A54B9A4F66A2C01013 /* TasksViewModel.swift */; };
 		3F91D2A54B9A4F66A2C01004 /* TaskDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F91D2A54B9A4F66A2C01014 /* TaskDetailView.swift */; };
 		3F91D2A54B9A4F66A2C01005 /* TaskDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F91D2A54B9A4F66A2C01015 /* TaskDetailViewModel.swift */; };
+		42758562F6ADCCAE22D35CF7 /* NAgentActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1732059E8DEB2951D7B9E803 /* NAgentActionHandler.swift */; };
 		449476080681804409012356 /* WhatsAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340C69C3296E2F5F3446B040 /* WhatsAppView.swift */; };
 		4C78B1D4EE15FB7E5D769A60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
 		5417A7400000000000000092 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = 5417A7400000000000000091 /* SwiftMath */; };
@@ -423,6 +424,7 @@
 		10CA110C0DE000000000B002 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		10CA110C0DE000000000B005 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
 		10CA110C0DE000000000C002 /* LocalizationCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationCatalogTests.swift; sourceTree = "<group>"; };
+		1732059E8DEB2951D7B9E803 /* NAgentActionHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAgentActionHandler.swift; sourceTree = "<group>"; };
 		19C1150000000000000000A2 /* CliSessionsSyncModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliSessionsSyncModel.swift; sourceTree = "<group>"; };
 		19C1150000000000000000A4 /* CliSessionsSyncModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliSessionsSyncModelTests.swift; sourceTree = "<group>"; };
 		1A2B3C4D5E6F700000000010 /* HermesMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HermesMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1459,6 +1461,7 @@
 				0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */,
 				4A3507A39E1A2B787DD85802 /* NAiceWidget.swift */,
 				3BAC4432EA7A7890B3BAB966 /* NAiceActivity.swift */,
+				1732059E8DEB2951D7B9E803 /* NAgentActionHandler.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -1923,6 +1926,7 @@
 				C3F0829E2D769F36F2573F94 /* DealDetailView.swift in Sources */,
 				C05722EC9A5DCEE91A0252B9 /* BusinessOverview.swift in Sources */,
 				096013A76B8A0238C7F8A0BF /* NAIceTasksView.swift in Sources */,
+				42758562F6ADCCAE22D35CF7 /* NAgentActionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

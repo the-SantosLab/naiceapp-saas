@@ -126,4 +126,51 @@ struct NAContextBuilder {
         parts.append("Zeitstempel: \(ISO8601DateFormatter().string(from: Date()))")
         return parts.joined(separator: "\n")
     }
+
+    /// Builds a compact context with Rollup data + Action instructions
+    @MainActor
+    static func buildFullContext(
+        moods: [MoodEntry], habits: [HabitLog], expenses: [Expense],
+        health: HealthManager, calendar: CalendarManager,
+        whoop: NAWhoopRollup?,
+        rollup: NARollup?,
+        contacts: NAContactService
+    ) -> String {
+        var parts: [String] = ["--- nAIce Kontext ---"]
+
+        if let w = whoop {
+            if let r = w.recovery { parts.append("Recovery: \(r.score)% (HRV: \(r.hrv)ms, Puls: \(r.rhr))") }
+            if let s = w.sleep { parts.append("Schlaf: \(String(format: "%.1f", s.net_hours))h") }
+            if let c = w.cycle { parts.append("Strain: \(String(format: "%.1f", c.strain ?? 0))") }
+        }
+
+        let events = calendar.upcomingEvents
+        if !events.isEmpty {
+            let texts = events.prefix(3).map { "\($0.title) um \($0.startDate.formatted(date: .omitted, time: .shortened))" }
+            parts.append("Termine: \(texts.joined(separator: ", "))")
+        }
+
+        if let lastMood = moods.first { parts.append("Stimmung: \(lastMood.mood)") }
+        let todayEx = expenses.filter { Calendar.current.isDateInToday($0.date) }
+        if !todayEx.isEmpty { parts.append("Ausgaben: \(Int(todayEx.reduce(0) { $0 + $1.amount }))€") }
+        let todayHb = habits.filter { Calendar.current.isDateInToday($0.date) }
+        if !todayHb.isEmpty { parts.append("Gewohnheiten: \(todayHb.count)") }
+
+        if let t = rollup?.tasks, t.active > 0 {
+            parts.append("Aufgaben: \(t.active) offen")
+        }
+        if WhatsAppViewModel.shared.totalUnread > 0 {
+            parts.append("WhatsApp: \(WhatsAppViewModel.shared.totalUnread) unbeantwortet")
+        }
+        if let b = rollup?.business {
+            if let f = b.foodloop { parts.append("Foodloop: \(f.total) Kontakte") }
+            if let n = b.naice { parts.append("nAIce: \(n.total) Kontakte") }
+        }
+
+        parts.append("---")
+        parts.append("Du kannst Aktionen ausfuhren: [ACTION:typ, key:value]")
+        parts.append("Typen: logMood, logExpense, createNote, createTask, openCalendar, openURL")
+
+        return parts.joined(separator: "\n")
+    }
 }

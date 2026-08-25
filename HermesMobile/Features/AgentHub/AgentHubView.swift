@@ -35,13 +35,15 @@ struct AgentHubView: View {
                     }.padding(.horizontal, 4)
                 }
 
-                // Chat mit Amelia
+                // Chat mit Amelia (mit vollem Kontext + Action-Fähigkeit)
                 Button {
-                    let context = NAContextBuilder.buildContext(
+                    let context = NAContextBuilder.buildFullContext(
                         moods: moods, habits: habits, expenses: expenses,
                         health: HealthManager.shared,
                         calendar: CalendarManager.shared,
-                        whoop: NAiceAPI.shared.whoop
+                        whoop: rollup.whoop,
+                        rollup: rollup.rollup,
+                        contacts: NAContactService.shared
                     )
                     requestedNewChat = NewChatRequest(
                         profileName: "santos-copilot",
