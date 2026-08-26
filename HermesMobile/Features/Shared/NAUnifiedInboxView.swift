@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - Unified Inbox View
 struct NAUnifiedInboxView: View {
     @ObservedObject private var inbox = NAUnifiedInboxService.shared
+    @State private var showEmailConfig = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -23,8 +24,8 @@ struct NAUnifiedInboxView: View {
                             .font(.caption)
                             .foregroundColor(.ncCyan)
                     }
-                    NavigationLink(destination: NAEmailConfigView()) {
-                        Image(systemName: "envelope.badge.gearshape")
+                    Button { showEmailConfig = true } label: {
+                        Image(systemName: "envelope.circle")
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
@@ -74,6 +75,9 @@ struct NAUnifiedInboxView: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .task { await inbox.refresh() }
+        .sheet(isPresented: $showEmailConfig) {
+            NAEmailConfigView()
+        }
     }
 
     private func statCard(count: Int, label: String, icon: String, color: Color) -> some View {
