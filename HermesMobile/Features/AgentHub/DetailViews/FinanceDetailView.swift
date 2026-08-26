@@ -24,9 +24,12 @@ struct FinanceDetailView: View {
                                             .font(.title2.weight(.bold))
                                             .foregroundColor(.white)
                                         if finance.incomeTotal > 0 {
-                                            Text("\(Int(finance.monthlyTotal)) € ausgegeben · \(Int(finance.incomeTotal)) € eingenommen")
-                                                .font(.subheadline)
+                                            Text("\(Int(finance.monthlyTotal)) € ausgegeben · \(Int(finance.incomeTotal)) € eingenommen diesen Monat")
+                                                .font(.caption)
                                                 .foregroundColor(.gray)
+                                            Text("\(Int(finance.totalExpensesAllTime)) € gesamt · \(Int(finance.totalIncomeAllTime)) € eingenommen seit \(finance.dataSinceLabel)")
+                                                .font(.caption2)
+                                                .foregroundColor(.gray.opacity(0.7))
                                         } else {
                                             Text("\(Int(finance.monthlyTotal)) € ausgegeben diesen Monat")
                                                 .font(.subheadline)
@@ -230,9 +233,14 @@ struct FinanceDetailView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.white)
                 Spacer()
-                Text("\(Int(finance.incomeTotal))€")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundColor(.ncNeonGreen)
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text("\(Int(finance.incomeTotal))€")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundColor(.ncNeonGreen)
+                    Text("\(Int(finance.totalIncomeAllTime))€ seit \(finance.dataSinceLabel)")
+                        .font(.system(size: 8))
+                        .foregroundColor(.gray)
+                }
             }
 
             // Top income entries

@@ -142,6 +142,26 @@ class NAFinanceService: ObservableObject {
         expenses.filter { $0.category == "einnahmen" }.sorted { $0.date > $1.date }
     }
 
+    // MARK: - Lifetime Values
+    var totalExpensesAllTime: Double {
+        expenses.filter { $0.category != "einnahmen" }.reduce(0) { $0 + $1.amount }
+    }
+
+    var totalIncomeAllTime: Double {
+        expenses.filter { $0.category == "einnahmen" }.reduce(0) { $0 + $1.amount }
+    }
+
+    var dataSince: Date? {
+        expenses.map(\.date).min()
+    }
+
+    var dataSinceLabel: String {
+        guard let date = dataSince else { return "–" }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "dd.MM.yyyy"
+        return fmt.string(from: date)
+    }
+
     var categorySpending: [(String, Double, Double, Double)] {
         // Returns (category, spent, limit, percentage)
         budgets.map { b in
