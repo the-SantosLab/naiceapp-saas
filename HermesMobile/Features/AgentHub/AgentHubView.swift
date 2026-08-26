@@ -169,6 +169,10 @@ struct AgentHubView: View {
                     areaTile("lightbulb.fill", "Kreativitat", .ncAmber, CreativityDetailView(naice: NAiceAPI.shared))
                     areaTile("house.fill", "Alltag", .ncBlue, DailyDetailView())
                     areaTile("folder.fill", "Dateien", .ncPurple, NAIceFilesView())
+                    areaTile("camera.viewfinder", "Scanner", .ncCyan, NACameraView())
+                    areaTile("tray.fill", "Posteingang", .ncNeonGreen, NAUnifiedInboxView())
+                    areaTile("homekit", "Smart Home", .ncAmber, NASmartHomeView())
+                    areaTile("apple.terminal", "Mac Agent", .ncPurple, NAMacAgentView())
                 }
                 .padding(.horizontal, 16)
             }
