@@ -157,7 +157,7 @@ struct NAIceTabView: View {
                     await waVM.fetchPending()
                 }
             })
-            .overlay(alignment: .bottom) {
+            .safeAreaInset(edge: .bottom) {
                 VStack(spacing: 0) {
                     if NAgentActionHandler.shared.showConfirmation {
                         NAgentActionConfirmationView()
@@ -165,7 +165,18 @@ struct NAIceTabView: View {
                             .padding(.bottom, 8)
                     }
                     AmeliaBar(showSlideUp: $showAmelia)
+                        .padding(.bottom, 4)
                 }
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [.black.opacity(0.8), .clear]),
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+                    .frame(height: 60)
+                    .ignoresSafeArea()
+                    , alignment: .bottom
+                )
             }
             .animation(.spring(response: 0.3), value: NAgentActionHandler.shared.showConfirmation)
             .ameliaSlideUp(isPresented: $showAmelia)
