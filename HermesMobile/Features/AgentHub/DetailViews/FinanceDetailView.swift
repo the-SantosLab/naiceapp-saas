@@ -10,6 +10,9 @@ struct FinanceDetailView: View {
     @State private var note = ""
     @State private var showCsvPicker = false
     @State private var importResult: String? = nil
+    @State private var showBudgetEditor = false
+    @State private var editingBudgetCategory = ""
+    @State private var editingBudgetAmount = ""
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -122,6 +125,9 @@ struct FinanceDetailView: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .animation(.spring(), value: importResult != nil)
             }
+        }
+        .sheet(isPresented: $showBudgetEditor) {
+            budgetEditorSheet
         }
     }
 
@@ -385,24 +391,31 @@ struct FinanceDetailView: View {
 
             VStack(spacing: 10) {
                 ForEach(finance.categorySpending, id: \.0) { cat, spent, limit, pct in
-                    VStack(spacing: 4) {
-                        HStack {
-                            HStack(spacing: 6) {
-                                Image(systemName: NAFinanceService.categoryIcon(cat))
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.ncCyan)
-                                Text(NAFinanceService.categoryLabel(cat))
-                                    .font(.subheadline)
-                                    .foregroundColor(.white)
+                    Button {
+                        editingBudgetCategory = cat
+                        editingBudgetAmount = String(Int(limit))
+                        showBudgetEditor = true
+                    } label: {
+                        VStack(spacing: 4) {
+                            HStack {
+                                HStack(spacing: 6) {
+                                    Image(systemName: NAFinanceService.categoryIcon(cat))
+                                        .font(.system(size: 8))
+                                        .foregroundColor(.ncCyan)
+                                    Text(NAFinanceService.categoryLabel(cat))
+                                        .font(.subheadline)
+                                        .foregroundColor(.white)
+                                }
+                                Spacer()
+                                Text("\(Int(spent))€/\(Int(limit))€")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
                             }
-                            Spacer()
-                            Text("\(Int(spent))€/\(Int(limit))€")
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                            ProgressView(value: min(pct / 100, 1.0))
+                                .tint(pct > 90 ? .ncRose : pct > 70 ? .ncAmber : .ncNeonGreen)
                         }
-                        ProgressView(value: min(pct / 100, 1.0))
-                            .tint(pct > 90 ? .ncRose : pct > 70 ? .ncAmber : .ncNeonGreen)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -598,6 +611,61 @@ struct FinanceDetailView: View {
                     Text("Neue Ausgabe")
                         .font(.headline)
                         .foregroundColor(.white)
+                }
+            }
+        }
+    }
+    // MARK: - Budget Editor
+    private var budgetEditorSheet: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                HStack(spacing: 8) {
+                    Image(systemName: NAFinanceService.categoryIcon(editingBudgetCategory))
+                        .font(.system(size: 20))
+                        .foregroundColor(.ncCyan)
+                    Text(NAFinanceService.categoryLabel(editingBudgetCategory))
+                        .font(.title2.weight(.bold))
+                        .foregroundColor(.white)
+                }
+                .padding(.top, 24)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Monatsbudget")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.gray)
+                    TextField("Betrag in €", text: $editingBudgetAmount)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                }
+                .padding(.horizontal, 32)
+
+                Button {
+                    if let amt = Double(editingBudgetAmount), amt >= 0 {
+                        finance.updateBudget(category: editingBudgetCategory, newLimit: amt)
+                        showBudgetEditor = false
+                    }
+                } label: {
+                    Text("Speichern")
+                        .font(.headline.weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.ncCyan, in: RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal, 32)
+
+                Spacer()
+            }
+            .background(Color.black.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Abbrechen") { showBudgetEditor = false }
+                        .foregroundColor(.ncCyan)
                 }
             }
         }

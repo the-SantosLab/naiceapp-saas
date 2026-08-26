@@ -13,7 +13,7 @@ struct NAExpense: Codable, Identifiable {
 struct NABudget: Codable, Identifiable {
     var id = UUID().uuidString
     let category: String
-    let monthlyLimit: Double
+    var monthlyLimit: Double
     var spentThisMonth: Double
 }
 
@@ -88,6 +88,14 @@ class NAFinanceService: ObservableObject {
         expenses.removeAll { $0.id == id }
         updateBudgetSpent()
         save()
+    }
+
+    func updateBudget(category: String, newLimit: Double) {
+        guard newLimit >= 0 else { return }
+        if let idx = budgets.firstIndex(where: { $0.category == category }) {
+            budgets[idx].monthlyLimit = newLimit
+            save()
+        }
     }
 
     private func updateBudgetSpent() {
