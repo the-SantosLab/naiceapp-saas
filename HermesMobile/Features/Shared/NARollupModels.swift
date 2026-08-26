@@ -14,6 +14,7 @@ struct NARollup: Codable {
     let summary: NASummary?
     let crm: NARollupCRM?
     let revenue: NARevenueRollup?
+    let knowledge: NAKnowledge?
 }
 
 struct NAWhoopRollup: Codable {
@@ -298,4 +299,18 @@ struct NAMonthlyRevenue: Codable, Identifiable {
     let month: String?
     let total: Int?
     var id: String { month ?? UUID().uuidString }
+}
+
+// MARK: - Knowledge Models
+struct NAKnowledge: Codable {
+    let entries: [NAKnowledgeEntry]?
+    let linked: [String]?
+}
+
+struct NAKnowledgeEntry: Codable, Identifiable {
+    let id: String?
+    let title: String?
+    let body: String?
+    let tags: [String]?
+    let created: Int?
 }

@@ -54,5 +54,6 @@ class NARollupService: ObservableObject {
     var journal: NAJournalRollup? { rollup?.journal }
     var calendar: NACalendarRollup? { rollup?.calendar }
     var revenue: NARevenueRollup? { rollup?.revenue }
+    var knowledge: NAKnowledge? { rollup?.knowledge }
     var flags: [NASummaryFlag] { summary?.flags ?? [] }
 }
