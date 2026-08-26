@@ -371,6 +371,7 @@
 		D59FD2094829DE947A421A24 /* NAiceWidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48811DAC9B4F4C328A5F8C49 /* NAiceWidgetExtension.swift */; };
 		D9327589D49ED4EC676438FA /* NARollupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAD6A4F60CF55B0BD8D7546 /* NARollupService.swift */; };
 		DAB04A05CDE42B1E2E445AB6 /* APIClient+AgentHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486FB27ABE466047F4F46E16 /* APIClient+AgentHub.swift */; };
+		DFA8D9E7EFD1722A9B554C83 /* NANumberPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5BD397F558FB67C3996059 /* NANumberPad.swift */; };
 		E39D048B8C5C4AC5BBDAE93A /* WhatsAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */; };
 		EF5BC9AB35AC8000C306BCE6 /* TrendCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21AE11BD3EC9267D81AB2C1 /* TrendCard.swift */; };
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
@@ -556,6 +557,7 @@
 		598FD5DD1FF20E28ABDD0A43 /* IdeasCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IdeasCard.swift; path = AgentHub/Cards/IdeasCard.swift; sourceTree = "<group>"; };
 		5D9DCD6C3FAEA0D39B31AE55 /* AgentHubView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubView.swift; path = AgentHub/AgentHubView.swift; sourceTree = "<group>"; };
 		5DA59130ED4141049177576C /* SlashCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommand.swift; sourceTree = "<group>"; };
+		5E5BD397F558FB67C3996059 /* NANumberPad.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANumberPad.swift; sourceTree = "<group>"; };
 		611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubModels.swift; path = AgentHub/Models/AgentHubModels.swift; sourceTree = "<group>"; };
 		63F7BCFA84BB0E549E0CE361 /* NAContactService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAContactService.swift; sourceTree = "<group>"; };
 		6578902466D98BB01323B252 /* AmeliaBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmeliaBar.swift; sourceTree = "<group>"; };
@@ -1518,6 +1520,7 @@
 				6578902466D98BB01323B252 /* AmeliaBar.swift */,
 				6C971B9F83714060B17741CE /* AmeliaSlideUp.swift */,
 				3DE44303FA26A69A6C782417 /* AmeliaMenuButton.swift */,
+				5E5BD397F558FB67C3996059 /* NANumberPad.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -1999,6 +2002,7 @@
 				667D3F413E87B62A4F1A91B2 /* AmeliaBar.swift in Sources */,
 				64729AD482EDFDC77AB148AC /* AmeliaSlideUp.swift in Sources */,
 				AD32F5BC3994E650462CF87C /* AmeliaMenuButton.swift in Sources */,
+				DFA8D9E7EFD1722A9B554C83 /* NANumberPad.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

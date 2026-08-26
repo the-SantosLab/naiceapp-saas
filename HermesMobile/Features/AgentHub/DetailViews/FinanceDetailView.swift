@@ -5,7 +5,7 @@ struct FinanceDetailView: View {
     @ObservedObject private var rollup = NARollupService.shared
     @ObservedObject private var finance = NAFinanceService.shared
     @State private var showAddExpense = false
-    @State private var amount = ""
+    @State private var amountDouble = 0.0
     @State private var selectedCategory = "essen"
     @State private var note = ""
 
@@ -305,32 +305,69 @@ struct FinanceDetailView: View {
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
     }
 
-    // MARK: - Add Expense Sheet
+    // MARK: - Add Expense Sheet (NumberPad)
     private var addExpenseSheet: some View {
         NavigationStack {
-            Form {
-                TextField("Betrag (€)", text: $amount).keyboardType(.decimalPad)
-                Picker("Kategorie", selection: $selectedCategory) {
-                    ForEach(["essen", "transport", "einkaufen", "wohnen", "freizeit", "gesundheit", "sonstiges"], id: \.self) { cat in
-                        Label(NAFinanceService.categoryLabel(cat), systemImage: NAFinanceService.categoryIcon(cat)).tag(cat)
-                    }
-                }
-                TextField("Notiz (optional)", text: $note)
-            }
-            .navigationTitle("Neue Ausgabe")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Speichern") {
-                        if let amt = Double(amount) {
-                            finance.addExpense(amount: amt, category: selectedCategory, note: note)
-                            amount = ""; note = ""; showAddExpense = false
+            VStack(spacing: 0) {
+                // Category selector
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(["essen", "transport", "einkaufen", "wohnen", "freizeit", "gesundheit", "sonstiges"], id: \.self) { cat in
+                            Button {
+                                selectedCategory = cat
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: NAFinanceService.categoryIcon(cat))
+                                        .font(.system(size: 10))
+                                    Text(NAFinanceService.categoryLabel(cat))
+                                        .font(.caption.weight(.semibold))
+                                }
+                                .foregroundColor(selectedCategory == cat ? .white : .ncCyan)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(
+                                    selectedCategory == cat ?
+                                        Color.ncCyan :
+                                        Color.ncCyan.opacity(0.1),
+                                    in: RoundedRectangle(cornerRadius: 10)
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .disabled(amount.isEmpty || Double(amount) == nil)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
                 }
+                .background(Color(red: 0.02, green: 0.02, blue: 0.04))
+
+                Divider().overlay(Color.white.opacity(0.06))
+
+                // NumberPad
+                NANumberPad(
+                    amount: $amountDouble,
+                    note: $note,
+                    category: selectedCategory,
+                    onSubmit: {
+                        finance.addExpense(amount: amountDouble, category: selectedCategory, note: note)
+                        amountDouble = 0.0
+                        note = ""
+                        showAddExpense = false
+                    }
+                )
+                .padding(.top, 20)
+
+                Spacer()
+            }
+            .background(Color.black.ignoresSafeArea())
+            .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Abbrechen") { showAddExpense = false }
+                        .foregroundColor(.ncCyan)
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("Neue Ausgabe")
+                        .font(.headline)
+                        .foregroundColor(.white)
                 }
             }
         }
