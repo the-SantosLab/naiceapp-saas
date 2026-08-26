@@ -97,6 +97,7 @@ class NAFinanceService: ObservableObject {
             let cat = budgets[i].category
             budgets[i].spentThisMonth = expenses
                 .filter { $0.category == cat && !$0.isBusiness }
+                .filter { $0.category != "einnahmen" }
                 .filter {
                     let c = Calendar.current
                     return c.component(.month, from: $0.date) == thisMonth && c.component(.year, from: $0.date) == thisYear
@@ -109,11 +110,28 @@ class NAFinanceService: ObservableObject {
         let thisMonth = Calendar.current.component(.month, from: Date())
         let thisYear = Calendar.current.component(.year, from: Date())
         return expenses
+            .filter { $0.category != "einnahmen" }
             .filter {
                 let c = Calendar.current
                 return c.component(.month, from: $0.date) == thisMonth && c.component(.year, from: $0.date) == thisYear
             }
             .reduce(0) { $0 + $1.amount }
+    }
+
+    var incomeTotal: Double {
+        let thisMonth = Calendar.current.component(.month, from: Date())
+        let thisYear = Calendar.current.component(.year, from: Date())
+        return expenses
+            .filter { $0.category == "einnahmen" }
+            .filter {
+                let c = Calendar.current
+                return c.component(.month, from: $0.date) == thisMonth && c.component(.year, from: $0.date) == thisYear
+            }
+            .reduce(0) { $0 + $1.amount }
+    }
+
+    var incomeEntries: [NAExpense] {
+        expenses.filter { $0.category == "einnahmen" }.sorted { $0.date > $1.date }
     }
 
     var categorySpending: [(String, Double, Double, Double)] {
@@ -132,6 +150,7 @@ class NAFinanceService: ObservableObject {
         case "wohnen": return "Wohnen"
         case "freizeit": return "Freizeit"
         case "gesundheit": return "Gesundheit"
+        case "einnahmen": return "Einnahmen"
         default: return "Sonstiges"
         }
     }
@@ -144,6 +163,7 @@ class NAFinanceService: ObservableObject {
         case "wohnen": return "house.fill"
         case "freizeit": return "gamecontroller.fill"
         case "gesundheit": return "heart.fill"
+        case "einnahmen": return "arrow.down.circle.fill"
         default: return "ellipsis.circle.fill"
         }
     }

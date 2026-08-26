@@ -15,25 +15,37 @@ struct FinanceDetailView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 20) {
                 // Header
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Finanzen")
-                            .font(.title2.weight(.bold))
-                            .foregroundColor(.white)
-                        Text("\(Int(finance.monthlyTotal)) € ausgegeben diesen Monat")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                    Spacer()
-                    if rollup.isLoading {
-                        ProgressView().scaleEffect(0.7).tint(.ncCyan)
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Finanzen")
+                                            .font(.title2.weight(.bold))
+                                            .foregroundColor(.white)
+                                        if finance.incomeTotal > 0 {
+                                            Text("\\(Int(finance.monthlyTotal)) € ausgegeben · \\(Int(finance.incomeTotal)) € eingenommen")
+                                                .font(.subheadline)
+                                                .foregroundColor(.gray)
+                                        } else {
+                                            Text("\\(Int(finance.monthlyTotal)) € ausgegeben diesen Monat")
+                                                .font(.subheadline)
+                                                .foregroundColor(.gray)
+                                        }
+                                    }
+                                    Spacer()
+                                    if rollup.isLoading {
+                                        ProgressView().scaleEffect(0.7).tint(.ncCyan)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.top, 8)
 
-                // Server Einnahmen
-                if let rev = rollup.revenue, !(rev.entries?.isEmpty ?? true) {
+                                // Income Section (Einnahmen)
+                                if !finance.incomeEntries.isEmpty {
+                                    incomeSection
+                                        .padding(.horizontal, 16)
+                                }
+
+                                // Server Revenue (old format)
+                                if let rev = rollup.revenue, !(rev.entries?.isEmpty ?? true) {
                     revenueSection(rev)
                         .padding(.horizontal, 16)
                 }
@@ -201,6 +213,62 @@ struct FinanceDetailView: View {
         )
     }
 
+    // MARK: - Income Section
+    private var incomeSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.down.circle.fill")
+                    .font(.caption)
+                    .foregroundColor(.ncNeonGreen)
+                Text("Einnahmen")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+                Text("\\(Int(finance.incomeTotal))€")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundColor(.ncNeonGreen)
+            }
+
+            // Top income entries
+            VStack(spacing: 6) {
+                ForEach(Array(finance.incomeEntries.prefix(8))) { entry in
+                    HStack(spacing: 10) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.ncNeonGreen.opacity(0.12))
+                                .frame(width: 28, height: 28)
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(.ncNeonGreen)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.note)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                            Text(entry.date, style: .date)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        Spacer()
+                        Text("\\(Int(entry.amount))€")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundColor(.ncNeonGreen)
+                    }
+                    .padding(10)
+                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.ncNeonGreen.opacity(0.1), lineWidth: 0.5))
+        )
+    }
+
     // MARK: - Insights Section (Dime-Inspired)
     private var insightsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -275,7 +343,7 @@ struct FinanceDetailView: View {
     }
 
     private var lineGraphData: [GraphPoint] {
-        let last7 = finance.expenses.prefix(7).reversed()
+        let last7 = finance.expenses.filter { $0.category != "einnahmen" }.prefix(7).reversed()
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM"
         return last7.enumerated().map { i, exp in

@@ -110,11 +110,17 @@ struct NACsvImportService {
         let cleaned = raw.replacingOccurrences(of: ",", with: ".") // safety fallback
         guard let signedAmount = Double(cleaned) else { return nil }
 
-        // Only expenses (negative amounts) — skip deposits/transfers
-        guard signedAmount < 0 else { return nil }
-
+        // Only expenses (negative amounts) — include positive as einnahmen
+        guard signedAmount != 0 else { return nil }
         let amount = abs(signedAmount)
+
+        let art = cols.count > 0 ? cols[0].trimmingCharacters(in: .init(charactersIn: "\"")) : ""
         let text = cols.count > 4 ? cols[4].trimmingCharacters(in: .init(charactersIn: "\"")) : ""
+
+        if signedAmount > 0 {
+            // Revenue
+            return NAExpense(amount: amount, category: "einnahmen", note: String(text.prefix(80)), date: date, isBusiness: false)
+        }
 
         return NAExpense(amount: amount, category: categorize(text), note: String(text.prefix(80)), date: date, isBusiness: false)
     }
