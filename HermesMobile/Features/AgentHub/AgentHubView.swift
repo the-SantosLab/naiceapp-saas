@@ -10,6 +10,7 @@ struct AgentHubView: View {
     @State private var newIdea = ""
     @Binding var requestedNewChat: NewChatRequest?
     @ObservedObject private var rollup = NARollupService.shared
+    @ObservedObject private var proactive = NAProactiveService.shared
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -98,6 +99,18 @@ struct AgentHubView: View {
                         .padding(.horizontal, 16)
                 }
 
+                // Proaktive Vorschläge
+                if !proactive.suggestions.isEmpty {
+                    sectionHeader(icon: "sparkle.magnifyingglass", title: "Vorschlage")
+                        .padding(.horizontal, 20)
+                    VStack(spacing: 6) {
+                        ForEach(proactive.suggestions.prefix(5)) { suggestion in
+                            NASuggestionCard(suggestion: suggestion)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+
                 // Kalender-Termine
                 if let c = rollup.calendar, c.count > 0 {
                     sectionHeader(icon: "calendar", title: "Termine")
@@ -165,6 +178,10 @@ struct AgentHubView: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await refreshAll() }
+        .task {
+            proactive.generate()
+            await rollup.fetch()
+        }
     }
 
     // MARK: - Refresh
