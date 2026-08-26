@@ -14,14 +14,24 @@ struct NFileViewer: View {
         Group {
             if isLoading {
                 VStack(spacing: 12) {
-                    ProgressView()
-                    Text("Lade \(file.name)...").font(.subheadline).foregroundColor(.ncMuted)
+                    ProgressView().scaleEffect(0.8).tint(.ncCyan)
+                    Text("Lade \(file.name)...")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.ignoresSafeArea())
             } else if let err = error {
                 VStack(spacing: 12) {
-                    Image(systemName: "exclamationmark.triangle").font(.title2).foregroundColor(.ncRed)
-                    Text(err).font(.subheadline).foregroundColor(.ncMuted)
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.title2)
+                        .foregroundColor(.ncRose)
+                    Text(err)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.ignoresSafeArea())
             } else if let d = data {
                 switch file.type {
                 case "pdf":
@@ -69,7 +79,7 @@ struct PDFKitView: UIViewRepresentable {
         let v = PDFView()
         v.document = PDFDocument(data: data)
         v.autoScales = true
-        v.backgroundColor = UIColor(Color.ncPaper)
+        v.backgroundColor = UIColor.black
         return v
     }
     func updateUIView(_ uiView: PDFView, context: Context) {}
@@ -91,14 +101,14 @@ struct WebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let wv = WKWebView()
         wv.load(data, mimeType: "text/html", characterEncodingName: "utf-8", baseURL: baseURL)
-        wv.backgroundColor = UIColor(Color.ncPaper)
+        wv.backgroundColor = UIColor.black
         wv.isOpaque = false
         return wv
     }
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 
-// MARK: - Text File Viewer (TXT, MD, DOCX)
+// MARK: - Text File Viewer
 struct TextFileViewer: View {
     let data: Data
     let type: String
@@ -108,14 +118,13 @@ struct TextFileViewer: View {
         ScrollView {
             Text(text)
                 .font(.system(.body, design: type == "md" ? .default : .monospaced))
-                .foregroundColor(.ncDark)
+                .foregroundColor(.white)
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .warmBackground()
+        .background(Color.black.ignoresSafeArea())
         .task {
             if type == "docx" {
-                // DOCX is a zip - extract text from word/document.xml
                 text = "DOCX-Vorschau: \(data.count) Bytes\n\n(Direkte DOCX-Parsing nicht implementiert – speichere und offne in Word)"
             } else {
                 text = String(data: data, encoding: .utf8) ?? "Kann Datei nicht dekodieren"
@@ -133,8 +142,13 @@ struct ImageViewer: View {
                 .resizable()
                 .scaledToFit()
                 .padding()
+                .background(Color.black.ignoresSafeArea())
         } else {
-            Text("Bild kann nicht angezeigt werden").font(.subheadline).foregroundColor(.ncMuted)
+            Text("Bild kann nicht angezeigt werden")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.ignoresSafeArea())
         }
     }
 }
@@ -149,10 +163,16 @@ struct NFileUploadSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
-                Image(systemName: "arrow.up.doc.fill").font(.system(size: 48)).foregroundColor(.ncGreen)
-                Text("Datei hochladen").font(.title2.weight(.bold)).foregroundColor(.ncDark)
+                Image(systemName: "arrow.up.doc.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(.ncCyan)
+                Text("Datei hochladen")
+                    .font(.title2.weight(.bold))
+                    .foregroundColor(.white)
                 Text("Wahle eine PDF, DOCX, HTML, MD oder TXT Datei")
-                    .font(.subheadline).foregroundColor(.ncMuted)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
 
                 Button {
                     showFilePicker = true
@@ -161,31 +181,40 @@ struct NFileUploadSheet: View {
                         Image(systemName: "doc.badge.plus").font(.title3)
                         Text("Datei auswahlen")
                     }
-                    .font(.headline.weight(.semibold)).foregroundColor(.white)
+                    .font(.headline.weight(.semibold))
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color.ncGreen, in: RoundedRectangle(cornerRadius: 14))
+                    .background(Color.ncCyan, in: RoundedRectangle(cornerRadius: 14))
                 }
                 .padding(.horizontal, 32)
 
                 if let url = selectedURL {
                     HStack {
-                        Image(systemName: "checkmark.circle.fill").foregroundColor(.ncGreen)
-                        Text(url.lastPathComponent).font(.subheadline).foregroundColor(.ncDark)
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.ncNeonGreen)
+                        Text(url.lastPathComponent)
+                            .font(.subheadline)
+                            .foregroundColor(.white)
                     }
                 }
 
                 if isUploading {
                     ProgressView("Lade hoch...")
+                        .tint(.ncCyan)
                 }
 
                 Spacer()
             }
             .padding(.top, 40)
+            .background(Color.black.ignoresSafeArea())
             .navigationTitle("Upload")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { Button("Schliessen") { dismiss() } }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Schliessen") { dismiss() }
+                        .foregroundColor(.ncCyan)
+                }
             }
             .fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.pdf, .text, .plainText, .html, .json, .data, .image]) { result in
                 switch result {
