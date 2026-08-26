@@ -11,6 +11,7 @@ struct NACsvImportService {
             .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
 
         let parsers: [(String) -> NAExpense?] = [
+            parseN26AccountStatementRow,
             parseDKBRow,
             parseINGRow,
             parseN26Row,
@@ -26,7 +27,8 @@ struct NACsvImportService {
                 let lower = line.lowercased()
                 if lower.contains("buchung") || lower.contains("datum") || lower.contains("date") ||
                    lower.contains("betrag") || lower.contains("amount") || lower.contains("value") ||
-                   lower.contains("umsatz") || lower.contains("valuta") {
+                   lower.contains("umsatz") || lower.contains("valuta") ||
+                   lower.contains("art,") || lower.contains("produkt,") {
                     headerSkipped = true
                     continue
                 }
@@ -74,7 +76,7 @@ struct NACsvImportService {
         return NAExpense(amount: amount, category: categorize(text), note: String(text.prefix(80)), date: date, isBusiness: false)
     }
 
-    // MARK: - N26 Format
+    // MARK: - N26 Format (Kontoauszug)
     private static func parseN26Row(_ line: String) -> NAExpense? {
         let cols = parseCSVLine(line)
         guard cols.count >= 4 else { return nil }
@@ -86,6 +88,34 @@ struct NACsvImportService {
         let payee = cols.count > 1 ? cols[1].trimmingCharacters(in: .init(charactersIn: "\"")) : ""
         let ref = cols.count > 2 ? cols[2].trimmingCharacters(in: .init(charactersIn: "\"")) : ""
         let text = "\(payee) \(ref)".trimmingCharacters(in: .whitespaces)
+        return NAExpense(amount: amount, category: categorize(text), note: String(text.prefix(80)), date: date, isBusiness: false)
+    }
+
+    // MARK: - N26 Account Statement Format
+    // "Art","Produkt","Datum des Beginns","Datum des Abschlusses","Beschreibung","Betrag","Gebühr","Währung","Status","Kontostand"
+    private static func parseN26AccountStatementRow(_ line: String) -> NAExpense? {
+        let cols = parseCSVLine(line)
+        guard cols.count >= 9 else { return nil }
+
+        // Skip STORNIERT and AUSSTEHEND
+        let status = cols[8].trimmingCharacters(in: .init(charactersIn: "\""))
+        guard status == "ABGESCHLOSSEN" else { return nil }
+
+        // Date from "Datum des Beginns" (col 2) — format "yyyy-MM-dd HH:mm:ss"
+        let dateStr = cols[2].trimmingCharacters(in: .init(charactersIn: "\""))
+        guard let date = parseDateFull(dateStr) else { return nil }
+
+        // Amount from "Betrag" (col 5) — N26 uses "." as decimal separator (e.g., -2.02, 10174.50)
+        let raw = cols[5].trimmingCharacters(in: .init(charactersIn: "\""))
+        let cleaned = raw.replacingOccurrences(of: ",", with: ".") // safety fallback
+        guard let signedAmount = Double(cleaned) else { return nil }
+
+        // Only expenses (negative amounts) — skip deposits/transfers
+        guard signedAmount < 0 else { return nil }
+
+        let amount = abs(signedAmount)
+        let text = cols.count > 4 ? cols[4].trimmingCharacters(in: .init(charactersIn: "\"")) : ""
+
         return NAExpense(amount: amount, category: categorize(text), note: String(text.prefix(80)), date: date, isBusiness: false)
     }
 
@@ -137,6 +167,11 @@ struct NACsvImportService {
             if let date = f.date(from: str) { return date }
         }
         return nil
+    }
+
+    private static func parseDateFull(_ str: String) -> Date? {
+        let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd HH:mm:ss"; f.locale = Locale(identifier: "de_DE")
+        return f.date(from: str)
     }
 
     private static func categorize(_ text: String) -> String {
