@@ -21,11 +21,11 @@ struct FinanceDetailView: View {
                                             .font(.title2.weight(.bold))
                                             .foregroundColor(.white)
                                         if finance.incomeTotal > 0 {
-                                            Text("\\(Int(finance.monthlyTotal)) € ausgegeben · \\(Int(finance.incomeTotal)) € eingenommen")
+                                            Text("\(Int(finance.monthlyTotal)) € ausgegeben · \(Int(finance.incomeTotal)) € eingenommen")
                                                 .font(.subheadline)
                                                 .foregroundColor(.gray)
                                         } else {
-                                            Text("\\(Int(finance.monthlyTotal)) € ausgegeben diesen Monat")
+                                            Text("\(Int(finance.monthlyTotal)) € ausgegeben diesen Monat")
                                                 .font(.subheadline)
                                                 .foregroundColor(.gray)
                                         }
@@ -224,7 +224,7 @@ struct FinanceDetailView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.white)
                 Spacer()
-                Text("\\(Int(finance.incomeTotal))€")
+                Text("\(Int(finance.incomeTotal))€")
                     .font(.subheadline.weight(.bold))
                     .foregroundColor(.ncNeonGreen)
             }
@@ -251,7 +251,7 @@ struct FinanceDetailView: View {
                                 .foregroundColor(.gray)
                         }
                         Spacer()
-                        Text("\\(Int(entry.amount))€")
+                        Text("\(Int(entry.amount))€")
                             .font(.subheadline.weight(.bold))
                             .foregroundColor(.ncNeonGreen)
                     }
