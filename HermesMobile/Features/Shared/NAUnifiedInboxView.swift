@@ -23,6 +23,11 @@ struct NAUnifiedInboxView: View {
                             .font(.caption)
                             .foregroundColor(.ncCyan)
                     }
+                    NavigationLink(destination: NAEmailConfigView()) {
+                        Image(systemName: "envelope.badge.gearshape")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -139,6 +144,7 @@ struct NAUnifiedInboxView: View {
         switch source {
         case "whatsapp": return .ncNeonGreen
         case "imessage": return .ncCyan
+        case "email": return .ncBlue
         case "telegram": return .ncBlue
         default: return .gray
         }
@@ -148,6 +154,7 @@ struct NAUnifiedInboxView: View {
         switch source {
         case "whatsapp": return "message.fill"
         case "imessage": return "bubble.left.fill"
+        case "email": return "envelope.fill"
         case "telegram": return "paperplane.fill"
         default: return "bell.fill"
         }

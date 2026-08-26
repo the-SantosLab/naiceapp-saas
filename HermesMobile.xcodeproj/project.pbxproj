@@ -142,6 +142,7 @@
 		54CAEBE2C4329017C4D999DD /* NAFinanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B309F61E3B80BDB41121439 /* NAFinanceService.swift */; };
 		553CBCE7FAC71D41BF9B3B47 /* NACRMDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */; };
 		56063D74CA7FC2BAFD989D68 /* nAIceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */; };
+		569F1CEAB141FFFA0273980A /* NAEmailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2E7BD602A919D59E033F70 /* NAEmailService.swift */; };
 		62AD82AB1A8D358CB53E66E6 /* NAiceWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */; };
 		64729AD482EDFDC77AB148AC /* AmeliaSlideUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C971B9F83714060B17741CE /* AmeliaSlideUp.swift */; };
 		64AE36FBAE436BF5C5083453 /* AgentHubModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */; };
@@ -825,6 +826,7 @@
 		E1B3346AFD64AFEE7725B6E7 /* NAiceWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HermesMobileWidgets/NAiceWidgetBundle.swift; sourceTree = "<group>"; };
 		E533B358B66057700CD6AAE8 /* NAVisionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAVisionService.swift; sourceTree = "<group>"; };
 		E6ED7B24D7511807FD577DDD /* ContactDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContactDetailView.swift; path = AgentHub/DetailViews/ContactDetailView.swift; sourceTree = "<group>"; };
+		EA2E7BD602A919D59E033F70 /* NAEmailService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAEmailService.swift; sourceTree = "<group>"; };
 		EE8A3B65E2196486BD26194A /* WorkoutScrollRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutScrollRow.swift; path = AgentHub/Cards/WorkoutScrollRow.swift; sourceTree = "<group>"; };
 		EFA630EF800CFC9594EBB197 /* ImpressionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImpressionCard.swift; sourceTree = "<group>"; };
 		F02DB651B910BACB7824C787 /* JournalDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JournalDetailView.swift; path = AgentHub/DetailViews/JournalDetailView.swift; sourceTree = "<group>"; };
@@ -1606,6 +1608,7 @@
 				E0B863BC687C467BF1BDDD85 /* NAMacAgentView.swift */,
 				E533B358B66057700CD6AAE8 /* NAVisionService.swift */,
 				F8104AFCD32302FA1B4A2BBB /* NAUnifiedInboxService.swift */,
+				EA2E7BD602A919D59E033F70 /* NAEmailService.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2128,6 +2131,7 @@
 				A0F0CD20AA34DCD791EDB66D /* NAMacAgentView.swift in Sources */,
 				09718ECA64DC3EA0D93F6382 /* NAVisionService.swift in Sources */,
 				4960DD6462DF323A10449A31 /* NAUnifiedInboxService.swift in Sources */,
+				569F1CEAB141FFFA0273980A /* NAEmailService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
