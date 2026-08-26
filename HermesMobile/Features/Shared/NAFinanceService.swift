@@ -72,6 +72,18 @@ class NAFinanceService: ObservableObject {
         save()
     }
 
+    func addExpenseVal(amount: Double, category: String, note: String, date: Date) {
+        let expense = NAExpense(amount: amount, category: category, note: note, date: date, isBusiness: false)
+        // Insert in date-sorted order
+        if let idx = expenses.firstIndex(where: { $0.date < date }) {
+            expenses.insert(expense, at: idx)
+        } else {
+            expenses.append(expense)
+        }
+        updateBudgetSpent()
+        save()
+    }
+
     func deleteExpense(_ id: String) {
         expenses.removeAll { $0.id == id }
         updateBudgetSpent()

@@ -64,16 +64,37 @@ struct FinanceDetailView: View {
         .sheet(isPresented: $showAddExpense) {
             addExpenseSheet
         }
-        .sheet(isPresented: $showCsvPicker) {
-            NACsvDocumentPicker(onImport: { expenses in
-                for exp in expenses {
-                    finance.addExpense(amount: exp.amount, category: exp.category, note: exp.note, isBusiness: exp.isBusiness)
+        .fileImporter(isPresented: $showCsvPicker, allowedContentTypes: [.commaSeparatedText, .text, .plainText, .data]) { result in
+            switch result {
+            case .success(let url):
+                guard url.startAccessingSecurityScopedResource() else { return }
+                defer { url.stopAccessingSecurityScopedResource() }
+                do {
+                    let content = try String(contentsOf: url, encoding: .utf8)
+                    let expenses = NACsvImportService.parseCSV(content)
+                    for exp in expenses {
+                        finance.addExpenseVal(amount: exp.amount, category: exp.category, note: exp.note, date: exp.date)
+                    }
+                    importResult = "\(expenses.count) Transaktionen importiert"
+                } catch {
+                    // Try latin1
+                    if let content = try? String(contentsOf: url, encoding: .isoLatin1) {
+                        let expenses = NACsvImportService.parseCSV(content)
+                        for exp in expenses {
+                            finance.addExpenseVal(amount: exp.amount, category: exp.category, note: exp.note, date: exp.date)
+                        }
+                        importResult = "\(expenses.count) Transaktionen importiert"
+                    } else {
+                        importResult = "Fehler: Datei konnte nicht gelesen werden"
+                    }
                 }
-                importResult = "\(expenses.count) Transaktionen importiert"
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     importResult = nil
                 }
-            })
+            case .failure:
+                importResult = "Fehler: Datei konnte nicht geoffnet werden"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) { importResult = nil }
+            }
         }
         .overlay(alignment: .top) {
             if let result = importResult {
