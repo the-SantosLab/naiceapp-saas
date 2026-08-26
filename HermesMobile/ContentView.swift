@@ -130,54 +130,47 @@ struct NAIceTabView: View {
         var icon: String { switch self { case .home: return "house"; case .life: return "leaf"; case .tasks: return "checklist"; case .agent: return "bubble.left.and.bubble.right"; case .more: return "square.grid.2x2" } }
     }
     var body: some View {
-        TabView(selection: $selectedTab) {
-            NavigationStack { AgentHubView(requestedNewChat: $pn) }.tabItem { Label(Tab.home.title, systemImage: Tab.home.icon) }.badge(waVM.totalUnread > 0 ? waVM.totalUnread : 0).tag(Tab.home)
-            NavigationStack { NAIceLifeView(services: services) }.tabItem { Label(Tab.life.title, systemImage: Tab.life.icon) }.tag(Tab.life)
-            NavigationStack { NAIceTasksView() }.tabItem { Label(Tab.tasks.title, systemImage: Tab.tasks.icon) }.badge(rollup.tasks?.active ?? 0 > 0 ? rollup.tasks!.active : 0).tag(Tab.tasks)
-            SessionListView(authManager: authManager, server: server, pendingSharedImport: $ps, pendingDeepLinkedSessionID: $pd, requestedNewChat: $pn).tabItem { Label(Tab.agent.title, systemImage: Tab.agent.icon) }.tag(Tab.agent)
-            NavigationStack { NAIceMoreView() }.tabItem { Label(Tab.more.title, systemImage: Tab.more.icon) }.tag(Tab.more)
-        }.tint(Color.ncCyan).task { await health.requestAuth(); await calendar.requestAuth(); await services.requestAll(); await NAiceAPI.shared.fetchIdeas(); await NARollupService.shared.fetch(); await waVM.fetchPending() }
-            .onAppear { ameliaContext.setContext(tab: selectedTab.rawValue) }
-            .onChange(of: selectedTab) { newTab in ameliaContext.setContext(tab: newTab.rawValue) }
-            .onChange(of: scenePhase, perform: { newPhase in
-                guard newPhase == .active else { return }
-                Task {
-                    await calendar.loadUpcoming()
-                    await NAiceAPI.shared.fetchIdeas()
-                    await NARollupService.shared.fetch()
-                    await NAJournalService.shared.fetch()
-                    if ServiceManager.shared.contactsAuthorized { await NAContactService.shared.fetchContacts() }
-                    await NASyncService.shared.syncAll(
-                        moods: [],
-                        habits: [],
-                        expenses: [],
-                        health: health,
-                        whoop: NAiceAPI.shared.whoop
-                    )
-                    await waVM.fetchPending()
-                }
-            })
-            .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 0) {
-                    if NAgentActionHandler.shared.showConfirmation {
-                        NAgentActionConfirmationView()
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                            .padding(.bottom, 8)
+        ZStack(alignment: .bottom) {
+                        TabView(selection: $selectedTab) {
+                            NavigationStack { AgentHubView(requestedNewChat: $pn) }.tabItem { Label(Tab.home.title, systemImage: Tab.home.icon) }.badge(waVM.totalUnread > 0 ? waVM.totalUnread : 0).tag(Tab.home)
+                            NavigationStack { NAIceLifeView(services: services) }.tabItem { Label(Tab.life.title, systemImage: Tab.life.icon) }.tag(Tab.life)
+                            NavigationStack { NAIceTasksView() }.tabItem { Label(Tab.tasks.title, systemImage: Tab.tasks.icon) }.badge(rollup.tasks?.active ?? 0 > 0 ? rollup.tasks!.active : 0).tag(Tab.tasks)
+                            SessionListView(authManager: authManager, server: server, pendingSharedImport: $ps, pendingDeepLinkedSessionID: $pd, requestedNewChat: $pn).tabItem { Label(Tab.agent.title, systemImage: Tab.agent.icon) }.tag(Tab.agent)
+                            NavigationStack { NAIceMoreView() }.tabItem { Label(Tab.more.title, systemImage: Tab.more.icon) }.tag(Tab.more)
+                        }.tint(Color.ncCyan).task { await health.requestAuth(); await calendar.requestAuth(); await services.requestAll(); await NAiceAPI.shared.fetchIdeas(); await NARollupService.shared.fetch(); await waVM.fetchPending() }
+                            .onAppear { ameliaContext.setContext(tab: selectedTab.rawValue) }
+                            .onChange(of: selectedTab) { newTab in ameliaContext.setContext(tab: newTab.rawValue) }
+                            .onChange(of: scenePhase, perform: { newPhase in
+                                guard newPhase == .active else { return }
+                                Task {
+                                    await calendar.loadUpcoming()
+                                    await NAiceAPI.shared.fetchIdeas()
+                                    await NARollupService.shared.fetch()
+                                    await NAJournalService.shared.fetch()
+                                    if ServiceManager.shared.contactsAuthorized { await NAContactService.shared.fetchContacts() }
+                                    await NASyncService.shared.syncAll(
+                                        moods: [],
+                                        habits: [],
+                                        expenses: [],
+                                        health: health,
+                                        whoop: NAiceAPI.shared.whoop
+                                    )
+                                    await waVM.fetchPending()
+                                }
+                            })
+
+                        // AmeliaBar über der Tab-Leiste
+                        VStack(spacing: 0) {
+                            if NAgentActionHandler.shared.showConfirmation {
+                                NAgentActionConfirmationView()
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                                    .padding(.bottom, 8)
+                            }
+                            AmeliaBar(showSlideUp: $showAmelia)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 54) // über Tab-Leiste (49pt + 5pt Abstand)
                     }
-                    AmeliaBar(showSlideUp: $showAmelia)
-                        .padding(.bottom, 4)
-                }
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [.black.opacity(0.8), .clear]),
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
-                    .frame(height: 60)
-                    .ignoresSafeArea()
-                    , alignment: .bottom
-                )
-            }
             .animation(.spring(response: 0.3), value: NAgentActionHandler.shared.showConfirmation)
             .ameliaSlideUp(isPresented: $showAmelia)
     }
