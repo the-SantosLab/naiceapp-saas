@@ -104,6 +104,7 @@
 		1F401C3F57E7F1847EC884C2 /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB0B81877A905E369B0B243 /* NAiceWidgetBundle.swift */; };
 		21A27CFE2DA7D13DE29858D8 /* NACryptoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3A6878D4C92A894FFDB3B /* NACryptoService.swift */; };
 		2218CE382CB8F604BD01051F /* JournalCheckinCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2CC284063C98B8181901DC /* JournalCheckinCard.swift */; };
+		223C2CC4235EB7796DBA5780 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
 		22AB000000000000000000B1 /* WorkspaceRegistryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AB000000000000000000F1 /* WorkspaceRegistryViewModel.swift */; };
 		22AB000000000000000000B2 /* WorkspaceManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AB000000000000000000F2 /* WorkspaceManagerView.swift */; };
 		22AB000000000000000000B3 /* WorkspaceRegistryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AB000000000000000000F3 /* WorkspaceRegistryViewModelTests.swift */; };
@@ -118,6 +119,7 @@
 		36CD9EF0B0734E5F8C28BB92 /* SlashCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA59130ED4141049177576C /* SlashCommand.swift */; };
 		3A4252DC2A2D04F26A15EAD4 /* NAFilesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6047979F180DA160B490470 /* NAFilesService.swift */; };
 		3BF04FA043C6B96713D5957D /* ImpressionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA630EF800CFC9594EBB197 /* ImpressionCard.swift */; };
+		3C088CAEC27CB9A4982B4974 /* NAiceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F63FC123A5991649F1216C /* NAiceWidget.swift */; };
 		3C093B979D5ABCE3194B8E14 /* IdeasCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598FD5DD1FF20E28ABDD0A43 /* IdeasCard.swift */; };
 		3C0983FEEA713115E30B2011 /* NACalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB8537D281F7636A743206F /* NACalendarService.swift */; };
 		3D97D9EBF368E55589FC8AA5 /* NAShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC15463911956AB6EA089FA /* NAShoppingList.swift */; };
@@ -378,10 +380,10 @@
 		DAB04A05CDE42B1E2E445AB6 /* APIClient+AgentHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486FB27ABE466047F4F46E16 /* APIClient+AgentHub.swift */; };
 		DD1EA83C6E631DE1F6489645 /* NACsvImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E7C1C8494E00A95ADFB08 /* NACsvImportService.swift */; };
 		DFA8D9E7EFD1722A9B554C83 /* NANumberPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5BD397F558FB67C3996059 /* NANumberPad.swift */; };
-		E13D451AF3F68AD1CF4AAEF8 /* NAiceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420A477786E3BA812C88B80B /* NAiceWidget.swift */; };
 		E38FCF95DB2BBF351033F108 /* NADonutChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15990341BD10919D01CE86C /* NADonutChart.swift */; };
 		E39D048B8C5C4AC5BBDAE93A /* WhatsAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */; };
 		EF5BC9AB35AC8000C306BCE6 /* TrendCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21AE11BD3EC9267D81AB2C1 /* TrendCard.swift */; };
+		F2410366F553E993A5D8E8FC /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */; };
 		F53F3D0362CB8D531884E6DA /* NAPushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B195E23D236271E714A93 /* NAPushService.swift */; };
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
 		FD5513154661E6D9D0E6B84D /* NAWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402AA464975A9B246B36F88 /* NAWorkflowService.swift */; };
@@ -541,6 +543,7 @@
 		2A27F126BDB5B9FE2F7272D8 /* WhatsAppModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppModels.swift; sourceTree = "<group>"; };
 		2B22429E07FCB1A1DB490B70 /* NAiceContext.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceContext.swift; sourceTree = "<group>"; };
 		2BE8F2B38F094C4C9EB18300 /* SkillsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsViewModelTests.swift; sourceTree = "<group>"; };
+		2D69C8C99CAA75F3C04C0E5C /* NAiceWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HermesMobile/Widgets/NAiceWidget.swift; sourceTree = "<group>"; };
 		2E365F20F0536DB4D9D3A61D /* NAKnowledgeSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AgentHub/DetailViews/NAKnowledgeSheet.swift; sourceTree = "<group>"; };
 		2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NAiceWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D067B3957F4996F92E721A /* NAJournalService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAJournalService.swift; sourceTree = "<group>"; };
@@ -555,6 +558,7 @@
 		3F91D2A54B9A4F66A2C01014 /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01015 /* TaskDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailViewModel.swift; sourceTree = "<group>"; };
 		420A477786E3BA812C88B80B /* NAiceWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidget.swift; sourceTree = "<group>"; };
+		432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAiceWidgetBundle.swift; path = HermesMobileWidgets/NAiceWidgetBundle.swift; sourceTree = "<group>"; };
 		436754903A7D2D553102C754 /* RadarChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RadarChart.swift; sourceTree = "<group>"; };
 		43D7807F9197CBA48B60BCA2 /* NAIceFilesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIceFilesView.swift; sourceTree = "<group>"; };
 		45A0BD6E9E1847B5267226FE /* NASyncService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASyncService.swift; sourceTree = "<group>"; };
@@ -581,6 +585,7 @@
 		6D2E2D0145071523FC3BD8F2 /* NAWeatherService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWeatherService.swift; sourceTree = "<group>"; };
 		72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7680D72A0B1646090D1AE45E /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = SDKROOT; };
+		7C25C1CD56AAC96FB4481A5F /* HermesMobileWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HermesMobileWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D44D7F9BE950C922C96F905 /* NAIceRelationsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; name = NAIceRelationsView.swift; path = AgentHub/DetailViews/NAIceRelationsView.swift; sourceTree = "<group>"; };
 		82626C6BEC28AF7D30A136F6 /* DealDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DealDetailView.swift; path = AgentHub/DetailViews/DealDetailView.swift; sourceTree = "<group>"; };
 		84E2D9CEAD2E5563AE50BA62 /* NAProactiveService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAProactiveService.swift; sourceTree = "<group>"; };
@@ -808,10 +813,12 @@
 		DF22AF4C99DC3882E3A8ADFD /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
 		DF451D7E79A66AC572524122 /* BusinessOverview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BusinessOverview.swift; path = AgentHub/DetailViews/BusinessOverview.swift; sourceTree = "<group>"; };
 		E15990341BD10919D01CE86C /* NADonutChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NADonutChart.swift; sourceTree = "<group>"; };
+		E1B3346AFD64AFEE7725B6E7 /* NAiceWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HermesMobileWidgets/NAiceWidgetBundle.swift; sourceTree = "<group>"; };
 		E6ED7B24D7511807FD577DDD /* ContactDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContactDetailView.swift; path = AgentHub/DetailViews/ContactDetailView.swift; sourceTree = "<group>"; };
 		EE8A3B65E2196486BD26194A /* WorkoutScrollRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutScrollRow.swift; path = AgentHub/Cards/WorkoutScrollRow.swift; sourceTree = "<group>"; };
 		EFA630EF800CFC9594EBB197 /* ImpressionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImpressionCard.swift; sourceTree = "<group>"; };
 		F02DB651B910BACB7824C787 /* JournalDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JournalDetailView.swift; path = AgentHub/DetailViews/JournalDetailView.swift; sourceTree = "<group>"; };
+		F1F63FC123A5991649F1216C /* NAiceWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAiceWidget.swift; path = HermesMobile/Widgets/NAiceWidget.swift; sourceTree = "<group>"; };
 		FAC15463911956AB6EA089FA /* NAShoppingList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAShoppingList.swift; sourceTree = "<group>"; };
 		FC2A37872AC842629FBDDFA4 /* SlashCommandAutocompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandAutocompleteView.swift; sourceTree = "<group>"; };
 		FDB8537D281F7636A743206F /* NACalendarService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACalendarService.swift; sourceTree = "<group>"; };
@@ -848,6 +855,14 @@
 				D2438A24C3E55FD86BAE1822 /* SwiftUI.framework in Frameworks */,
 				D425BA8A771DCB692A3369E7 /* WidgetKit.framework in Frameworks */,
 				FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8954A0AA05E263F6505DF7C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				223C2CC4235EB7796DBA5780 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -906,6 +921,9 @@
 				1A2B3C4D5E6F700000000032 /* Products */,
 				0F49707964BB58FB324DD914 /* NAiceWidget */,
 				52615C3F025E62770EC59ED5 /* Frameworks */,
+				A2570FB983A4BC0B695C8820 /* HermesMobileWidgets */,
+				432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */,
+				F1F63FC123A5991649F1216C /* NAiceWidget.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -936,6 +954,7 @@
 				B5A100000000000000000017 /* HermesShareExtension.appex */,
 				A04500000000000000000017 /* HermesLiveActivityWidget.appex */,
 				2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */,
+				7C25C1CD56AAC96FB4481A5F /* HermesMobileWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1433,6 +1452,7 @@
 			isa = PBXGroup;
 			children = (
 				420A477786E3BA812C88B80B /* NAiceWidget.swift */,
+				2D69C8C99CAA75F3C04C0E5C /* NAiceWidget.swift */,
 			);
 			name = Widgets;
 			path = Widgets;
@@ -1478,6 +1498,14 @@
 			);
 			path = Resources;
 			sourceTree = "<group>";
+		};
+		A2570FB983A4BC0B695C8820 /* HermesMobileWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				E1B3346AFD64AFEE7725B6E7 /* NAiceWidgetBundle.swift */,
+			);
+			name = HermesMobileWidgets;
+			sourceTree = SOURCE_ROOT;
 		};
 		B50E1CE3A8912B92B1924714 /* Insights */ = {
 			isa = PBXGroup;
@@ -1663,6 +1691,23 @@
 			productReference = A04500000000000000000017 /* HermesLiveActivityWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		A1E6EB1EB66DC27B3A3D56F2 /* HermesMobileWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1761EA7EBD3C81489DFAFB17 /* Build configuration list for PBXNativeTarget "HermesMobileWidgets" */;
+			buildPhases = (
+				6CA4227BA37FB0AE066492C0 /* Sources */,
+				8954A0AA05E263F6505DF7C6 /* Frameworks */,
+				21010F6EB25060EED58FCECF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HermesMobileWidgets;
+			productName = HermesMobileWidgets;
+			productReference = 7C25C1CD56AAC96FB4481A5F /* HermesMobileWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		B5A100000000000000000040 /* HermesShareExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B5A100000000000000000041 /* Build configuration list for PBXNativeTarget "HermesShareExtension" */;
@@ -1748,6 +1793,7 @@
 				B5A100000000000000000040 /* HermesShareExtension */,
 				A04500000000000000000040 /* HermesLiveActivityWidget */,
 				308C41D08C2059EB52FCF406 /* NAiceWidget */,
+				A1E6EB1EB66DC27B3A3D56F2 /* HermesMobileWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -1762,6 +1808,13 @@
 				10CA110C0DE000000000B004 /* AppShortcuts.xcstrings in Resources */,
 				1A2B3C4D5E6F70000000300 /* PrivacyInfo.xcprivacy in Resources */,
 				9E2A653D968A4ACDA19A8142 /* ThirdPartyNotices in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		21010F6EB25060EED58FCECF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2051,7 +2104,6 @@
 				171C5C880338A67EF0063629 /* NAProactiveService.swift in Sources */,
 				3C0983FEEA713115E30B2011 /* NACalendarService.swift in Sources */,
 				3D97D9EBF368E55589FC8AA5 /* NAShoppingList.swift in Sources */,
-				E13D451AF3F68AD1CF4AAEF8 /* NAiceWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2152,6 +2204,15 @@
 				A04500000000000000000008 /* LiveActivityTests.swift in Sources */,
 				1A2B3C4D5E6F700000000341 /* AppIntentNewChatTests.swift in Sources */,
 				1A2B3C4D5E6F700000000345 /* AppIntentNewChatInProfileTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CA4227BA37FB0AE066492C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F2410366F553E993A5D8E8FC /* NAiceWidgetBundle.swift in Sources */,
+				3C088CAEC27CB9A4982B4974 /* NAiceWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2449,6 +2510,49 @@
 			};
 			name = Release;
 		};
+		36F34F6C52ACA4BF80A0394E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = GX89CS2T99;
+				INFOPLIST_FILE = HermesMobileWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MODULE_NAME = HermesMobileWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.widgets;
+				PRODUCT_MODULE_NAME = HermesMobileWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		62DA5DA96C74B37B551B86CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = GX89CS2T99;
+				INFOPLIST_FILE = HermesMobileWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MODULE_NAME = HermesMobileWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.widgets;
+				PRODUCT_MODULE_NAME = HermesMobileWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		7F3EFA214D7318C9E6DC717A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2603,6 +2707,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1761EA7EBD3C81489DFAFB17 /* Build configuration list for PBXNativeTarget "HermesMobileWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				62DA5DA96C74B37B551B86CF /* Release */,
+				36F34F6C52ACA4BF80A0394E /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1A2B3C4D5E6F700000000041 /* Build configuration list for PBXNativeTarget "HermesMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
