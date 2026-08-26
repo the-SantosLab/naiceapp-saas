@@ -1,5 +1,52 @@
 import SwiftUI
 
+// MARK: - Mac Agent Result (Decodable from server + queue)
+struct MacAgentResult: Decodable {
+    let success: Bool
+    let output: String
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        success = try container.decode(Bool.self, forKey: .success)
+        if let out = try? container.decode(String.self, forKey: .output) {
+            output = out
+        } else if let out = try? container.decode(String.self, forKey: .stdout) {
+            output = out
+        } else {
+            output = ""
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case success, output, stdout
+    }
+}
+
+// MARK: - Queue Models
+struct QueueSubmitResponse: Decodable {
+    let ok: Bool?
+    let id: String?
+    let error: String?
+}
+
+struct QueuePollResponse: Decodable {
+    let id: String?
+    let command: String?
+    let status: String?
+    let result: QueueResult?
+    let stdout: String?
+    let stderr: String?
+    let returncode: Int?
+    let success: Bool?
+    let error: String?
+}
+
+struct QueueResult: Decodable {
+    let stdout: String?
+    let stderr: String?
+    let returncode: Int?
+}
+
 // MARK: - Mac Agent View
 struct NAMacAgentView: View {
     @State private var command = ""
@@ -7,6 +54,7 @@ struct NAMacAgentView: View {
     @State private var isRunning = false
     @State private var recentCommands: [String] = []
     @State private var resultType: ResultType = .idle
+    @State private var macConnected = false
 
     enum ResultType { case idle, success, error }
 
@@ -21,13 +69,13 @@ struct NAMacAgentView: View {
                         Text("Mac Agent")
                             .font(.title2.weight(.bold))
                             .foregroundColor(.white)
-                        Text("Steuere deinen Mac von hier aus")
+                        Text(macConnected ? "Verbunden mit deinem Mac" : "Warte auf Mac Client...")
                             .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .foregroundColor(macConnected ? .ncNeonGreen : .gray)
                     }
                     Spacer()
                     Circle()
-                        .fill(resultType == .idle ? .gray : resultType == .success ? .ncNeonGreen : .ncRose)
+                        .fill(macConnected ? Color.ncNeonGreen : Color.ncAmber)
                         .frame(width: 8, height: 8)
                 }
                 .padding(.horizontal, 20)
@@ -35,7 +83,7 @@ struct NAMacAgentView: View {
 
                 // Quick Commands
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(["ls ~/Desktop/", "cat ~/Desktop/naice.txt", "whoami", "date", "df -h", "ps aux | head 10", "open /Applications/", "pwd", "sw_vers"], id: \.self) { cmd in
+                    ForEach(["ls ~/Desktop/", "cat ~/Desktop/naice.txt", "whoami", "date", "df -h", "open /Applications/", "pwd", "sw_vers"], id: \.self) { cmd in
                         Button {
                             command = cmd
                             runCommand(cmd)
@@ -52,7 +100,6 @@ struct NAMacAgentView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 4)
 
                 // Command Input
                 VStack(spacing: 8) {
@@ -76,7 +123,7 @@ struct NAMacAgentView: View {
                             if isRunning {
                                 ProgressView().scaleEffect(0.6).tint(.white)
                             }
-                            Text(isRunning ? "Ausfuhren..." : "Ausfuhren")
+                            Text(isRunning ? "Warte auf Mac..." : "An Mac senden")
                                 .font(.subheadline.weight(.medium))
                         }
                         .foregroundColor(.white)
@@ -133,7 +180,7 @@ struct NAMacAgentView: View {
                             Image(systemName: "clock")
                                 .font(.caption)
                                 .foregroundColor(.gray)
-                            Text("Letzte Befehle")
+                            Text("Letzte Befehle | \(macConnected ? "Mac verbunden" : "warte auf Mac Client...")")
                                 .font(.caption.weight(.semibold))
                                 .foregroundColor(.gray)
                         }
@@ -160,12 +207,25 @@ struct NAMacAgentView: View {
         .background(Color.black.ignoresSafeArea())
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            // Initial health check + start polling for connection status
+            checkMacConnected()
+        }
+    }
+
+    private func checkMacConnected() {
+        guard let url = URL(string: "\(serverURL)/health") else { return }
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            if data != nil {
+                DispatchQueue.main.async { macConnected = true }
+            }
+        }.resume()
     }
 
     private func runCommand(_ cmd: String) {
         guard !cmd.isEmpty else { return }
         isRunning = true
-        output = ""
+        output = "Sende Befehl an Mac..."
         resultType = .idle
 
         if !recentCommands.contains(cmd) {
@@ -173,47 +233,83 @@ struct NAMacAgentView: View {
             if recentCommands.count > 10 { recentCommands.removeLast() }
         }
 
-        guard let url = URL(string: "\(serverURL)/execute") else { return }
-        var req = URLRequest(url: url)
+        // Step 1: Queue the command
+        guard let queueUrl = URL(string: "\(serverURL)/queue") else { return }
+        var req = URLRequest(url: queueUrl)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try? JSONEncoder().encode(["command": cmd])
 
         URLSession.shared.dataTask(with: req) { data, _, error in
-            DispatchQueue.main.async {
-                isRunning = false
-                if let data = data,
-                   let result = try? JSONDecoder().decode(MacAgentResult.self, from: data) {
-                    output = result.output
-                    resultType = result.success ? .success : .error
-                } else if let error = error {
-                    output = "Fehler: \(error.localizedDescription)"
-                    resultType = .error
-                } else {
-                    output = "Keine Antwort vom Server"
+            guard let data = data,
+                  let submit = try? JSONDecoder().decode(QueueSubmitResponse.self, from: data),
+                  let cmdId = submit.id else {
+                DispatchQueue.main.async {
+                    isRunning = false
+                    output = error?.localizedDescription ?? "Server nicht erreichbar"
                     resultType = .error
                 }
+                return
             }
+
+            // Step 2: Poll for result
+            self.pollResult(cmdId: cmdId, attempts: 0)
         }.resume()
     }
-}
 
-// MARK: - Mac Agent Result
-struct MacAgentResult: Decodable {
-    let success: Bool
-    let output: String
+    private func pollResult(cmdId: String, attempts: Int) {
+        let maxAttempts = 120 // 120 * 2s = 4 Minuten max
+        guard let url = URL(string: "\(serverURL)/result/\(cmdId)") else { return }
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        success = try container.decode(Bool.self, forKey: .success)
-        if let out = try? container.decode(String.self, forKey: .output) {
-            output = out
-        } else {
-            output = try container.decode(String.self, forKey: .stdout)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            URLSession.shared.dataTask(with: url) { data, _, error in
+                guard let data = data,
+                      let poll = try? JSONDecoder().decode(QueuePollResponse.self, from: data) else {
+                    if attempts < maxAttempts {
+                        if attempts % 5 == 0 {
+                            DispatchQueue.main.async {
+                                output = "Warte auf Mac Client... (\(attempts * 2)s)"
+                            }
+                        }
+                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
+                    } else {
+                        DispatchQueue.main.async {
+                            isRunning = false
+                            output = "Timeout nach \(maxAttempts * 2)s - Mac Client nicht erreichbar?"
+                            resultType = .error
+                        }
+                    }
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    if poll.status == "completed" || poll.status == "failed" || poll.success != nil {
+                        // Got result
+                        isRunning = false
+                        if let r = poll.result {
+                            let out = r.stdout ?? ""
+                            let err = r.stderr ?? ""
+                            output = out + (err.isEmpty ? "" : "\nFehler:\n" + err)
+                            resultType = (r.returncode == 0) ? .success : .error
+                        } else if let s = poll.stdout {
+                            output = s + (poll.stderr ?? "")
+                            resultType = (poll.success ?? false) ? .success : .error
+                        } else {
+                            output = "Befehl ausgefuhrt (keine Ausgabe)"
+                            resultType = .success
+                        }
+                        macConnected = true
+                    } else if poll.status == "running" {
+                        output = "Befehl lauft auf Mac..."
+                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
+                    } else if poll.status == "pending" {
+                        output = "Befehl wartet in der Warteschlange..."
+                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
+                    } else {
+                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
+                    }
+                }
+            }.resume()
         }
-    }
-
-    enum CodingKeys: String, CodingKey {
-        case success, output, stdout
     }
 }
