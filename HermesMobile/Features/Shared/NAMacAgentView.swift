@@ -199,7 +199,21 @@ struct NAMacAgentView: View {
 }
 
 // MARK: - Mac Agent Result
-struct MacAgentResult: Codable {
+struct MacAgentResult: Decodable {
     let success: Bool
     let output: String
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        success = try container.decode(Bool.self, forKey: .success)
+        if let out = try? container.decode(String.self, forKey: .output) {
+            output = out
+        } else {
+            output = try container.decode(String.self, forKey: .stdout)
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case success, output, stdout
+    }
 }
