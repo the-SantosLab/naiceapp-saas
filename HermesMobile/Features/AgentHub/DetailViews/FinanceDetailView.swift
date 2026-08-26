@@ -8,6 +8,8 @@ struct FinanceDetailView: View {
     @State private var amountDouble = 0.0
     @State private var selectedCategory = "essen"
     @State private var note = ""
+    @State private var showCsvPicker = false
+    @State private var importResult: String? = nil
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -61,6 +63,31 @@ struct FinanceDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showAddExpense) {
             addExpenseSheet
+        }
+        .sheet(isPresented: $showCsvPicker) {
+            NACsvDocumentPicker(onImport: { expenses in
+                for exp in expenses {
+                    finance.addExpense(amount: exp.amount, category: exp.category, note: exp.note, isBusiness: exp.isBusiness)
+                }
+                importResult = "\(expenses.count) Transaktionen importiert"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    importResult = nil
+                }
+            })
+        }
+        .overlay(alignment: .top) {
+            if let result = importResult {
+                Text(result)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.ncNeonGreen)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.ncNeonGreen.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.ncNeonGreen.opacity(0.2), lineWidth: 0.5))
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .animation(.spring(), value: importResult != nil)
+            }
         }
     }
 
@@ -312,6 +339,11 @@ struct FinanceDetailView: View {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 16))
                         .foregroundColor(.ncCyan)
+                }
+                Button { showCsvPicker = true } label: {
+                    Image(systemName: "doc.badge.plus")
+                        .font(.system(size: 14))
+                        .foregroundColor(.ncCyan.opacity(0.7))
                 }
             }
 

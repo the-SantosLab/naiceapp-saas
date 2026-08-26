@@ -372,6 +372,7 @@
 		D59FD2094829DE947A421A24 /* NAiceWidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48811DAC9B4F4C328A5F8C49 /* NAiceWidgetExtension.swift */; };
 		D9327589D49ED4EC676438FA /* NARollupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAD6A4F60CF55B0BD8D7546 /* NARollupService.swift */; };
 		DAB04A05CDE42B1E2E445AB6 /* APIClient+AgentHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486FB27ABE466047F4F46E16 /* APIClient+AgentHub.swift */; };
+		DD1EA83C6E631DE1F6489645 /* NACsvImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E7C1C8494E00A95ADFB08 /* NACsvImportService.swift */; };
 		DFA8D9E7EFD1722A9B554C83 /* NANumberPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5BD397F558FB67C3996059 /* NANumberPad.swift */; };
 		E38FCF95DB2BBF351033F108 /* NADonutChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15990341BD10919D01CE86C /* NADonutChart.swift */; };
 		E39D048B8C5C4AC5BBDAE93A /* WhatsAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */; };
@@ -552,6 +553,7 @@
 		48811DAC9B4F4C328A5F8C49 /* NAiceWidgetExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidgetExtension.swift; sourceTree = "<group>"; };
 		488791F556304AD2AC59BC5D /* ThirdPartyNotices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ThirdPartyNotices; sourceTree = "<group>"; };
 		4A3507A39E1A2B787DD85802 /* NAiceWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidget.swift; sourceTree = "<group>"; };
+		4A4E7C1C8494E00A95ADFB08 /* NACsvImportService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACsvImportService.swift; sourceTree = "<group>"; };
 		568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppViewModel.swift; sourceTree = "<group>"; };
 		57B5FD09B6B5937573B5F9A4 /* InsightsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		585D173240AB85DED12058BE /* NARollupModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NARollupModels.swift; sourceTree = "<group>"; };
@@ -1527,6 +1529,7 @@
 				5E5BD397F558FB67C3996059 /* NANumberPad.swift */,
 				E15990341BD10919D01CE86C /* NADonutChart.swift */,
 				933A6607F4CECE363F5D06DC /* NAInsightsChart.swift */,
+				4A4E7C1C8494E00A95ADFB08 /* NACsvImportService.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2011,6 +2014,7 @@
 				DFA8D9E7EFD1722A9B554C83 /* NANumberPad.swift in Sources */,
 				E38FCF95DB2BBF351033F108 /* NADonutChart.swift in Sources */,
 				A7ADB5D7729DDC4BD67761D9 /* NAInsightsChart.swift in Sources */,
+				DD1EA83C6E631DE1F6489645 /* NACsvImportService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
