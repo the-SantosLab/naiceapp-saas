@@ -110,7 +110,7 @@ class NAEmailService: ObservableObject {
 
 // MARK: - Email Account Config View
 struct NAEmailConfigView: View {
-    @State private var server = "imap.gmx.net"
+    @State private var server = "imap.ionos.de"
     @State private var username = ""
     @State private var password = ""
     @State private var isSaving = false
