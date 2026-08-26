@@ -1,50 +1,34 @@
 import SwiftUI
 
-// MARK: - Mac Agent Result (Decodable from server + queue)
+// MARK: - Mac Agent Result
 struct MacAgentResult: Decodable {
     let success: Bool
     let output: String
-
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         success = try container.decode(Bool.self, forKey: .success)
-        if let out = try? container.decode(String.self, forKey: .output) {
-            output = out
-        } else if let out = try? container.decode(String.self, forKey: .stdout) {
-            output = out
-        } else {
-            output = ""
-        }
+        if let out = try? container.decode(String.self, forKey: .output) { output = out }
+        else if let out = try? container.decode(String.self, forKey: .stdout) { output = out }
+        else if let out = try? container.decode(String.self, forKey: .content) { output = out }
+        else { output = "" }
     }
-
-    enum CodingKeys: String, CodingKey {
-        case success, output, stdout
-    }
+    enum CodingKeys: String, CodingKey { case success, output, stdout, content }
 }
 
-// MARK: - Queue Models
 struct QueueSubmitResponse: Decodable {
-    let ok: Bool?
-    let id: String?
-    let error: String?
+    let ok: Bool?; let id: String?; let error: String?; let suggestions: [String]?
 }
 
 struct QueuePollResponse: Decodable {
-    let id: String?
-    let command: String?
-    let status: String?
-    let result: QueueResult?
-    let stdout: String?
-    let stderr: String?
-    let returncode: Int?
-    let success: Bool?
-    let error: String?
-}
-
-struct QueueResult: Decodable {
-    let stdout: String?
-    let stderr: String?
-    let returncode: Int?
+    let id: String?; let command: String?; let status: String?
+    let result: QueueResult?; let stdout: String?; let stderr: String?
+    let returncode: Int?; let success: Bool?; let error: String?
+    let action: String?; let has_image: Bool?
+    var items: [DirectoryItem]?
+    var results: [FindResult]?
+    struct QueueResult: Decodable { let stdout: String?; let stderr: String?; let returncode: Int? }
+    struct DirectoryItem: Decodable { let name: String; let type: String; let size: Int; let modified: String }
+    struct FindResult: Decodable { let path: String; let name: String; let size: Int; let modified: String }
 }
 
 // MARK: - Mac Agent View
@@ -55,14 +39,34 @@ struct NAMacAgentView: View {
     @State private var recentCommands: [String] = []
     @State private var resultType: ResultType = .idle
     @State private var macConnected = false
+    @State private var actionMode: ActionMode = .shell
+    @State private var showActionPicker = false
 
     enum ResultType { case idle, success, error }
+    enum ActionMode: String, CaseIterable {
+        case shell = "Terminal"
+        case readFile = "Datei lesen"
+        case openApp = "App offnen"
+        case screenshot = "Screenshot"
+        case findFiles = "Dateien suchen"
+        case listDir = "Ordner"
+        var icon: String {
+            switch self {
+            case .shell: return "terminal"
+            case .readFile: return "doc.text"
+            case .openApp: return "app"
+            case .screenshot: return "camera.viewfinder"
+            case .findFiles: return "magnifyingglass"
+            case .listDir: return "folder"
+            }
+        }
+    }
 
     let serverURL = "https://health.santoslab.de/api/mac-agent"
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 20) {
+            VStack(spacing: 16) {
                 // Header
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -81,48 +85,75 @@ struct NAMacAgentView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
 
-                // Quick Commands
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(["ls ~/Desktop/", "cat ~/Desktop/naice.txt", "whoami", "date", "df -h", "open /Applications/", "pwd", "sw_vers"], id: \.self) { cmd in
-                        Button {
-                            command = cmd
-                            runCommand(cmd)
-                        } label: {
-                            Text(cmd)
-                                .font(.system(size: 10, design: .monospaced))
-                                .foregroundColor(.ncCyan)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.ncCyan.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
-                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.ncCyan.opacity(0.15), lineWidth: 0.5))
+                // Action Picker
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(ActionMode.allCases, id: \.rawValue) { mode in
+                            Button {
+                                actionMode = mode
+                                command = ""
+                                output = ""
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: mode.icon).font(.system(size: 9))
+                                    Text(mode.rawValue).font(.caption)
+                                }
+                                .foregroundColor(actionMode == mode ? .white : .gray)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(actionMode == mode ? Color.ncCyan : Color(red: 0.03, green: 0.03, blue: 0.06), in: Capsule())
+                                .overlay(Capsule().stroke(actionMode == mode ? Color.ncCyan : Color.white.opacity(0.08), lineWidth: 1))
+                            }
                         }
-                        .buttonStyle(.plain)
                     }
+                    .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 16)
 
-                // Command Input
+                // Input area
                 VStack(spacing: 8) {
                     HStack(spacing: 8) {
-                        Image(systemName: "apple.terminal")
+                        Image(systemName: actionMode.icon)
                             .font(.caption)
                             .foregroundColor(.ncCyan)
-                        TextField("Befehl eingeben...", text: $command)
-                            .font(.system(size: 12, design: .monospaced))
-                            .foregroundColor(.white)
-                            .onSubmit { runCommand(command) }
+                        if actionMode == .shell {
+                            TextField("Befehl eingeben...", text: $command)
+                                .font(.system(size: 12, design: .monospaced))
+                                .foregroundColor(.white)
+                                .onSubmit { runCommand() }
+                        } else if actionMode == .readFile {
+                            TextField("Dateipfad (z.B. ~/Desktop/note.txt)", text: $command)
+                                .font(.system(size: 12, design: .monospaced))
+                                .foregroundColor(.white)
+                                .onSubmit { runCommand() }
+                        } else if actionMode == .openApp {
+                            TextField("App-Name (z.B. Safari)", text: $command)
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                                .onSubmit { runCommand() }
+                        } else if actionMode == .findFiles {
+                            TextField("Muster (z.B. *.pdf, *.swift)", text: $command)
+                                .font(.system(size: 12, design: .monospaced))
+                                .foregroundColor(.white)
+                                .onSubmit { runCommand() }
+                        } else if actionMode == .listDir {
+                            TextField("Ordner (z.B. ~/Desktop)", text: $command)
+                                .font(.system(size: 12, design: .monospaced))
+                                .foregroundColor(.white)
+                                .onSubmit { runCommand() }
+                        } else {
+                            TextField("Befehl...", text: $command)
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                                .onSubmit { runCommand() }
+                        }
                     }
                     .padding(12)
                     .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
 
-                    Button {
-                        runCommand(command)
-                    } label: {
+                    Button { runCommand() } label: {
                         HStack(spacing: 6) {
-                            if isRunning {
-                                ProgressView().scaleEffect(0.6).tint(.white)
-                            }
+                            if isRunning { ProgressView().scaleEffect(0.6).tint(.white) }
                             Text(isRunning ? "Warte auf Mac..." : "An Mac senden")
                                 .font(.subheadline.weight(.medium))
                         }
@@ -136,6 +167,32 @@ struct NAMacAgentView: View {
                 }
                 .padding(.horizontal, 16)
 
+                // Quick Actions as buttons
+                if actionMode == .shell {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Schnellbefehle").font(.caption.weight(.semibold)).foregroundColor(.gray).padding(.horizontal, 20)
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
+                            quickBtn("whoami", "terminal")
+                            quickBtn("date", "calendar")
+                            quickBtn("df -h", "externaldrive")
+                            quickBtn("sw_vers", "apple.logo")
+                            quickBtn("ls ~/Desktop/", "folder")
+                            quickBtn("ps aux | head 10", "memorychip")
+                        }
+                        .padding(.horizontal, 16)
+                    }
+                } else if actionMode == .openApp {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
+                        quickBtn("Safari", "safari")
+                        quickBtn("Finder", "folder")
+                        quickBtn("Terminal", "terminal")
+                        quickBtn("Xcode", "hammer")
+                        quickBtn("Calendar", "calendar")
+                        quickBtn("Notes", "note.text")
+                    }
+                    .padding(.horizontal, 16)
+                }
+
                 // Output
                 if !output.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
@@ -143,18 +200,13 @@ struct NAMacAgentView: View {
                             Image(systemName: "terminal")
                                 .font(.caption)
                                 .foregroundColor(resultType == .success ? .ncNeonGreen : .ncRose)
-                            Text("Output")
+                            Text("Output von deinem Mac")
                                 .font(.caption.weight(.semibold))
                                 .foregroundColor(.gray)
                             Spacer()
-                            Button {
-                                UIPasteboard.general.string = output
-                            } label: {
-                                Image(systemName: "doc.on.doc")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                            .buttonStyle(.plain)
+                            Button { UIPasteboard.general.string = output } label: {
+                                Image(systemName: "doc.on.doc").font(.caption).foregroundColor(.gray)
+                            }.buttonStyle(.plain)
                         }
                         ScrollView([.horizontal, .vertical]) {
                             Text(output)
@@ -165,11 +217,8 @@ struct NAMacAgentView: View {
                         .frame(maxHeight: 300)
                     }
                     .padding(12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color(red: 0.01, green: 0.01, blue: 0.02))
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(resultType == .success ? Color.ncNeonGreen.opacity(0.1) : Color.ncRose.opacity(0.1), lineWidth: 0.5))
-                    )
+                    .background(RoundedRectangle(cornerRadius: 14).fill(Color(red: 0.01, green: 0.01, blue: 0.02))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(resultType == .success ? Color.ncNeonGreen.opacity(0.1) : Color.ncRose.opacity(0.1), lineWidth: 0.5)))
                     .padding(.horizontal, 16)
                 }
 
@@ -177,24 +226,16 @@ struct NAMacAgentView: View {
                 if !recentCommands.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 8) {
-                            Image(systemName: "clock")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Text("Letzte Befehle | \(macConnected ? "Mac verbunden" : "warte auf Mac Client...")")
-                                .font(.caption.weight(.semibold))
-                                .foregroundColor(.gray)
+                            Image(systemName: "clock").font(.caption).foregroundColor(.gray)
+                            Text("Letzte Aktionen").font(.caption.weight(.semibold)).foregroundColor(.gray)
                         }
                         ForEach(recentCommands.prefix(5), id: \.self) { cmd in
                             Button {
                                 command = cmd
-                                runCommand(cmd)
+                                runCommand()
                             } label: {
-                                Text(cmd)
-                                    .font(.system(size: 11, design: .monospaced))
-                                    .foregroundColor(.gray)
-                                    .lineLimit(1)
-                            }
-                            .buttonStyle(.plain)
+                                Text(cmd).font(.system(size: 11, design: .monospaced)).foregroundColor(.gray).lineLimit(1)
+                            }.buttonStyle(.plain)
                         }
                     }
                     .padding(12)
@@ -207,107 +248,111 @@ struct NAMacAgentView: View {
         .background(Color.black.ignoresSafeArea())
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .task {
-            // Initial health check + start polling for connection status
-            checkMacConnected()
+        .task { checkMacConnected() }
+    }
+
+    private func quickBtn(_ label: String, _ icon: String) -> some View {
+        Button {
+            command = label
+            runCommand()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: icon).font(.system(size: 8))
+                Text(label).font(.system(size: 9, design: .monospaced)).lineLimit(1)
+            }
+            .foregroundColor(.ncCyan)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .background(Color.ncCyan.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.ncCyan.opacity(0.15), lineWidth: 0.5))
         }
+        .buttonStyle(.plain)
     }
 
     private func checkMacConnected() {
         guard let url = URL(string: "\(serverURL)/health") else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
-            if data != nil {
-                DispatchQueue.main.async { macConnected = true }
-            }
+            if data != nil { DispatchQueue.main.async { macConnected = true } }
         }.resume()
     }
 
-    private func runCommand(_ cmd: String) {
-        guard !cmd.isEmpty else { return }
+    private func runCommand() {
+        guard !command.isEmpty else { return }
         isRunning = true
-        output = "Sende Befehl an Mac..."
+        output = "Sende an Mac..."
         resultType = .idle
-
-        if !recentCommands.contains(cmd) {
-            recentCommands.insert(cmd, at: 0)
+        if !recentCommands.contains(command) {
+            recentCommands.insert(command, at: 0)
             if recentCommands.count > 10 { recentCommands.removeLast() }
         }
 
-        // Step 1: Queue the command
-        guard let queueUrl = URL(string: "\(serverURL)/queue") else { return }
-        var req = URLRequest(url: queueUrl)
+        // Build the payload
+        var payload: [String: Any] = ["command": command]
+        switch actionMode {
+        case .shell:
+            payload["action"] = "shell"
+        case .readFile:
+            payload["action"] = "read_file"
+            payload["params"] = ["path": command]
+        case .openApp:
+            payload["action"] = "open_app"
+            payload["params"] = ["name": command]
+        case .screenshot:
+            payload["action"] = "screenshot"
+            payload["params"] = [:]
+        case .findFiles:
+            payload["action"] = "find_files"
+            payload["params"] = ["pattern": command]
+        case .listDir:
+            payload["action"] = "list_directory"
+            payload["params"] = ["path": command]
+        }
+
+        guard let url = URL(string: "\(serverURL)/queue") else { return }
+        var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpBody = try? JSONEncoder().encode(["command": cmd])
+        req.httpBody = try? JSONSerialization.data(withJSONObject: payload)
 
         URLSession.shared.dataTask(with: req) { data, _, error in
-            guard let data = data,
-                  let submit = try? JSONDecoder().decode(QueueSubmitResponse.self, from: data),
-                  let cmdId = submit.id else {
-                DispatchQueue.main.async {
-                    isRunning = false
-                    output = error?.localizedDescription ?? "Server nicht erreichbar"
-                    resultType = .error
-                }
+            guard let data = data, let submit = try? JSONDecoder().decode(QueueSubmitResponse.self, from: data), let cmdId = submit.id else {
+                DispatchQueue.main.async { isRunning = false; output = error?.localizedDescription ?? "Server nicht erreichbar"; resultType = .error }
                 return
             }
-
-            // Step 2: Poll for result
             self.pollResult(cmdId: cmdId, attempts: 0)
         }.resume()
     }
 
     private func pollResult(cmdId: String, attempts: Int) {
-        let maxAttempts = 120 // 120 * 2s = 4 Minuten max
+        let maxAttempts = 120
         guard let url = URL(string: "\(serverURL)/result/\(cmdId)") else { return }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             URLSession.shared.dataTask(with: url) { data, _, error in
-                guard let data = data,
-                      let poll = try? JSONDecoder().decode(QueuePollResponse.self, from: data) else {
-                    if attempts < maxAttempts {
-                        if attempts % 5 == 0 {
-                            DispatchQueue.main.async {
-                                output = "Warte auf Mac Client... (\(attempts * 2)s)"
-                            }
-                        }
-                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
-                    } else {
-                        DispatchQueue.main.async {
-                            isRunning = false
-                            output = "Timeout nach \(maxAttempts * 2)s - Mac Client nicht erreichbar?"
-                            resultType = .error
-                        }
-                    }
+                guard let data = data, let poll = try? JSONDecoder().decode(QueuePollResponse.self, from: data) else {
+                    if attempts < maxAttempts { self.pollResult(cmdId: cmdId, attempts: attempts + 1) }
+                    else { DispatchQueue.main.async { isRunning = false; output = "Timeout - Mac Client nicht erreichbar?"; resultType = .error } }
                     return
                 }
-
                 DispatchQueue.main.async {
                     if poll.status == "completed" || poll.status == "failed" || poll.success != nil {
-                        // Got result
                         isRunning = false
                         if let r = poll.result {
                             let out = r.stdout ?? ""
                             let err = r.stderr ?? ""
                             output = out + (err.isEmpty ? "" : "\nFehler:\n" + err)
-                            resultType = (r.returncode == 0) ? .success : .error
-                        } else if let s = poll.stdout {
-                            output = s + (poll.stderr ?? "")
-                            resultType = (poll.success ?? false) ? .success : .error
+                        } else if let s = poll.stdout, !s.isEmpty {
+                            let err = poll.stderr ?? ""
+                            output = s + (err.isEmpty ? "" : "\nFehler:\n" + err)
                         } else {
                             output = "Befehl ausgefuhrt (keine Ausgabe)"
-                            resultType = .success
                         }
+                        resultType = (poll.success ?? (poll.returncode == 0)) ? .success : .error
                         macConnected = true
-                    } else if poll.status == "running" {
-                        output = "Befehl lauft auf Mac..."
+                    } else if poll.status == "running" || poll.status == "pending" {
+                        output = poll.status == "running" ? "Befehl lauft auf Mac..." : "Befehl wartet in der Warteschlange..."
                         self.pollResult(cmdId: cmdId, attempts: attempts + 1)
-                    } else if poll.status == "pending" {
-                        output = "Befehl wartet in der Warteschlange..."
-                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
-                    } else {
-                        self.pollResult(cmdId: cmdId, attempts: attempts + 1)
-                    }
+                    } else { self.pollResult(cmdId: cmdId, attempts: attempts + 1) }
                 }
             }.resume()
         }
