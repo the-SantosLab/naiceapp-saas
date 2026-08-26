@@ -172,7 +172,14 @@ struct NAIceTabView: View {
                         .padding(.bottom, 54) // über Tab-Leiste (49pt + 5pt Abstand)
                     }
             .animation(.spring(response: 0.3), value: NAgentActionHandler.shared.showConfirmation)
-            .ameliaSlideUp(isPresented: $showAmelia)
+            .ameliaSlideUp(isPresented: $showAmelia, onSend: { message in
+                pn = NewChatRequest(
+                    profileName: "santos-copilot",
+                    initialDraft: "[\(ameliaContext.slideUpContext)] \(message)"
+                )
+                selectedTab = .agent
+                showAmelia = false
+            })
     }
 }
 

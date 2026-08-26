@@ -4,6 +4,11 @@ import SwiftUI
 struct AmeliaSlideUp: View {
     @ObservedObject private var context = AmeliaContextProvider.shared
     @State private var message = ""
+    let onSend: (String) -> Void
+
+    init(onSend: @escaping (String) -> Void) {
+        self.onSend = onSend
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -46,7 +51,7 @@ struct AmeliaSlideUp: View {
                     VStack(spacing: 12) {
                         // Welcome message
                         chatBubble(
-                            text: "Ich bin im Kontext »\(context.slideUpContext)« für dich da. Was möchtest du wissen?",
+                            text: "Ich bin im Kontext »\(context.slideUpContext)« für dich da. Tippe deine Frage – ich öffne den Chat mit Kontext.",
                             isAmelia: true
                         )
 
@@ -67,8 +72,7 @@ struct AmeliaSlideUp: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
-                        // Notes
-                        Text("Amelia antwortet im Agent-Tab.")
+                        Text("Deine Nachricht öffnet den Amelia-Chat mit aktuellem Kontext.")
                             .font(.caption2)
                             .foregroundColor(.gray)
                             .padding(.top, 8)
@@ -86,10 +90,10 @@ struct AmeliaSlideUp: View {
                     .padding(.vertical, 10)
                     .background(Color(red: 0.04, green: 0.04, blue: 0.08), in: RoundedRectangle(cornerRadius: 12))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                    .onSubmit { send() }
 
                 Button {
-                    // Will be handled in a future version
-                    message = ""
+                    send()
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 28))
@@ -101,6 +105,13 @@ struct AmeliaSlideUp: View {
             .padding(.vertical, 10)
         }
         .background(Color.black.ignoresSafeArea())
+    }
+
+    private func send() {
+        let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        onSend(trimmed)
+        message = ""
     }
 
     private var contextSuggestions: [String] {
@@ -145,9 +156,9 @@ struct AmeliaSlideUp: View {
 
 // MARK: - Slide-Up Modifier
 extension View {
-    func ameliaSlideUp(isPresented: Binding<Bool>) -> some View {
+    func ameliaSlideUp(isPresented: Binding<Bool>, onSend: @escaping (String) -> Void) -> some View {
         self.sheet(isPresented: isPresented) {
-            AmeliaSlideUp()
+            AmeliaSlideUp(onSend: onSend)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
                 .presentationBackground(.black)
