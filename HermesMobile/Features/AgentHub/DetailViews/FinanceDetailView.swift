@@ -61,6 +61,7 @@ struct FinanceDetailView: View {
         .background(Color.black.ignoresSafeArea())
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .task { finance.syncFromServer() }
         .sheet(isPresented: $showAddExpense) {
             addExpenseSheet
         }

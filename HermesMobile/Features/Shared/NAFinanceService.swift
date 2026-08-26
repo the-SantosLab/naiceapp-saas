@@ -147,4 +147,77 @@ class NAFinanceService: ObservableObject {
         default: return "ellipsis.circle.fill"
         }
     }
+
+    // MARK: - Server Sync
+    func syncFromServer() {
+        guard let url = URL(string: "https://health.santoslab.de/api/naice/expenses") else { return }
+        isLoading = true
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                guard let data = data, error == nil,
+                      let serverExpenses = try? JSONDecoder().decode([NAServerExpense].self, from: data) else {
+                    print("[Finance] Server sync failed: \(error?.localizedDescription ?? "no data")")
+                    return
+                }
+                // Merge: only add expenses not already in local store
+                let existingNotes = Set(self?.expenses.map { $0.note } ?? [])
+                var added = 0
+                for se in serverExpenses {
+                    let note = se.note ?? ""
+                    if existingNotes.contains(note) { continue }
+                    let expense = NAExpense(amount: se.amount, category: se.category ?? "sonstiges", note: note, date: se.date ?? Date(), isBusiness: false)
+                    self?.expenses.append(expense)
+                    added += 1
+                }
+                if added > 0 {
+                    self?.updateBudgetSpent()
+                    self?.save()
+                    print("[Finance] \(added) neue Ausgaben vom Server importiert")
+                }
+            }
+        }.resume()
+    }
+}
+
+struct NAServerExpense: Codable {
+    let amount: Double
+    let category: String?
+    let note: String?
+    let date: Date?
+    let isBusiness: Bool?
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        amount = try container.decode(Double.self, forKey: .amount)
+        category = try container.decodeIfPresent(String.self, forKey: .category)
+        note = try container.decodeIfPresent(String.self, forKey: .note)
+        isBusiness = try container.decodeIfPresent(Bool.self, forKey: .isBusiness)
+
+        // Date can be ISO string or timestamp
+        var parsedDate: Date?
+        if let dateStr = try? container.decode(String.self, forKey: .date) {
+            // Try ISO8601 with Z suffix first
+            let fmt = ISO8601DateFormatter()
+            fmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            parsedDate = fmt.date(from: dateStr)
+            // Try without Z
+            if parsedDate == nil {
+                fmt.formatOptions = [.withInternetDateTime]
+                parsedDate = fmt.date(from: dateStr)
+            }
+            // Try custom format "yyyy-MM-dd'T'HH:mm:ss"
+            if parsedDate == nil {
+                let f = DateFormatter()
+                f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                f.locale = Locale(identifier: "en_US_POSIX")
+                parsedDate = f.date(from: dateStr)
+            }
+        }
+        date = parsedDate
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case amount, category, note, date, isBusiness
+    }
 }
