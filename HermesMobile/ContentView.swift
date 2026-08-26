@@ -195,7 +195,9 @@ struct NAIceTabView: View {
                                     .transition(.move(edge: .bottom).combined(with: .opacity))
                                     .padding(.bottom, 8)
                             }
-                            AmeliaBar(showSlideUp: $showAmelia)
+                            if selectedTab != .agent {
+                                AmeliaBar(showSlideUp: $showAmelia)
+                            }
                         }
                         .padding(.horizontal, 12)
                         .padding(.bottom, 54) // über Tab-Leiste (49pt + 5pt Abstand)
