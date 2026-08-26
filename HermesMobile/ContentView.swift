@@ -93,13 +93,42 @@ class CalendarManager: ObservableObject {
     let store = EKEventStore()
     @Published var todayEvents: [EKEvent] = []; @Published var upcomingEvents: [EKEvent] = []; @Published var isAuthorized = false
     @Published var remindersCount = 0
+    @Published var reminders: [EKReminder] = []
     func requestAuth() async {
         guard EKEventStore.authorizationStatus(for: .event) != .denied else { return }
-        do { if #available(iOS 17, *) { isAuthorized = try await store.requestFullAccessToEvents() } else { isAuthorized = try await store.requestAccess(to: .event) }; if isAuthorized { await loadToday(); await loadUpcoming(); await countReminders() } } catch { isAuthorized = false }
+        do { if #available(iOS 17, *) { isAuthorized = try await store.requestFullAccessToEvents() } else { isAuthorized = try await store.requestAccess(to: .event) }; if isAuthorized { await loadToday(); await loadUpcoming(); await fetchReminders() } } catch { isAuthorized = false }
     }
     func loadToday() async { let cal = Calendar.current; let start = cal.startOfDay(for: Date()); let end = cal.date(byAdding: .day, value: 1, to: start)!; todayEvents = store.events(matching: store.predicateForEvents(withStart: start, end: end, calendars: nil)) }
     func loadUpcoming() async { let cal = Calendar.current; let start = Date(); let end = cal.date(byAdding: .year, value: 1, to: start)!; let all = store.events(matching: store.predicateForEvents(withStart: start, end: end, calendars: nil)); upcomingEvents = all.sorted { ($0.startDate) < ($1.startDate) }.prefix(3).map { $0 } }
     func countReminders() async { let all = store.calendars(for: .reminder); let pred = store.predicateForIncompleteReminders(withDueDateStarting: nil, ending: Date(), calendars: all); store.fetchReminders(matching: pred) { items in Task { @MainActor in self.remindersCount = items?.count ?? 0 } } }
+    func fetchReminders() async {
+        let calendars = store.calendars(for: .reminder)
+        guard !calendars.isEmpty else { return }
+        // Fetch incomplete + overdue reminders, sorted by due date
+        let pred = store.predicateForIncompleteReminders(withDueDateStarting: nil, ending: nil, calendars: calendars)
+        store.fetchReminders(matching: pred) { items in
+            Task { @MainActor in
+                let all = items ?? []
+                // Sort: overdue first, then by due date ascending
+                let now = Date()
+                self.reminders = all.sorted { a, b in
+                    let aOverdue = a.dueDateComponents?.date.map { $0 < now } ?? false
+                    let bOverdue = b.dueDateComponents?.date.map { $0 < now } ?? false
+                    if aOverdue && !bOverdue { return true }
+                    if !aOverdue && bOverdue { return false }
+                    return (a.dueDateComponents?.date ?? .distantFuture) < (b.dueDateComponents?.date ?? .distantFuture)
+                }
+                self.remindersCount = self.reminders.count
+            }
+        }
+    }
+    func completeReminder(_ reminder: EKReminder) {
+        reminder.isCompleted = true
+        do {
+            try store.save(reminder, commit: true)
+            Task { @MainActor in await self.fetchReminders() }
+        } catch { print("[Calendar] Error completing reminder: \(error)") }
+    }
 }
 
 // MARK: - Service Manager

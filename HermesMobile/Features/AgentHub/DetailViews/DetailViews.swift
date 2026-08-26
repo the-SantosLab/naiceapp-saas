@@ -1,4 +1,5 @@
 import SwiftUI
+import EventKit
 
 // MARK: - Health Detail View (WHOOP-Inspired)
 struct HealthDetailView: View {
@@ -468,7 +469,7 @@ struct CreativityDetailView: View {
     }
 }
 
-// MARK: - Daily Detail View
+// MARK: - Daily Detail View (Modern Dark)
 struct DailyDetailView: View {
     @ObservedObject var calendar = CalendarManager.shared
     @ObservedObject var weather = NAWeatherService.shared
@@ -481,229 +482,543 @@ struct DailyDetailView: View {
     @State private var newLocationNote = ""
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Alltag").font(.title2.weight(.bold)).foregroundColor(.ncDark)
-                Text("Dein Tag im Uberblick.").font(.subheadline).foregroundColor(.ncMuted)
-
-                // Wetter + Standort
-                VStack(spacing: 10) {
-                    HStack {
-                        if let w = weather.weather {
-                            Image(systemName: w.iconName).font(.title).foregroundColor(.ncGold)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(Int(w.temperature))°C · \(w.condition)").font(.headline).foregroundColor(.ncDark)
-                                Text(w.locationName).font(.subheadline).foregroundColor(.ncMuted)
-                            }
-                        } else if weather.isLoading {
-                            ProgressView().scaleEffect(0.7)
-                            Text("Wetter laden...").font(.subheadline).foregroundColor(.ncMuted)
-                        } else {
-                            Image(systemName: "location.slash").font(.title2).foregroundColor(.ncSand)
-                            Text("Standort nicht verfugbar").font(.subheadline).foregroundColor(.ncMuted)
-                        }
-                        Spacer()
-                        Button { Task { await weather.fetchWeather() } } label: {
-                            Image(systemName: "arrow.clockwise").font(.caption).foregroundColor(.ncSage)
-                        }
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 20) {
+                // Header
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Alltag")
+                            .font(.title2.weight(.bold))
+                            .foregroundColor(.white)
+                        Text("Dein Tag im Uberblick.")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
                     }
-                }.warmCard()
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+
+                // Weather + Health Summary (Morning Check-in)
+                morningCheckin
+                    .padding(.horizontal, 16)
 
                 // Termine
-                let events = calendar.upcomingEvents.isEmpty ? calendar.todayEvents : calendar.upcomingEvents
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "calendar").font(.title3).foregroundColor(.ncSage)
-                        Text(events.isEmpty ? "Keine Termine" : "Nachste Termine").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        Spacer()
-                        Text(events.isEmpty ? "" : "\(events.count)")
-                            .font(.caption).foregroundColor(.white)
-                            .padding(.horizontal, 8).padding(.vertical, 2)
-                            .background(Color.ncGreen, in: Capsule())
-                    }
-                    if events.isEmpty {
-                        Text("Keine anstehenden Termine im Kalender.").font(.subheadline).foregroundColor(.ncMuted)
-                    } else {
-                        ForEach(events.prefix(5), id: \.eventIdentifier) { event in
-                            HStack(spacing: 10) {
-                                RoundedRectangle(cornerRadius: 4).fill(Color.ncGreen).frame(width: 3, height: 32)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(event.title).font(.subheadline.weight(.semibold)).foregroundColor(.ncDark)
-                                    Text(event.startDate, style: .date).font(.caption).foregroundColor(.ncMuted)
-                                    + Text("  ").font(.caption).foregroundColor(.ncMuted)
-                                    + Text(event.startDate, style: .time).font(.caption).foregroundColor(.ncMuted)
-                                }
-                            }
-                        }
-                    }
-                }.warmCard()
+                eventsSection
+                    .padding(.horizontal, 16)
 
-                // Morgendlicher Check-in
-                VStack(spacing: 8) {
-                    HStack {
-                        Image(systemName: "sunrise.fill").font(.title3).foregroundColor(.ncGold)
-                        Text("Guten Morgen, Johannes").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        Spacer()
-                    }
-                    let tempStr = weather.weather.map { "\(Int($0.temperature))°C · \($0.condition) in \($0.locationName)" } ?? "–"
-                    let eventStr = calendar.todayEvents.isEmpty ? "Keine Termine heute" : "\(calendar.todayEvents.count) Termin(e) heute"
-                    Text("\(tempStr). \(eventStr).")
-                        .font(.subheadline).foregroundColor(.ncMuted)
-                    if health.heartRate > 0 {
-                        Text("Ruhepuls: \(Int(health.heartRate)) bpm · \(Int(health.hrv)) ms HRV · \(health.steps) Schritte bisher")
-                            .font(.caption).foregroundColor(.ncSage)
-                    }
-                    if rollup.flags.isEmpty {
-                        Text("Alles im grunen Bereich!").font(.caption).foregroundColor(.ncGreen)
-                    } else {
-                        ForEach(rollup.flags.prefix(2)) { flag in
-                            Label(flag.text, systemImage: flag.level == "red" ? "exclamationmark.triangle.fill" : "exclamationmark.circle.fill")
-                                .font(.caption).foregroundColor(flag.level == "red" ? .ncRed : .ncGold)
-                        }
-                    }
-                }.warmCard()
+                // iOS Reminders
+                if !calendar.reminders.isEmpty {
+                    remindersSection
+                        .padding(.horizontal, 16)
+                }
 
-                // Routinen & Gewohnheiten
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "arrow.trianglehead.clockwise").font(.title3).foregroundColor(.ncSage)
-                        Text("Routinen (\(routines.completedToday)/\(routines.routines.count) heute)").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        Spacer()
-                        Text("\(routines.currentStreak) Tage Serie")
-                            .font(.caption).foregroundColor(.white)
-                            .padding(.horizontal, 8).padding(.vertical, 2)
-                            .background(Color.ncGreen, in: Capsule())
-                    }
-                    ForEach(routines.routines) { routine in
-                        HStack(spacing: 10) {
-                            Image(systemName: routine.icon).font(.title3).foregroundColor(.ncGold).frame(width: 28)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(routine.name).font(.subheadline.weight(.semibold)).foregroundColor(.ncDark)
-                                Text(routine.description).font(.caption).foregroundColor(.ncMuted)
-                            }
-                            Spacer()
-                            Button {
-                                routines.completeRoutine(routine.id)
-                            } label: {
-                                Image(systemName: routine.lastCompleted != nil ? "checkmark.circle.fill" : "circle")
-                                    .font(.title3).foregroundColor(routine.lastCompleted != nil ? .ncGreen : .ncSand)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    if !routines.suggestions.isEmpty {
-                        Text(routines.suggestions.first ?? "Keine Vorschlage.")
-                            .font(.caption).foregroundColor(.ncSage).padding(.top, 4)
-                    }
-                }.warmCard()
+                // Routinen
+                routinesSection
+                    .padding(.horizontal, 16)
 
-                // Standort-basierte Erinnerungen
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "mappin.and.ellipse").font(.title3).foregroundColor(.ncSage)
-                        Text("Standort-Erinnerungen").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        Spacer()
-                        Button(action: { showingNewLocation = true }) {
-                            Image(systemName: "plus.circle.fill").font(.title3).foregroundColor(.ncGreen)
-                        }
-                    }
-                    if locations.reminders.isEmpty {
-                        Text("Noch keine Standort-Erinnerungen. Tippe auf + um eine zu erstellen.")
-                            .font(.subheadline).foregroundColor(.ncMuted)
-                    } else {
-                        ForEach(Array(locations.reminders.enumerated()), id: \.offset) { idx, reminder in
-                            HStack(spacing: 10) {
-                                Image(systemName: reminder.isEnabled ? "bell.fill" : "bell.slash")
-                                    .font(.caption).foregroundColor(reminder.isEnabled ? .ncSage : .ncMuted)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(reminder.name).font(.subheadline.weight(.semibold)).foregroundColor(.ncDark)
-                                    Text(reminder.note).font(.caption).foregroundColor(.ncMuted)
-                                }
-                                Spacer()
-                                Toggle("", isOn: Binding(
-                                    get: { locations.reminders[idx].isEnabled },
-                                    set: { v in locations.toggleReminder(reminder.id) }
-                                )).labelsHidden().tint(.ncGreen)
-                            }
-                        }
-                    }
-                }.warmCard()
+                // Standort-Erinnerungen
+                locationSection
+                    .padding(.horizontal, 16)
 
                 // Abendliche Reflexion
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "moon.stars.fill").font(.title3).foregroundColor(.ncGold)
-                        Text("Abendliche Reflexion").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                        Spacer()
-                        Button {
-                            // Navigate to journal in Home tab
-                        } label: {
-                            Image(systemName: "square.and.pencil").font(.title3).foregroundColor(.ncGreen)
-                        }
-                    }
-                    Text("Was war gut heute? Was morgen besser? Mach einen kurzen Journal-Eintrag.")
-                        .font(.subheadline).foregroundColor(.ncMuted)
-                    let weekCount = rollup.journal?.this_week ?? 0
-                    if weekCount > 0 {
-                        Text("\(weekCount) Eintrage diese Woche").font(.caption).foregroundColor(.ncSage)
-                    } else {
-                        Text("Noch kein Eintrag heute.").font(.caption).foregroundColor(.ncMuted)
-                    }
-                }.warmCard()
+                reflectionSection
+                    .padding(.horizontal, 16)
 
-                // AI-Tipp aus Rollup
-                VStack(spacing: 8) {
-                    Text("AI-Tipp").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
-                    if rollup.flags.isEmpty {
-                        Text(routines.suggestions.first ?? "Routinen geben Struktur, aber Flexibilitat macht glucklich.")
-                            .font(.subheadline).foregroundColor(.ncMuted)
-                    } else {
-                        ForEach(rollup.flags) { flag in
-                            Label(flag.text, systemImage: flag.level == "red" ? "exclamationmark.triangle.fill" : "exclamationmark.circle.fill")
-                                .font(.subheadline).foregroundColor(flag.level == "red" ? .ncRed : .ncGold)
-                        }
-                    }
-                }.warmCard()
+                // AI-Tipp
+                aiTipSection
+                    .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 24)
+            .padding(.bottom, 30)
         }
-        .warmBackground()
-        .navigationTitle("Alltag")
-        .navigationBarTitleDisplayMode(.large)
+        .background(Color.black.ignoresSafeArea())
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             await weather.fetchWeather()
             await calendar.loadUpcoming()
+            await calendar.fetchReminders()
             await routines.refreshSuggestions()
         }
-        .sheet(isPresented: $showingNewLocation) {
-            newLocationSheet
-        }
+        .sheet(isPresented: $showingNewLocation) { newLocationSheet }
     }
 
+    // MARK: - Morning Check-in
+    private var morningCheckin: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "sunrise.fill")
+                    .font(.caption)
+                    .foregroundColor(.ncAmber)
+                Text("Guten Morgen, Johannes")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+            }
+
+            HStack(spacing: 12) {
+                // Weather
+                VStack(alignment: .leading, spacing: 4) {
+                    if let w = weather.weather {
+                        HStack(spacing: 8) {
+                            Image(systemName: w.iconName)
+                                .font(.system(size: 24))
+                                .foregroundColor(.ncCyan)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("\(Int(w.temperature))°C")
+                                    .font(.title3.weight(.bold))
+                                    .foregroundColor(.white)
+                                Text(w.condition)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                Text(w.locationName)
+                                    .font(.caption2)
+                                    .foregroundColor(.gray.opacity(0.7))
+                            }
+                        }
+                    } else if weather.isLoading {
+                        HStack(spacing: 8) {
+                            ProgressView().scaleEffect(0.7).tint(.ncCyan)
+                            Text("Wetter laden...")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    } else {
+                        HStack(spacing: 8) {
+                            Image(systemName: "location.slash")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                            Text("Standort nicht verfugbar")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Health mini
+                if health.isAuthorized && health.steps > 0 {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 8))
+                            .foregroundColor(.ncRose)
+                        Text("\(Int(health.heartRate)) bpm")
+                            .font(.caption.weight(.medium))
+                            .foregroundColor(.white)
+                        Text("\(health.steps) Schritte")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                        Text("\(Int(health.hrv)) ms HRV")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+
+            // Calendar summary
+            if !calendar.todayEvents.isEmpty {
+                Text("\(calendar.todayEvents.count) Termin(e) heute")
+                    .font(.caption)
+                    .foregroundColor(.ncCyan)
+            } else {
+                Text("Keine Termine heute – Zeit fur Fokus.")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - Events
+    private var eventsSection: some View {
+        let events = calendar.upcomingEvents.isEmpty ? calendar.todayEvents : calendar.upcomingEvents
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.ncCyan)
+                Text("Termine")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+                Text("\(events.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color.ncCyan, in: Capsule())
+            }
+
+            if events.isEmpty {
+                Text("Keine anstehenden Termine im Kalender.")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            } else {
+                VStack(spacing: 6) {
+                    ForEach(events.prefix(5), id: \.eventIdentifier) { event in
+                        HStack(spacing: 10) {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.ncCyan)
+                                .frame(width: 3, height: 36)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(event.title)
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundColor(.white)
+                                    .lineLimit(1)
+                                Text(event.startDate, style: .date)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                + Text(" ")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                + Text(event.startDate, style: .time)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            Spacer()
+                        }
+                        .padding(10)
+                        .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - iOS Reminders
+    private var remindersSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "bell.badge.fill")
+                    .font(.caption)
+                    .foregroundColor(.ncRose)
+                Text("Erinnerungen")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+                Text("\(calendar.remindersCount)")
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color.ncRose, in: Capsule())
+            }
+
+            VStack(spacing: 6) {
+                ForEach(Array(calendar.reminders.prefix(8)), id: \.calendarItemIdentifier) { reminder in
+                    reminderRow(reminder)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.ncRose.opacity(0.1), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - Routinen
+    private var routinesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.trianglehead.clockwise")
+                    .font(.caption)
+                    .foregroundColor(.ncAmber)
+                Text("Routinen")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+                Text("\(routines.completedToday)/\(routines.routines.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(routines.completedToday == routines.routines.count ? Color.ncNeonGreen : Color.ncAmber, in: Capsule())
+            }
+
+            VStack(spacing: 6) {
+                ForEach(routines.routines) { routine in
+                    HStack(spacing: 10) {
+                        Image(systemName: routine.icon)
+                            .font(.system(size: 12))
+                            .foregroundColor(.ncAmber)
+                            .frame(width: 24)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(routine.name)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(.white)
+                            Text(routine.description)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
+                        }
+
+                        Spacer()
+
+                        Button {
+                            routines.completeRoutine(routine.id)
+                        } label: {
+                            Image(systemName: routine.lastCompleted != nil ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 18))
+                                .foregroundColor(routine.lastCompleted != nil ? .ncNeonGreen : .gray.opacity(0.5))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(10)
+                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+                }
+            }
+
+            if !routines.suggestions.isEmpty {
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 8))
+                        .foregroundColor(.ncAmber)
+                    Text(routines.suggestions.first ?? "")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                .padding(8)
+                .background(Color.ncAmber.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - Standort-Erinnerungen
+    private var locationSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "mappin.and.ellipse")
+                    .font(.caption)
+                    .foregroundColor(.ncCyan)
+                Text("Standort-Erinnerungen")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+                Button { showingNewLocation = true } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(.ncCyan)
+                }
+            }
+
+            if locations.reminders.isEmpty {
+                Text("Noch keine Standort-Erinnerungen. Tippe auf + um eine zu erstellen.")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            } else {
+                VStack(spacing: 6) {
+                    ForEach(Array(locations.reminders.enumerated()), id: \.offset) { idx, reminder in
+                        HStack(spacing: 10) {
+                            Image(systemName: reminder.isEnabled ? "bell.fill" : "bell.slash")
+                                .font(.system(size: 10))
+                                .foregroundColor(reminder.isEnabled ? .ncCyan : .gray)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(reminder.name)
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundColor(.white)
+                                Text(reminder.note)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            Spacer()
+                            Toggle("", isOn: Binding(
+                                get: { locations.reminders[idx].isEnabled },
+                                set: { _ in locations.toggleReminder(reminder.id) }
+                            ))
+                            .labelsHidden()
+                            .tint(.ncCyan)
+                            .scaleEffect(0.7)
+                        }
+                        .padding(10)
+                        .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - Reflection
+    private var reflectionSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "moon.stars.fill")
+                    .font(.caption)
+                    .foregroundColor(.ncAmber)
+                Text("Abendliche Reflexion")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+            }
+            Text("Was war gut heute? Was morgen besser? Mach einen kurzen Journal-Eintrag.")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+
+            let weekCount = rollup.journal?.this_week ?? 0
+            HStack(spacing: 8) {
+                if weekCount > 0 {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 10))
+                        .foregroundColor(.ncNeonGreen)
+                    Text("\(weekCount) Eintrage diese Woche")
+                        .font(.caption)
+                        .foregroundColor(.ncNeonGreen)
+                } else {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 10))
+                        .foregroundColor(.gray)
+                    Text("Noch kein Eintrag heute.")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - AI-Tipp
+    private var aiTipSection: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "sparkle")
+                    .font(.caption)
+                    .foregroundColor(.ncCyan)
+                Text("AI-Tipp")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                Spacer()
+            }
+            Text(routines.suggestions.first ?? "Routinen geben Struktur, aber Flexibilitat macht glucklich.")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.ncCyan.opacity(0.1), lineWidth: 0.5))
+        )
+    }
+
+    private func reminderRow(_ reminder: EKReminder) -> some View {
+        HStack(spacing: 10) {
+            Button {
+                calendar.completeReminder(reminder)
+            } label: {
+                Image(systemName: "circle")
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+            }
+            .buttonStyle(.plain)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(reminder.title ?? "Unbenannt")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.white)
+                if let notes = reminder.notes, !notes.isEmpty {
+                    Text(notes)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                }
+                if let due = reminder.dueDateComponents?.date {
+                    if due < Date() {
+                        Text("Überfallig")
+                            .font(.caption2)
+                            .foregroundColor(.ncRose)
+                    } else {
+                        Text(due, style: .date)
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+
+            Spacer()
+
+            if let list = reminder.calendar {
+                let calName = list.title
+                if !calName.isEmpty {
+                    Text(calName)
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundColor(.gray)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 2)
+                        .background(Color.gray.opacity(0.15), in: RoundedRectangle(cornerRadius: 4))
+                }
+            }
+        }
+        .padding(10)
+        .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
+    }
+
+    // MARK: - New Location Sheet
     private var newLocationSheet: some View {
         NavigationStack {
-            Form {
+            VStack(spacing: 20) {
+                Text("Neue Standort-Erinnerung")
+                    .font(.headline.weight(.bold))
+                    .foregroundColor(.white)
                 TextField("Name (z.B. Zuhause)", text: $newLocationName)
+                    .font(.subheadline).foregroundColor(.white)
+                    .padding(14)
+                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                    .padding(.horizontal, 20)
                 TextField("Notiz (z.B. Einkaufe mitbringen)", text: $newLocationNote)
+                    .font(.subheadline).foregroundColor(.white)
+                    .padding(14)
+                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                    .padding(.horizontal, 20)
                 Button("Hinzufugen") {
-                    let reminder = NALocationReminder(
-                        name: newLocationName,
-                        latitude: NAWeatherService.shared.weather != nil ? 47.85 : 0,
-                        longitude: NAWeatherService.shared.weather != nil ? 10.28 : 0,
-                        radius: 100,
-                        onEntry: true,
-                        onExit: false,
-                        note: newLocationNote
-                    )
+                    let reminder = NALocationReminder(name: newLocationName, latitude: 47.85, longitude: 10.28, radius: 100, onEntry: true, onExit: false, note: newLocationNote)
                     locations.addReminder(reminder)
-                    newLocationName = ""
-                    newLocationNote = ""
-                    showingNewLocation = false
+                    newLocationName = ""; newLocationNote = ""; showingNewLocation = false
                 }
-                .disabled(newLocationName.isEmpty)
+                .font(.headline.weight(.semibold)).foregroundColor(.white)
+                .frame(maxWidth: .infinity).padding(.vertical, 14)
+                .background(newLocationName.isEmpty ? Color.gray.opacity(0.3) : Color.ncCyan, in: RoundedRectangle(cornerRadius: 14))
+                .disabled(newLocationName.isEmpty).padding(.horizontal, 20)
+                Spacer()
             }
-            .navigationTitle("Neue Erinnerung")
-            .navigationBarTitleDisplayMode(.inline)
+            .padding(.top, 24)
+            .background(Color.black.ignoresSafeArea())
+            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button("Abbrechen") { showingNewLocation = false }.foregroundColor(.ncCyan) } }
         }
     }
 }
