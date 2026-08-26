@@ -13,6 +13,7 @@
 		031031031031031031031007 /* MarkdownMathFormatter+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031031031031031031031008 /* MarkdownMathFormatter+Support.swift */; };
 		031031031031031031031009 /* DisplayMathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03103103103103103103100A /* DisplayMathView.swift */; };
 		03103103103103103103100B /* MarkdownMathFormatter+Environments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03103103103103103103100C /* MarkdownMathFormatter+Environments.swift */; };
+		031F0120CBAEBB88DE092FBD /* NAIceRelationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D44D7F9BE950C922C96F905 /* NAIceRelationsView.swift */; };
 		05814DEA5DE4690F730B1E15 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EC010A2D940B0E42287A4 /* InsightsViewModel.swift */; };
 		0765B9A12229D83851384211 /* WorkoutScrollRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8A3B65E2196486BD26194A /* WorkoutScrollRow.swift */; };
 		07D922D2B9848EEA60C4C2C3 /* CardsOfTheMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */; };
@@ -571,6 +572,7 @@
 		6D2E2D0145071523FC3BD8F2 /* NAWeatherService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWeatherService.swift; sourceTree = "<group>"; };
 		72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7680D72A0B1646090D1AE45E /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = SDKROOT; };
+		7D44D7F9BE950C922C96F905 /* NAIceRelationsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; name = NAIceRelationsView.swift; path = AgentHub/DetailViews/NAIceRelationsView.swift; sourceTree = "<group>"; };
 		82626C6BEC28AF7D30A136F6 /* DealDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DealDetailView.swift; path = AgentHub/DetailViews/DealDetailView.swift; sourceTree = "<group>"; };
 		8ACDC6D12C6462690E0C7BA3 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8C56E6D23E631D3EE0FF26B4 /* DetailViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DetailViews.swift; path = AgentHub/DetailViews/DetailViews.swift; sourceTree = "<group>"; };
@@ -1409,6 +1411,7 @@
 				AB28B6A55BA4A60663132D30 /* FinanceDetailView.swift */,
 				CD34F4B5C90F1AC9E3F79FEA /* NABriefingDetailView.swift */,
 				2E365F20F0536DB4D9D3A61D /* NAKnowledgeSheet.swift */,
+				7D44D7F9BE950C922C96F905 /* NAIceRelationsView.swift */,
 			);
 			name = DetailViews;
 			sourceTree = "<group>";
@@ -2015,6 +2018,7 @@
 				E38FCF95DB2BBF351033F108 /* NADonutChart.swift in Sources */,
 				A7ADB5D7729DDC4BD67761D9 /* NAInsightsChart.swift in Sources */,
 				DD1EA83C6E631DE1F6489645 /* NACsvImportService.swift in Sources */,
+				031F0120CBAEBB88DE092FBD /* NAIceRelationsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
