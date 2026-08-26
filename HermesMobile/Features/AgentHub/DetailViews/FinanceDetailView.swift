@@ -36,6 +36,12 @@ struct FinanceDetailView: View {
                         .padding(.horizontal, 16)
                 }
 
+                // Insights Charts (ported from Dime)
+                if !finance.expenses.isEmpty {
+                    insightsSection
+                        .padding(.horizontal, 16)
+                }
+
                 // Budget
                 budgetSection
                     .padding(.horizontal, 16)
@@ -144,6 +150,108 @@ struct FinanceDetailView: View {
                 .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
                 .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
         )
+    }
+
+    // MARK: - Insights Section (Dime-Inspired)
+    private var insightsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Image(systemName: "chart.pie.fill")
+                    .font(.caption)
+                    .foregroundColor(.ncCyan)
+                Text("Analyse")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+            }
+
+            // Suggested Transactions
+            if !suggestedExpenses.isEmpty {
+                NASuggestedTransactions(
+                    suggestions: suggestedExpenses,
+                    currencySymbol: "€",
+                    onTap: { item in
+                        finance.addExpense(amount: item.amount, category: item.category, note: item.label)
+                    }
+                )
+            }
+
+            // Donut Chart
+            if !donutData.isEmpty {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Kategorien")
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(.gray)
+                        Spacer()
+                    }
+                    NADonutChart(data: donutData, total: donutData.reduce(0) { $0 + $1.amount })
+                }
+            }
+
+            // Line Graph
+            if !lineGraphData.isEmpty {
+                NALineGraph(
+                    dataPoints: lineGraphData,
+                    lineColor: .ncCyan,
+                    title: "Ausgaben Trend"
+                )
+                .frame(height: 200)
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        )
+    }
+
+    // MARK: - Computed Data
+    private var donutData: [DonutSlice] {
+        let total = finance.monthlyTotal
+        guard total > 0 else { return [] }
+        let catColors: [String: Color] = [
+            "essen": .ncAmber, "transport": .ncCyan, "einkaufen": .ncPurple,
+            "wohnen": .ncBlue, "freizeit": .ncNeonGreen, "gesundheit": .ncRose, "sonstiges": .gray
+        ]
+        return finance.categorySpending.compactMap { cat, spent, _, _ in
+            guard spent > 0 else { return nil }
+            return DonutSlice(
+                label: NAFinanceService.categoryLabel(cat),
+                amount: spent,
+                color: catColors[cat] ?? .gray,
+                total: total
+            )
+        }
+    }
+
+    private var lineGraphData: [GraphPoint] {
+        let last7 = finance.expenses.prefix(7).reversed()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM"
+        return last7.enumerated().map { i, exp in
+            GraphPoint(label: formatter.string(from: exp.date), value: exp.amount)
+        }
+    }
+
+    private var suggestedExpenses: [SuggestedExpense] {
+        // Group expenses by category, find most common amounts
+        let grouped = Dictionary(grouping: finance.expenses.prefix(20)) { $0.category }
+        var suggestions: [SuggestedExpense] = []
+        let catColors: [String: Color] = [
+            "essen": .ncAmber, "transport": .ncCyan, "einkaufen": .ncPurple,
+            "wohnen": .ncBlue, "freizeit": .ncNeonGreen, "gesundheit": .ncRose, "sonstiges": .gray
+        ]
+        for (cat, exps) in grouped {
+            guard let mostCommon = exps.max(by: { $0.amount < $1.amount }) else { continue }
+            suggestions.append(SuggestedExpense(
+                label: mostCommon.note.isEmpty ? NAFinanceService.categoryLabel(cat) : mostCommon.note,
+                amount: mostCommon.amount,
+                category: cat,
+                color: catColors[cat] ?? .gray
+            ))
+        }
+        return Array(suggestions.prefix(5))
     }
 
     // MARK: - Budget Section
