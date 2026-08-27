@@ -143,6 +143,7 @@
 		553CBCE7FAC71D41BF9B3B47 /* NACRMDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */; };
 		56063D74CA7FC2BAFD989D68 /* nAIceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */; };
 		569F1CEAB141FFFA0273980A /* NAEmailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2E7BD602A919D59E033F70 /* NAEmailService.swift */; };
+		5BFDFB88F7D53E056E214110 /* NAIceChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36213E5489BFD53A961F208D /* NAIceChatView.swift */; };
 		62AD82AB1A8D358CB53E66E6 /* NAiceWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */; };
 		64729AD482EDFDC77AB148AC /* AmeliaSlideUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C971B9F83714060B17741CE /* AmeliaSlideUp.swift */; };
 		64AE36FBAE436BF5C5083453 /* AgentHubModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */; };
@@ -558,6 +559,7 @@
 		30D067B3957F4996F92E721A /* NAJournalService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAJournalService.swift; sourceTree = "<group>"; };
 		340C69C3296E2F5F3446B040 /* WhatsAppView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppView.swift; sourceTree = "<group>"; };
 		351C0F1600000000000000A1 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Shared.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
+		36213E5489BFD53A961F208D /* NAIceChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIceChatView.swift; sourceTree = "<group>"; };
 		3B309F61E3B80BDB41121439 /* NAFinanceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFinanceService.swift; sourceTree = "<group>"; };
 		3BAC4432EA7A7890B3BAB966 /* NAiceActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceActivity.swift; sourceTree = "<group>"; };
 		3DE44303FA26A69A6C782417 /* AmeliaMenuButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmeliaMenuButton.swift; sourceTree = "<group>"; };
@@ -1612,6 +1614,7 @@
 				F8104AFCD32302FA1B4A2BBB /* NAUnifiedInboxService.swift */,
 				EA2E7BD602A919D59E033F70 /* NAEmailService.swift */,
 				8ED34C29439AE2FB042C4E32 /* NAMacAgentService.swift */,
+				36213E5489BFD53A961F208D /* NAIceChatView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2136,6 +2139,7 @@
 				4960DD6462DF323A10449A31 /* NAUnifiedInboxService.swift in Sources */,
 				569F1CEAB141FFFA0273980A /* NAEmailService.swift in Sources */,
 				8A041BD2035129703F266316 /* NAMacAgentService.swift in Sources */,
+				5BFDFB88F7D53E056E214110 /* NAIceChatView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

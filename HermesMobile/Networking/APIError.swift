@@ -20,7 +20,7 @@ enum APIError: LocalizedError {
 
             switch statusCode {
             case -1:
-                return String(localized: "The server response could not be read. Check that the URL points to a Hermes Web UI server.")
+                return String(localized: "The server response could not be read. Check that the URL points to a nAIce Web UI server.")
             case 400:
                 if let message = Self.serverErrorMessage(from: body) {
                     return String(localized: "The server rejected the request: \(message)")
@@ -29,7 +29,7 @@ enum APIError: LocalizedError {
             case 403:
                 return String(localized: "The server refused access. Check the server password and permissions.")
             case 404:
-                return String(localized: "The server endpoint was not found. Check that the URL points to a Hermes Web UI server.")
+                return String(localized: "The server endpoint was not found. Check that the URL points to a nAIce Web UI server.")
             case 408:
                 return String(localized: "The server took too long to respond. Check that the Mac is awake and the server is running.")
             case 429:

@@ -358,7 +358,7 @@ enum ChatActiveRunStatusKind: Equatable {
         case .starting:
             return String(localized: "Starting response")
         case .active:
-            return String(localized: "Hermes is working")
+            return String(localized: "nAIce is working")
         case .checking:
             return String(localized: "Checking stream")
         case .reconnecting:
@@ -371,15 +371,15 @@ enum ChatActiveRunStatusKind: Equatable {
     var accessibilityLabel: String {
         switch self {
         case .starting:
-            return String(localized: "Hermes is starting a response")
+            return String(localized: "nAIce is starting a response")
         case .active:
-            return String(localized: "Hermes is working on the response")
+            return String(localized: "nAIce is working on the response")
         case .checking:
-            return String(localized: "Hermes is checking the response stream")
+            return String(localized: "nAIce is checking the response stream")
         case .reconnecting:
-            return String(localized: "Hermes is reconnecting the response stream")
+            return String(localized: "nAIce is reconnecting the response stream")
         case .stopping:
-            return String(localized: "Hermes is stopping the response")
+            return String(localized: "nAIce is stopping the response")
         }
     }
 }
@@ -454,7 +454,7 @@ enum ResponseCompletionNotificationPolicy {
 }
 
 struct ResponseCompletionNotificationRequest: Equatable {
-    static let title = String(localized: "Hermes response complete")
+    static let title = String(localized: "nAIce response complete")
     static let body = String(localized: "The assistant finished responding.")
 
     let sessionID: String?

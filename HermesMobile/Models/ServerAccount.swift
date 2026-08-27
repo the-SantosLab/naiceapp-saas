@@ -1,7 +1,7 @@
 import Foundation
 import os
 
-/// Non-secret-shaped metadata for one configured Hermes Web UI server.
+/// Non-secret-shaped metadata for one configured nAIce Web UI server.
 ///
 /// This is the persisted account model introduced by I-039a (#15) — the
 /// foundation the rest of the multi-server epic (#16/#17/#18) builds on. The

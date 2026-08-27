@@ -83,7 +83,7 @@ struct OnboardingView: View {
                 advanceToNextPage()
             }
         } message: {
-            Text("Copy the agent setup prompt on your desktop before continuing so Hermes Web UI and Tailscale are configured correctly.")
+            Text("Copy the agent setup prompt on your desktop before continuing so nAIce Web UI and Tailscale are configured correctly.")
         }
     }
 
