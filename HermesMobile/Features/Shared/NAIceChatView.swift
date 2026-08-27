@@ -18,7 +18,7 @@ struct NAIceChatView: View {
     @State private var scrollToBottom = false
     @FocusState private var isFocused: Bool
 
-    let serverURL = "https://health.santoslab.de/api/naice/chat"
+    let serverURL = "http://192.168.178.105:8999/api/naice/chat"
 
     var body: some View {
         VStack(spacing: 0) {
