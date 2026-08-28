@@ -47,6 +47,8 @@
 	<string>nAIce syncs your reminders to show your daily tasks. No reminders are shared with third parties.</string>
 	<key>NSSiriUsageDescription</key>
 	<string>nAIce integrates with Siri so you can start new chats and interact with your agent hands-free.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>INStartCallIntent</string>
