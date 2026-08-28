@@ -152,6 +152,7 @@ struct NAIceTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: Tab = .home; @State private var ps: SharedImport?; @State private var pd: String?; @State private var pn: NewChatRequest?
     @State private var showAmelia = false
+    @StateObject private var intentRouter = NAIntentRouter.shared
     @StateObject private var ameliaContext = AmeliaContextProvider.shared
     @StateObject private var health = HealthManager.shared; @StateObject private var calendar = CalendarManager.shared; @StateObject private var services = ServiceManager.shared; @StateObject private var rollup = NARollupService.shared; @StateObject private var journal = NAJournalService.shared; @StateObject private var contacts = NAContactService.shared; @StateObject private var waVM = WhatsAppViewModel.shared
     enum Tab: String, CaseIterable { case home; case life; case tasks; case agent; case more
@@ -169,6 +170,12 @@ struct NAIceTabView: View {
                         }.tint(Color.ncCyan).task { await health.requestAuth(); await calendar.requestAuth(); await services.requestAll(); await NAiceAPI.shared.fetchIdeas(); await NARollupService.shared.fetch(); await waVM.fetchPending() }
                             .onAppear { ameliaContext.setContext(tab: selectedTab.rawValue) }
                             .onChange(of: selectedTab) { newTab in ameliaContext.setContext(tab: newTab.rawValue) }
+                            .onChange(of: intentRouter.pendingTab, perform: { tab in
+                                                            if let t = tab, let newTab = Tab(rawValue: t) {
+                                                                selectedTab = newTab
+                                                                intentRouter.pendingTab = nil
+                                                            }
+                                                        })
                             .onChange(of: scenePhase, perform: { newPhase in
                                 guard newPhase == .active else { return }
                                 Task {

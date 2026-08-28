@@ -1,8 +1,11 @@
 import SwiftUI
 
-// MARK: - Tasks View (Modern Dark Theme)
+// MARK: - Tasks View (Modern Dark Theme + Add/Complete/Delete)
 struct NAIceTasksView: View {
+    @ObservedObject private var taskService = NATaskService.shared
     @ObservedObject private var rollup = NARollupService.shared
+    @State private var showAddSheet = false
+    @State private var filterDone = false
 
     var body: some View {
         NavigationStack {
@@ -14,42 +17,71 @@ struct NAIceTasksView: View {
                             Text("Aufgaben")
                                 .font(.title2.weight(.bold))
                                 .foregroundColor(.white)
-                            Text("Business-Tasks aus Amelia's Pipeline.")
+                            Text("Eigene Tasks + Pipeline-Aufgaben")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
-                        if rollup.isLoading {
-                            ProgressView().scaleEffect(0.7).tint(.ncCyan)
+                        HStack(spacing: 8) {
+                            if taskService.isLoading || rollup.isLoading {
+                                ProgressView().scaleEffect(0.7).tint(.ncCyan)
+                            }
+                            // Filter toggle
+                            Button {
+                                withAnimation { filterDone.toggle() }
+                            } label: {
+                                Image(systemName: filterDone ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(filterDone ? .ncCyan : .gray)
+                            }
+                            // Add button
+                            Button {
+                                showAddSheet = true
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.ncCyan)
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 8)
 
-                    if let t = rollup.tasks, let tasks = t.tasks, !tasks.isEmpty {
-                        // High priority section
-                        let high = tasks.filter { $0.priority == "high" }
+                    let filtered = filterDone ? taskService.tasks.filter { $0.status != "done" } : taskService.tasks
+
+                    if filtered.isEmpty {
+                        emptySection
+                            .padding(.horizontal, 16)
+                    } else {
+                        // Stats
+                        let open = taskService.tasks.filter { $0.status != "done" }.count
+                        let done = taskService.tasks.filter { $0.status == "done" }.count
+                        HStack(spacing: 12) {
+                            statCard(icon: "tray.full.fill", value: "\(taskService.tasks.count)", label: "Gesamt", color: .ncCyan)
+                            statCard(icon: "exclamationmark.circle.fill", value: "\(open)", label: "Offen", color: .ncAmber)
+                            statCard(icon: "checkmark.circle.fill", value: "\(done)", label: "Erledigt", color: .ncNeonGreen)
+                        }
+                        .padding(.horizontal, 16)
+
+                        // High priority
+                        let high = filtered.filter { $0.priority == "high" && $0.status != "done" }
                         if !high.isEmpty {
                             taskSection(title: "Kritisch", icon: "exclamationmark.triangle.fill", tasks: high, accent: .ncRose)
                         }
 
-                        // Others
-                        let other = tasks.filter { $0.priority != "high" }
-                        if !other.isEmpty {
-                            taskSection(title: "Offen (\(other.count))", icon: "circle", tasks: other, accent: .ncCyan)
+                        // Open tasks
+                        let openTasks = filtered.filter { $0.priority != "high" && $0.status != "done" }
+                        if !openTasks.isEmpty {
+                            taskSection(title: "Offen (\(openTasks.count))", icon: "circle", tasks: openTasks, accent: .ncCyan)
                         }
 
-                        // Summary
-                        VStack(spacing: 8) {
-                            HStack(spacing: 12) {
-                                glassStat(icon: "tray.full.fill", value: "\(t.total)", label: "Gesamt", color: .ncCyan)
-                                glassStat(icon: "exclamationmark.circle.fill", value: "\(t.active)", label: "Aktiv", color: .ncAmber)
+                        // Done (only if not filtered)
+                        if !filterDone {
+                            let doneTasks = filtered.filter { $0.status == "done" }
+                            if !doneTasks.isEmpty {
+                                taskSection(title: "Erledigt (\(doneTasks.count))", icon: "checkmark.circle.fill", tasks: doneTasks, accent: .ncNeonGreen)
                             }
                         }
-                        .padding(.horizontal, 16)
-                    } else {
-                        emptySection
-                            .padding(.horizontal, 16)
                     }
                 }
                 .padding(.bottom, 30)
@@ -57,11 +89,18 @@ struct NAIceTasksView: View {
             .background(Color.black.ignoresSafeArea())
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
+            .task { await taskService.fetch() }
+            .refreshable { await taskService.fetch() }
+        }
+        .sheet(isPresented: $showAddSheet) {
+            AddTaskSheet { title, project, priority, deadline in
+                Task { await taskService.addTask(title: title, project: project, priority: priority, deadline: deadline) }
+            }
         }
     }
 
     // MARK: - Task Section
-    private func taskSection(title: String, icon: String, tasks: [NATask], accent: Color) -> some View {
+    private func taskSection(title: String, icon: String, tasks: [NATaskItem], accent: Color) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
@@ -95,21 +134,29 @@ struct NAIceTasksView: View {
     }
 
     // MARK: - Task Card
-    private func taskCard(_ task: NATask, accent: Color) -> some View {
+    private func taskCard(_ task: NATaskItem, accent: Color) -> some View {
         HStack(spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(priorityColor(task.priority).opacity(0.12))
-                    .frame(width: 28, height: 28)
-                Image(systemName: task.priority == "high" ? "exclamationmark.circle.fill" : "circle.fill")
-                    .font(.system(size: 11))
-                    .foregroundColor(priorityColor(task.priority))
+            // Completion toggle
+            Button {
+                let newStatus = task.status == "done" ? "open" : "done"
+                Task { await taskService.updateTask(task, status: newStatus) }
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(task.status == "done" ? Color.ncNeonGreen.opacity(0.15) : accent.opacity(0.12))
+                        .frame(width: 28, height: 28)
+                    Image(systemName: task.status == "done" ? "checkmark.circle.fill" : "circle.fill")
+                        .font(.system(size: 11))
+                        .foregroundColor(task.status == "done" ? .ncNeonGreen : accent)
+                }
             }
+            .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(task.title)
                     .font(.subheadline.weight(.medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(task.status == "done" ? .gray : .white)
+                    .strikethrough(task.status == "done")
                     .lineLimit(2)
 
                 HStack(spacing: 8) {
@@ -119,34 +166,41 @@ struct NAIceTasksView: View {
                             Text(p).font(.caption2).foregroundColor(.gray)
                         }
                     }
-                    if let s = task.status {
-                        HStack(spacing: 4) {
-                            Circle().fill(statusDot(s)).frame(width: 4, height: 4)
-                            Text(s.replacingOccurrences(of: "_", with: " ").capitalized)
-                                .font(.caption2)
-                                .foregroundColor(.gray)
+                    HStack(spacing: 4) {
+                        Circle().fill(task.statusDot).frame(width: 4, height: 4)
+                        Text(task.status == "done" ? "Erledigt" : task.status.replacingOccurrences(of: "_", with: " ").capitalized)
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
+                    if task.isLocal {
+                        HStack(spacing: 3) {
+                            Image(systemName: "iphone").font(.system(size: 8))
+                            Text("Eigen").font(.caption2)
                         }
+                        .foregroundColor(.gray.opacity(0.6))
                     }
                 }
             }
 
             Spacer()
 
-            if let d = task.deadline {
-                Text(deadlineLabel(d))
+            // Delete button
+            Button(role: .destructive) {
+                Task { await taskService.deleteTask(task) }
+            } label: {
+                Image(systemName: "trash")
                     .font(.caption)
-                    .foregroundColor(deadlineColor(d))
-                    .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(deadlineColor(d).opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+                    .foregroundColor(.gray.opacity(0.5))
             }
+            .buttonStyle(.plain)
         }
         .padding(12)
         .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
     }
 
-    // MARK: - Glass Stat
-    private func glassStat(icon: String, value: String, label: String, color: Color) -> some View {
+    // MARK: - Stat Card
+    private func statCard(icon: String, value: String, label: String, color: Color) -> some View {
         HStack(spacing: 10) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
@@ -183,7 +237,7 @@ struct NAIceTasksView: View {
             Text("Keine offenen Aufgaben")
                 .font(.subheadline.weight(.semibold))
                 .foregroundColor(.white)
-            Text("Alle Tasks aus Amelia's Pipeline sind erledigt.")
+            Text("Tippe auf + um einen neuen Task zu erstellen.")
                 .font(.caption)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
@@ -193,54 +247,121 @@ struct NAIceTasksView: View {
         .background(Color(red: 0.02, green: 0.02, blue: 0.04), in: RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
     }
+}
 
-    // MARK: - Helpers
-    private func priorityColor(_ p: String?) -> Color {
-        guard let p = p else { return .ncCyan }
-        switch p.lowercased() {
-        case "high": return .ncRose
-        case "medium": return .ncAmber
-        default: return .ncCyan
+// MARK: - Add Task Sheet
+struct AddTaskSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let onSave: (String, String, String, String?) -> Void
+
+    @State private var title = ""
+    @State private var project = "nAIce"
+    @State private var priority = "medium"
+    @State private var deadline = ""
+    @State private var hasDeadline = false
+
+    let projects = ["nAIce", "foodloop", "Schaffer-Wine", "parcelmate", "einfacHR", "Privat", "Sonstiges"]
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // Title
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Titel").font(.caption).foregroundColor(.gray)
+                            TextField("Task eingeben...", text: $title)
+                                .font(.body)
+                                .foregroundColor(.white)
+                                .padding(12)
+                                .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
+                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                        }
+
+                        // Project
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Projekt").font(.caption).foregroundColor(.gray)
+                            HStack(spacing: 6) {
+                                ForEach(projects, id: \.self) { p in
+                                    Button {
+                                        project = p
+                                    } label: {
+                                        Text(p)
+                                            .font(.caption)
+                                            .padding(.horizontal, 10).padding(.vertical, 6)
+                                            .background(project == p ? Color.ncCyan.opacity(0.2) : Color(red: 0.03, green: 0.03, blue: 0.06))
+                                            .foregroundColor(project == p ? .ncCyan : .gray)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(project == p ? Color.ncCyan.opacity(0.3) : Color.white.opacity(0.04), lineWidth: 0.5))
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+
+                        // Priority
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Priorität").font(.caption).foregroundColor(.gray)
+                            HStack(spacing: 10) {
+                                priorityButton("niedrig", color: .ncCyan)
+                                priorityButton("medium", color: .ncAmber)
+                                priorityButton("high", color: .ncRose)
+                            }
+                        }
+
+                        // Deadline
+                        VStack(alignment: .leading, spacing: 6) {
+                            Toggle("Deadline", isOn: $hasDeadline)
+                                .font(.subheadline).foregroundColor(.white)
+                                .tint(.ncCyan)
+                            if hasDeadline {
+                                TextField("YYYY-MM-DD", text: $deadline)
+                                    .font(.body)
+                                    .foregroundColor(.white)
+                                    .padding(12)
+                                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
+                                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                            }
+                        }
+                    }
+                    .padding(20)
+                }
+            }
+            .navigationTitle("Neuer Task")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                        .foregroundColor(.gray)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Hinzufügen") {
+                        let d = hasDeadline && !deadline.isEmpty ? deadline : nil
+                        onSave(title, project, priority, d)
+                        dismiss()
+                    }
+                    .font(.headline)
+                    .foregroundColor(title.trimmingCharacters(in: .whitespaces).isEmpty ? .gray : .ncCyan)
+                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
         }
     }
 
-    private func deadlineLabel(_ d: String) -> String {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate, .withDashSeparatorInDate]
-        if let date = formatter.date(from: d) {
-            let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
-            if days < 0 { return "\(abs(days))d uberfallig" }
-            if days == 0 { return "Heute" }
-            if days == 1 { return "Morgen" }
-            return "\(days)d"
-        }
-        formatter.formatOptions = [.withFullDate]
-        if let date = formatter.date(from: d) {
-            let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
-            if days < 0 { return "Uberfallig" }
-            return "\(days)d"
-        }
-        return d
-    }
-
-    private func deadlineColor(_ d: String) -> Color {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate, .withDashSeparatorInDate]
-        if let date = formatter.date(from: d) {
-            let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 99
-            if days < 0 { return .ncRose }
-            if days == 0 { return .ncAmber }
-            return .gray
-        }
-        return .gray
-    }
-
-    private func statusDot(_ s: String) -> Color {
-        switch s.lowercased() {
-        case "open": return .ncAmber
-        case "in_progress": return .ncCyan
-        case "done": return .ncNeonGreen
-        default: return .gray
+    func priorityButton(_ label: String, color: Color) -> some View {
+        Button {
+            priority = label == "niedrig" ? "low" : label == "medium" ? "medium" : "high"
+        } label: {
+            HStack(spacing: 4) {
+                Circle().fill(color).frame(width: 6, height: 6)
+                Text(label).font(.caption)
+            }
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .background(priority == (label == "niedrig" ? "low" : label) ? color.opacity(0.15) : Color(red: 0.03, green: 0.03, blue: 0.06))
+            .foregroundColor(priority == (label == "niedrig" ? "low" : label) ? color : .gray)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(priority == (label == "niedrig" ? "low" : label) ? color.opacity(0.3) : Color.white.opacity(0.04), lineWidth: 0.5))
         }
     }
 }
