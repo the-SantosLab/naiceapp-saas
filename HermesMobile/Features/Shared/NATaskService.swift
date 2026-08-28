@@ -1,17 +1,17 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Task Item Model (mutable, for local + server tasks)
+// MARK: - Task Item Model
 struct NATaskItem: Identifiable, Codable, Hashable {
     var id: String
     var title: String
     var project: String?
-    var priority: String  // "high", "medium", "low"
-    var status: String    // "open", "done", "in_progress"
+    var priority: String
+    var status: String
     var deadline: String?
     var source: String?
     var created: Int?
-    var isLocal: Bool = false  // true = user-created, false = from rollup
+    var isLocal: Bool = false
 
     var isCompleted: Bool {
         get { status == "done" }
@@ -26,6 +26,33 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         }
     }
 
+    var deadlineDate: Date? {
+        guard let d = deadline, !d.isEmpty else { return nil }
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withFullDate, .withDashSeparatorInDate]
+        if let date = f.date(from: d) { return date }
+        let f2 = DateFormatter()
+        f2.dateFormat = "yyyy-MM-dd"
+        return f2.date(from: d)
+    }
+
+    var deadlineLabel: String {
+        guard let date = deadlineDate else { return "" }
+        let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
+        if days < 0 { return "\(abs(days))d überfällig" }
+        if days == 0 { return "Heute" }
+        if days == 1 { return "Morgen" }
+        return "\(days)d"
+    }
+
+    var deadlineColor: Color {
+        guard let date = deadlineDate else { return .gray }
+        let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 99
+        if days < 0 { return .ncRose }
+        if days == 0 { return .ncAmber }
+        return .gray
+    }
+
     var statusDot: Color {
         switch status.lowercased() {
         case "open": return .ncAmber
@@ -35,7 +62,7 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         }
     }
 
-    init(id: String = UUID().uuidString.prefix(8).description,
+    init(id: String = String(UUID().uuidString.prefix(8)),
          title: String,
          project: String? = "nAIce",
          priority: String = "medium",
@@ -55,7 +82,6 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         self.isLocal = isLocal
     }
 
-    // Convert from rollup NATask
     init(from rollupTask: NATask) {
         self.id = rollupTask.id
         self.title = rollupTask.title
@@ -82,16 +108,13 @@ class NATaskService: ObservableObject {
 
     private init() {}
 
-    // MARK: - Fetch
     func fetch() async {
         isLoading = true
         defer { isLoading = false }
 
-        // 1. Load from rollup
         await NARollupService.shared.fetch()
         var merged: [NATaskItem] = []
 
-        // Add rollup tasks (not completed)
         if let rollupTasks = NARollupService.shared.tasks?.tasks {
             for t in rollupTasks {
                 let item = NATaskItem(from: t)
@@ -101,12 +124,10 @@ class NATaskService: ObservableObject {
             }
         }
 
-        // 2. Load local/server tasks
         guard let url = URL(string: serverURL) else { return }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             let serverTasks = try JSONDecoder().decode([NATaskItem].self, from: data)
-            // Merge: rollup tasks first, then server tasks (filter out duplicates by id)
             let rollupIds = Set(merged.map { $0.id })
             for t in serverTasks where !rollupIds.contains(t.id) {
                 var item = t
@@ -117,9 +138,8 @@ class NATaskService: ObservableObject {
             lastError = "Server: \(error.localizedDescription)"
         }
 
-        // Sort: open first, then by priority
         merged.sort { a, b in
-            if a.status != b.status { return a.status == "open" }
+            if a.status != b.status { return a.status == "open" && b.status != "open" }
             let pOrder = ["high": 0, "medium": 1, "low": 2]
             return (pOrder[a.priority] ?? 2) < (pOrder[b.priority] ?? 2)
         }
@@ -127,7 +147,6 @@ class NATaskService: ObservableObject {
         tasks = merged
     }
 
-    // MARK: - Add Task
     func addTask(title: String, project: String = "nAIce", priority: String = "medium", deadline: String? = nil) async {
         guard let url = URL(string: serverURL) else { return }
         var req = URLRequest(url: url)
@@ -138,90 +157,64 @@ class NATaskService: ObservableObject {
         req.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         do {
-            let (data, _) = try await URLSession.shared.data(for: req)
-            if let result = try? JSONDecoder().decode([String: AnyCodable].self, from: data),
-               result["ok"]?.value as? Bool == true,
-               let taskDict = result["task"]?.value as? [String: Any] {
-                // Try to decode the task from the response
-                if let taskData = try? JSONSerialization.data(withJSONObject: taskDict),
-                   let task = try? JSONDecoder().decode(NATaskItem.self, from: taskData) {
-                    var t = task
-                    t.isLocal = true
-                    tasks.insert(t, at: 0)
-                }
-            }
-            // Refresh
+            let (_, _) = try await URLSession.shared.data(for: req)
+            // Refresh full list
             await fetch()
         } catch {
             lastError = "Add failed: \(error.localizedDescription)"
         }
     }
 
-    // MARK: - Update Task (toggle complete, change priority, etc.)
-    func updateTask(_ task: NATaskItem, status: String? = nil, priority: String? = nil) async {
-        guard let url = URL(string: serverURL) else { return }
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        var body: [String: Any] = ["action": "update", "task_id": task.id]
-        if let s = status { body["status"] = s }
-        if let p = priority { body["priority"] = p }
-        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+    func toggleTask(_ task: NATaskItem) async {
+        let newStatus = task.status == "done" ? "open" : "done"
 
-        do {
-            let (_, _) = try await URLSession.shared.data(for: req)
-            // Update locally
-            if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
-                if let s = status { tasks[idx].status = s }
-                if let p = priority { tasks[idx].priority = p }
+        // Local update first (instant UI)
+        if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[idx].status = newStatus
+        }
+
+        // If local task, sync to server
+        if task.isLocal {
+            guard let url = URL(string: serverURL) else { return }
+            var req = URLRequest(url: url)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let body: [String: Any] = ["action": "update", "task_id": task.id, "status": newStatus]
+            req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+            do {
+                let (data, _) = try await URLSession.shared.data(for: req)
+                if let result = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   result["ok"] as? Bool == false {
+                    // Server failed, revert
+                    if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
+                        tasks[idx].status = task.status
+                    }
+                }
+            } catch {
+                if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
+                    tasks[idx].status = task.status
+                }
             }
-        } catch {
-            lastError = "Update failed: \(error.localizedDescription)"
         }
+        // For rollup tasks: just local state, no server sync
     }
 
-    // MARK: - Delete Task
     func deleteTask(_ task: NATaskItem) async {
-        guard let url = URL(string: serverURL) else { return }
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["action": "delete", "task_id": task.id]
-        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        // Local removal first
+        tasks.removeAll { $0.id == task.id }
 
-        do {
-            let (_, _) = try await URLSession.shared.data(for: req)
-            tasks.removeAll { $0.id == task.id }
-        } catch {
-            lastError = "Delete failed: \(error.localizedDescription)"
+        if task.isLocal {
+            guard let url = URL(string: serverURL) else { return }
+            var req = URLRequest(url: url)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let body: [String: Any] = ["action": "delete", "task_id": task.id]
+            req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+            do {
+                let (_, _) = try await URLSession.shared.data(for: req)
+            } catch {
+                lastError = "Delete failed: \(error.localizedDescription)"
+            }
         }
-    }
-}
-
-// MARK: - AnyCodable helper for flexible JSON decoding
-struct AnyCodable: Codable {
-    let value: Any
-
-    init(_ value: Any) { self.value = value }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let intVal = try? container.decode(Int.self) { value = intVal }
-        else if let doubleVal = try? container.decode(Double.self) { value = doubleVal }
-        else if let boolVal = try? container.decode(Bool.self) { value = boolVal }
-        else if let stringVal = try? container.decode(String.self) { value = stringVal }
-        else if let arrayVal = try? container.decode([AnyCodable].self) { value = arrayVal.map { $0.value } }
-        else if let dictVal = try? container.decode([String: AnyCodable].self) { value = dictVal.mapValues { $0.value } }
-        else { value = "" }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        if let intVal = value as? Int { try container.encode(intVal) }
-        else if let doubleVal = value as? Double { try container.encode(doubleVal) }
-        else if let boolVal = value as? Bool { try container.encode(boolVal) }
-        else if let stringVal = value as? String { try container.encode(stringVal) }
-        else if let arrayVal = value as? [Any] { try container.encode(arrayVal.map { AnyCodable($0) }) }
-        else if let dictVal = value as? [String: Any] { try container.encode(dictVal.mapValues { AnyCodable($0) }) }
     }
 }

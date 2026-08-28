@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Tasks View (Modern Dark Theme + Add/Complete/Delete)
+// MARK: - Tasks View
 struct NAIceTasksView: View {
     @ObservedObject private var taskService = NATaskService.shared
     @ObservedObject private var rollup = NARollupService.shared
@@ -26,7 +26,6 @@ struct NAIceTasksView: View {
                             if taskService.isLoading || rollup.isLoading {
                                 ProgressView().scaleEffect(0.7).tint(.ncCyan)
                             }
-                            // Filter toggle
                             Button {
                                 withAnimation { filterDone.toggle() }
                             } label: {
@@ -34,7 +33,6 @@ struct NAIceTasksView: View {
                                     .font(.system(size: 16))
                                     .foregroundColor(filterDone ? .ncCyan : .gray)
                             }
-                            // Add button
                             Button {
                                 showAddSheet = true
                             } label: {
@@ -50,10 +48,8 @@ struct NAIceTasksView: View {
                     let filtered = filterDone ? taskService.tasks.filter { $0.status != "done" } : taskService.tasks
 
                     if filtered.isEmpty {
-                        emptySection
-                            .padding(.horizontal, 16)
+                        emptySection.padding(.horizontal, 16)
                     } else {
-                        // Stats
                         let open = taskService.tasks.filter { $0.status != "done" }.count
                         let done = taskService.tasks.filter { $0.status == "done" }.count
                         HStack(spacing: 12) {
@@ -63,19 +59,16 @@ struct NAIceTasksView: View {
                         }
                         .padding(.horizontal, 16)
 
-                        // High priority
                         let high = filtered.filter { $0.priority == "high" && $0.status != "done" }
                         if !high.isEmpty {
                             taskSection(title: "Kritisch", icon: "exclamationmark.triangle.fill", tasks: high, accent: .ncRose)
                         }
 
-                        // Open tasks
                         let openTasks = filtered.filter { $0.priority != "high" && $0.status != "done" }
                         if !openTasks.isEmpty {
                             taskSection(title: "Offen (\(openTasks.count))", icon: "circle", tasks: openTasks, accent: .ncCyan)
                         }
 
-                        // Done (only if not filtered)
                         if !filterDone {
                             let doneTasks = filtered.filter { $0.status == "done" }
                             if !doneTasks.isEmpty {
@@ -99,20 +92,14 @@ struct NAIceTasksView: View {
         }
     }
 
-    // MARK: - Task Section
     private func taskSection(title: String, icon: String, tasks: [NATaskItem], accent: Color) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.caption)
-                    .foregroundColor(accent)
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(.white)
+                Image(systemName: icon).font(.caption).foregroundColor(accent)
+                Text(title).font(.subheadline.weight(.semibold)).foregroundColor(.white)
                 Spacer()
                 Text("\(tasks.count)")
-                    .font(.caption.weight(.bold))
-                    .foregroundColor(accent)
+                    .font(.caption.weight(.bold)).foregroundColor(accent)
                     .padding(.horizontal, 8).padding(.vertical, 2)
                     .background(accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 6))
             }
@@ -133,13 +120,10 @@ struct NAIceTasksView: View {
         .padding(.horizontal, 16)
     }
 
-    // MARK: - Task Card
     private func taskCard(_ task: NATaskItem, accent: Color) -> some View {
         HStack(spacing: 12) {
-            // Completion toggle
             Button {
-                let newStatus = task.status == "done" ? "open" : "done"
-                Task { await taskService.updateTask(task, status: newStatus) }
+                Task { await taskService.toggleTask(task) }
             } label: {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
@@ -165,58 +149,64 @@ struct NAIceTasksView: View {
                             Circle().fill(accent).frame(width: 4, height: 4)
                             Text(p).font(.caption2).foregroundColor(.gray)
                         }
+                        .fixedSize()
                     }
                     HStack(spacing: 4) {
                         Circle().fill(task.statusDot).frame(width: 4, height: 4)
                         Text(task.status == "done" ? "Erledigt" : task.status.replacingOccurrences(of: "_", with: " ").capitalized)
-                            .font(.caption2)
-                            .foregroundColor(.gray)
+                            .font(.caption2).foregroundColor(.gray)
                     }
+                    .fixedSize()
                     if task.isLocal {
                         HStack(spacing: 3) {
                             Image(systemName: "iphone").font(.system(size: 8))
                             Text("Eigen").font(.caption2)
                         }
                         .foregroundColor(.gray.opacity(0.6))
+                        .fixedSize()
+                    }
+                    // Deadline badge
+                    if let d = task.deadline, !d.isEmpty {
+                        HStack(spacing: 3) {
+                            Image(systemName: "calendar").font(.system(size: 8))
+                            Text(task.deadlineLabel)
+                        }
+                        .font(.caption2)
+                        .foregroundColor(task.deadlineColor)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(task.deadlineColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 4))
+                        .fixedSize()
                     }
                 }
             }
 
             Spacer()
 
-            // Delete button
-            Button(role: .destructive) {
-                Task { await taskService.deleteTask(task) }
-            } label: {
-                Image(systemName: "trash")
-                    .font(.caption)
-                    .foregroundColor(.gray.opacity(0.5))
+            if task.isLocal {
+                Button(role: .destructive) {
+                    Task { await taskService.deleteTask(task) }
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.caption)
+                        .foregroundColor(.gray.opacity(0.5))
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .padding(12)
         .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.04), lineWidth: 0.5))
     }
 
-    // MARK: - Stat Card
     private func statCard(icon: String, value: String, label: String, color: Color) -> some View {
         HStack(spacing: 10) {
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(color.opacity(0.12))
-                    .frame(width: 28, height: 28)
-                Image(systemName: icon)
-                    .font(.system(size: 11))
-                    .foregroundColor(color)
+                RoundedRectangle(cornerRadius: 8).fill(color.opacity(0.12)).frame(width: 28, height: 28)
+                Image(systemName: icon).font(.system(size: 11)).foregroundColor(color)
             }
             VStack(alignment: .leading, spacing: 1) {
-                Text(value)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
-                Text(label)
-                    .font(.caption2)
-                    .foregroundColor(.gray)
+                Text(value).font(.system(size: 18, weight: .bold)).foregroundColor(.white)
+                Text(label).font(.caption2).foregroundColor(.gray)
             }
             Spacer()
         }
@@ -225,25 +215,18 @@ struct NAIceTasksView: View {
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
     }
 
-    // MARK: - Empty State
     private var emptySection: some View {
         VStack(spacing: 14) {
             ZStack {
                 Circle().fill(Color.ncNeonGreen.opacity(0.1)).frame(width: 48, height: 48)
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.ncNeonGreen)
+                Image(systemName: "checkmark.circle.fill").font(.title2).foregroundColor(.ncNeonGreen)
             }
             Text("Keine offenen Aufgaben")
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.white)
+                .font(.subheadline.weight(.semibold)).foregroundColor(.white)
             Text("Tippe auf + um einen neuen Task zu erstellen.")
-                .font(.caption)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
+                .font(.caption).foregroundColor(.gray).multilineTextAlignment(.center)
         }
-        .padding(24)
-        .frame(maxWidth: .infinity)
+        .padding(24).frame(maxWidth: .infinity)
         .background(Color(red: 0.02, green: 0.02, blue: 0.04), in: RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
     }
@@ -257,71 +240,108 @@ struct AddTaskSheet: View {
     @State private var title = ""
     @State private var project = "nAIce"
     @State private var priority = "medium"
-    @State private var deadline = ""
+    @State private var deadlineDate = Date().addingTimeInterval(86400 * 7)
     @State private var hasDeadline = false
 
     let projects = ["nAIce", "foodloop", "Schaffer-Wine", "parcelmate", "einfacHR", "Privat", "Sonstiges"]
+
+    private var deadlineString: String? {
+        guard hasDeadline else { return nil }
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: deadlineDate)
+    }
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.black.ignoresSafeArea()
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(spacing: 24) {
                         // Title
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Titel").font(.caption).foregroundColor(.gray)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Titel")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.gray)
+                                .textCase(.uppercase)
+                                .tracking(1)
                             TextField("Task eingeben...", text: $title)
                                 .font(.body)
                                 .foregroundColor(.white)
-                                .padding(12)
+                                .padding(14)
                                 .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
                                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
                         }
 
                         // Project
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Projekt").font(.caption).foregroundColor(.gray)
-                            HStack(spacing: 6) {
-                                ForEach(projects, id: \.self) { p in
-                                    Button {
-                                        project = p
-                                    } label: {
-                                        Text(p)
-                                            .font(.caption)
-                                            .padding(.horizontal, 10).padding(.vertical, 6)
-                                            .background(project == p ? Color.ncCyan.opacity(0.2) : Color(red: 0.03, green: 0.03, blue: 0.06))
-                                            .foregroundColor(project == p ? .ncCyan : .gray)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(project == p ? Color.ncCyan.opacity(0.3) : Color.white.opacity(0.04), lineWidth: 0.5))
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Projekt")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.gray)
+                                .textCase(.uppercase)
+                                .tracking(1)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(projects, id: \.self) { p in
+                                        Button {
+                                            project = p
+                                        } label: {
+                                            Text(p)
+                                                .font(.subheadline)
+                                                .padding(.horizontal, 14)
+                                                .padding(.vertical, 8)
+                                                .background(project == p ? Color.ncCyan.opacity(0.2) : Color(red: 0.03, green: 0.03, blue: 0.06))
+                                                .foregroundColor(project == p ? .ncCyan : .gray)
+                                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 10)
+                                                        .stroke(project == p ? Color.ncCyan.opacity(0.3) : Color.white.opacity(0.04), lineWidth: 0.5)
+                                                )
+                                        }
+                                        .fixedSize()
                                     }
                                 }
+                                .padding(.vertical, 4)
                             }
-                            .padding(.vertical, 4)
                         }
 
                         // Priority
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Priorität").font(.caption).foregroundColor(.gray)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Priorität")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.gray)
+                                .textCase(.uppercase)
+                                .tracking(1)
                             HStack(spacing: 10) {
-                                priorityButton("niedrig", color: .ncCyan)
-                                priorityButton("medium", color: .ncAmber)
-                                priorityButton("high", color: .ncRose)
+                                prioBtn("Niedrig", value: "low", color: .ncCyan)
+                                prioBtn("Mittel", value: "medium", color: .ncAmber)
+                                prioBtn("Hoch", value: "high", color: .ncRose)
                             }
                         }
 
                         // Deadline
-                        VStack(alignment: .leading, spacing: 6) {
-                            Toggle("Deadline", isOn: $hasDeadline)
-                                .font(.subheadline).foregroundColor(.white)
-                                .tint(.ncCyan)
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Deadline")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundColor(.gray)
+                                    .textCase(.uppercase)
+                                    .tracking(1)
+                                Spacer()
+                                Toggle("", isOn: $hasDeadline)
+                                    .labelsHidden()
+                                    .tint(.ncCyan)
+                            }
                             if hasDeadline {
-                                TextField("YYYY-MM-DD", text: $deadline)
-                                    .font(.body)
-                                    .foregroundColor(.white)
-                                    .padding(12)
-                                    .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
-                                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+                                DatePicker(
+                                    "Datum",
+                                    selection: $deadlineDate,
+                                    displayedComponents: .date
+                                )
+                                .datePickerStyle(.graphical)
+                                .tint(.ncCyan)
+                                .background(Color(red: 0.03, green: 0.03, blue: 0.06), in: RoundedRectangle(cornerRadius: 12))
+                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
                             }
                         }
                     }
@@ -332,13 +352,11 @@ struct AddTaskSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Abbrechen") { dismiss() }
-                        .foregroundColor(.gray)
+                    Button("Abbrechen") { dismiss() }.foregroundColor(.gray)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Hinzufügen") {
-                        let d = hasDeadline && !deadline.isEmpty ? deadline : nil
-                        onSave(title, project, priority, d)
+                        onSave(title, project, priority, deadlineString)
                         dismiss()
                     }
                     .font(.headline)
@@ -349,19 +367,23 @@ struct AddTaskSheet: View {
         }
     }
 
-    func priorityButton(_ label: String, color: Color) -> some View {
+    func prioBtn(_ label: String, value: String, color: Color) -> some View {
         Button {
-            priority = label == "niedrig" ? "low" : label == "medium" ? "medium" : "high"
+            priority = value
         } label: {
-            HStack(spacing: 4) {
-                Circle().fill(color).frame(width: 6, height: 6)
-                Text(label).font(.caption)
+            HStack(spacing: 6) {
+                Circle().fill(color).frame(width: 8, height: 8)
+                Text(label).font(.subheadline)
             }
-            .padding(.horizontal, 12).padding(.vertical, 8)
-            .background(priority == (label == "niedrig" ? "low" : label) ? color.opacity(0.15) : Color(red: 0.03, green: 0.03, blue: 0.06))
-            .foregroundColor(priority == (label == "niedrig" ? "low" : label) ? color : .gray)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(priority == (label == "niedrig" ? "low" : label) ? color.opacity(0.3) : Color.white.opacity(0.04), lineWidth: 0.5))
+            .padding(.horizontal, 16).padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(priority == value ? color.opacity(0.15) : Color(red: 0.03, green: 0.03, blue: 0.06))
+            .foregroundColor(priority == value ? color : .gray)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(priority == value ? color.opacity(0.3) : Color.white.opacity(0.04), lineWidth: 0.5)
+            )
         }
     }
 }
