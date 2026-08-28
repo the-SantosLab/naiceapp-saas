@@ -173,8 +173,28 @@ struct nAIceApp: App {
                     biometricAuth.lock()
                 }
             }
+            .onOpenURL { url in
+                handleDeepLink(url)
+            }
         }
         .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self])
         .commands { nAIceCommands(); SidebarCommands() }
+    }
+
+    // MARK: - Deep Link Handler
+    @MainActor
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme == "naice" else { return }
+        switch url.host {
+        case "chat":
+            NAIntentRouter.shared.pendingTab = "agent"
+            NAIntentRouter.shared.pendingNewChat = true
+        case "tasks":
+            NAIntentRouter.shared.pendingTab = "tasks"
+        case "mood", "journal":
+            NAIntentRouter.shared.pendingTab = "life"
+        default:
+            NAIntentRouter.shared.pendingTab = "home"
+        }
     }
 }

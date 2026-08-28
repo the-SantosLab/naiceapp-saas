@@ -181,7 +181,7 @@ struct NAiceShortcuts: AppShortcutsProvider {
             phrases: [
                 "What is my recovery in \(.applicationName)",
                 "\(.applicationName) recovery",
-                "Show my WHOOP recovery"
+                "Show my WHOOP recovery in \(.applicationName)"
             ],
             shortTitle: "Recovery",
             systemImageName: "heart.fill"
@@ -191,7 +191,7 @@ struct NAiceShortcuts: AppShortcutsProvider {
             phrases: [
                 "What is my briefing in \(.applicationName)",
                 "\(.applicationName) briefing",
-                "Show my daily briefing"
+                "Show my daily briefing in \(.applicationName)"
             ],
             shortTitle: "Daily Briefing",
             systemImageName: "sun.max.fill"
@@ -201,7 +201,7 @@ struct NAiceShortcuts: AppShortcutsProvider {
             phrases: [
                 "Business status in \(.applicationName)",
                 "\(.applicationName) business",
-                "Show my business pipeline"
+                "Show my business pipeline in \(.applicationName)"
             ],
             shortTitle: "Business",
             systemImageName: "chart.bar.fill"
