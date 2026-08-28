@@ -92,41 +92,5 @@ struct NewChatInProfileIntent: AppIntent {
     }
 }
 
-/// Registers nAIce's App Shortcuts. iOS discovers this conformance automatically at build
-/// time — it does not need to be referenced from the `App` struct. Exposing the intent here
-/// is what makes "New Chat" appear in the Shortcuts app, Spotlight, and Siri, and assignable
-/// to the iPhone Action button.
-struct nAIceShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: NewChatIntent(),
-            phrases: [
-                "New chat in \(.applicationName)",
-                "New \(.applicationName) chat",
-                "Start a new chat in \(.applicationName)"
-            ],
-            shortTitle: "New Chat",
-            systemImageName: "square.and.pencil"
-        )
-        AppShortcut(
-            intent: NewChatVoiceIntent(),
-            phrases: [
-                "New voice chat in \(.applicationName)",
-                "New \(.applicationName) voice chat",
-                "Start a voice chat in \(.applicationName)"
-            ],
-            shortTitle: "New Chat with Voice",
-            systemImageName: "mic.badge.plus"
-        )
-        AppShortcut(
-            intent: NewChatInProfileIntent(),
-            phrases: [
-                "New \(\.$profile) chat in \(.applicationName)",
-                "Start a new \(\.$profile) chat in \(.applicationName)",
-                "New chat in \(\.$profile) on \(.applicationName)"
-            ],
-            shortTitle: "New Chat in Profile",
-            systemImageName: "person.crop.circle.badge.plus"
-        )
-    }
-}
+// MARK: - Register Intents (nAIce Shortcuts defined in NAIntentRouter.swift)
+// nAIceShortcuts moved to NAIntentRouter.swift as NAiceShortcuts

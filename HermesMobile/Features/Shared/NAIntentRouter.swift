@@ -6,6 +6,7 @@ import AppIntents
 final class NAIntentRouter: ObservableObject {
     static let shared = NAIntentRouter()
     @Published var pendingTab: String? = nil
+    @Published var pendingNewChat = false
     private init() {}
 }
 
@@ -145,5 +146,65 @@ struct OpenTasksIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         NAIntentRouter.shared.pendingTab = "tasks"
         return .result()
+    }
+}
+
+// MARK: - New Chat Intent (nAIce native)
+struct NAiceNewChatIntent: AppIntent {
+    static var title: LocalizedStringResource = "New Chat"
+    static var description = IntentDescription("Öffnet nAIce in einem neuen Chat mit Amelia.")
+    static var openAppWhenRun: Bool = true
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        NAIntentRouter.shared.pendingTab = "agent"
+        NAIntentRouter.shared.pendingNewChat = true
+        return .result()
+    }
+}
+
+// MARK: - nAIce Shortcuts Provider
+struct NAiceShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: NAiceNewChatIntent(),
+            phrases: [
+                "New chat in \(.applicationName)",
+                "New \(.applicationName) chat",
+                "Start a new chat in \(.applicationName)"
+            ],
+            shortTitle: "New Chat",
+            systemImageName: "square.and.pencil"
+        )
+        AppShortcut(
+            intent: RecoveryIntent(),
+            phrases: [
+                "What is my recovery in \(.applicationName)",
+                "\(.applicationName) recovery",
+                "Show my WHOOP recovery"
+            ],
+            shortTitle: "Recovery",
+            systemImageName: "heart.fill"
+        )
+        AppShortcut(
+            intent: BriefingIntent(),
+            phrases: [
+                "What is my briefing in \(.applicationName)",
+                "\(.applicationName) briefing",
+                "Show my daily briefing"
+            ],
+            shortTitle: "Daily Briefing",
+            systemImageName: "sun.max.fill"
+        )
+        AppShortcut(
+            intent: BusinessIntent(),
+            phrases: [
+                "Business status in \(.applicationName)",
+                "\(.applicationName) business",
+                "Show my business pipeline"
+            ],
+            shortTitle: "Business",
+            systemImageName: "chart.bar.fill"
+        )
     }
 }

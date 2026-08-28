@@ -176,6 +176,12 @@ struct NAIceTabView: View {
                                                                 intentRouter.pendingTab = nil
                                                             }
                                                         })
+                            .onChange(of: intentRouter.pendingNewChat, perform: { val in
+                                if val {
+                                    pn = NewChatRequest()
+                                    intentRouter.pendingNewChat = false
+                                }
+                            })
                             .onChange(of: scenePhase, perform: { newPhase in
                                 guard newPhase == .active else { return }
                                 Task {
