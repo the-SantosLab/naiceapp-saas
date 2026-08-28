@@ -26,6 +26,35 @@ struct NAIceMoreView: View {
                         integrationRow("bell.fill", "Push", pushReg.statusText)
                     }.warmCard()
 
+                    // Sicherheit
+                    if NABiometricAuth.shared.isAvailable {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("🔒 Sicherheit").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
+                            HStack(spacing: 10) {
+                                Image(systemName: "faceid").font(.caption).foregroundColor(.ncSage).frame(width: 20)
+                                Text("App Lock (\(NABiometricAuth.shared.biometryTypeLabel))")
+                                    .font(.subheadline).foregroundColor(.ncDark)
+                                Spacer()
+                                Toggle("", isOn: Binding(
+                                    get: { NABiometricAuth.shared.isEnabled },
+                                    set: { newValue in
+                                        NABiometricAuth.shared.isEnabled = newValue
+                                        if newValue {
+                                            NABiometricAuth.shared.lock()
+                                            Task { await NABiometricAuth.shared.authenticate() }
+                                        }
+                                    }
+                                ))
+                                .labelsHidden()
+                                .tint(.ncSage)
+                            }
+                            .padding(.vertical, 4)
+                            Text("Sperrt nAIce mit \(NABiometricAuth.shared.biometryTypeLabel) wenn die App in den Hintergrund geht.")
+                                .font(.caption).foregroundColor(.ncMuted)
+                                .padding(.leading, 30)
+                        }.warmCard()
+                    }
+
                     // KI & Agent
                     VStack(alignment: .leading, spacing: 8) {
                         Text("✨ KI & Agent").font(.headline.weight(.semibold)).foregroundColor(.ncDark)
