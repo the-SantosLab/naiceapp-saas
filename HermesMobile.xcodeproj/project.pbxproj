@@ -102,6 +102,7 @@
 		1A2B3C4D5E6F70000000214 /* SkillsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F70000000215 /* SkillsViewModel.swift */; };
 		1A2B3C4D5E6F70000000300 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F70000000301 /* PrivacyInfo.xcprivacy */; };
 		1A2B3C4D5E6F70000000410 /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F70000000411 /* OnboardingComponents.swift */; };
+		1DDAEF347D4A57D3DAED66EB /* NANotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 629E8754B1AD2675BB5492E2 /* NANotesView.swift */; };
 		1F401C3F57E7F1847EC884C2 /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB0B81877A905E369B0B243 /* NAiceWidgetBundle.swift */; };
 		21A27CFE2DA7D13DE29858D8 /* NACryptoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3A6878D4C92A894FFDB3B /* NACryptoService.swift */; };
 		2218CE382CB8F604BD01051F /* JournalCheckinCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2CC284063C98B8181901DC /* JournalCheckinCard.swift */; };
@@ -380,6 +381,7 @@
 		C5C877CB6E6C2B1B8CAC6F5C /* NAIceFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D7807F9197CBA48B60BCA2 /* NAIceFilesView.swift */; };
 		C6B992E62A18CA61F6BE36F5 /* NALocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3CC1C2B875235B55609590 /* NALocationService.swift */; };
 		CB134039F4A923B2C960913A /* BriefingPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01960B512D344D69450CF659 /* BriefingPlaceholder.swift */; };
+		D095DEFC6DD9DD5BAC3E8C2D /* NANotesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2630E33F7B2B402503D89CCA /* NANotesService.swift */; };
 		D0M1C0000000000000000009 /* MarkdownMathLayoutCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0M1C000000000000000000A /* MarkdownMathLayoutCacheTests.swift */; };
 		D123E596F72D4D22FF9919C1 /* NAIceMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EE0F07846E19EAFBF2FF6 /* NAIceMoreView.swift */; };
 		D2438A24C3E55FD86BAE1822 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2604B1A5A2028EE86CC8F4DB /* SwiftUI.framework */; };
@@ -547,6 +549,7 @@
 		22AB000000000000000000F3 /* WorkspaceRegistryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceRegistryViewModelTests.swift; sourceTree = "<group>"; };
 		2402AA464975A9B246B36F88 /* NAWorkflowService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWorkflowService.swift; sourceTree = "<group>"; };
 		2604B1A5A2028EE86CC8F4DB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftUI.framework; sourceTree = SDKROOT; };
+		2630E33F7B2B402503D89CCA /* NANotesService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANotesService.swift; sourceTree = "<group>"; };
 		26AB000000000000000000F1 /* ProvidersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvidersViewModel.swift; sourceTree = "<group>"; };
 		26AB000000000000000000F2 /* ProvidersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvidersView.swift; sourceTree = "<group>"; };
 		26AB000000000000000000F3 /* APIClientProvidersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientProvidersTests.swift; sourceTree = "<group>"; };
@@ -588,6 +591,7 @@
 		5DA59130ED4141049177576C /* SlashCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommand.swift; sourceTree = "<group>"; };
 		5E5BD397F558FB67C3996059 /* NANumberPad.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANumberPad.swift; sourceTree = "<group>"; };
 		611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubModels.swift; path = AgentHub/Models/AgentHubModels.swift; sourceTree = "<group>"; };
+		629E8754B1AD2675BB5492E2 /* NANotesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANotesView.swift; sourceTree = "<group>"; };
 		63F7BCFA84BB0E549E0CE361 /* NAContactService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAContactService.swift; sourceTree = "<group>"; };
 		6578902466D98BB01323B252 /* AmeliaBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmeliaBar.swift; sourceTree = "<group>"; };
 		6809B8F1391248A4AA77C453 /* SlashCommandExecutorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandExecutorTests.swift; sourceTree = "<group>"; };
@@ -1619,6 +1623,8 @@
 				36213E5489BFD53A961F208D /* NAIceChatView.swift */,
 				9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */,
 				8C8CD5B8EB4CFECAF6AB51C3 /* NATaskService.swift */,
+				2630E33F7B2B402503D89CCA /* NANotesService.swift */,
+				629E8754B1AD2675BB5492E2 /* NANotesView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2146,6 +2152,8 @@
 				840D30CDEF25A0255AFABB1E /* NABiometricAuth.swift in Sources */,
 				E8DFEE26F289B67519C1B11B /* NAIntentRouter.swift in Sources */,
 				8BD8A4D6D186151FAB437884 /* NATaskService.swift in Sources */,
+				D095DEFC6DD9DD5BAC3E8C2D /* NANotesService.swift in Sources */,
+				1DDAEF347D4A57D3DAED66EB /* NANotesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2472,10 +2480,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
-			};
 			name = Debug;
 		};
 		1A2B3C4D5E6F700000000083 /* Release */ = {
@@ -2505,10 +2509,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
 			};
 			name = Release;
 		};

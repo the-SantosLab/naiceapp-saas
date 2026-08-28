@@ -170,6 +170,7 @@ struct AgentHubView: View {
                     areaTile("house.fill", "Alltag", .ncBlue, DailyDetailView())
                     areaTile("folder.fill", "Dateien", .ncPurple, NAIceFilesView())
                     areaTile("camera.viewfinder", "Scanner", .ncCyan, NACameraView())
+                    areaTile("note.text", "Notizen", .ncBlue, NANotesView())
                     areaTile("tray.fill", "Posteingang", .ncNeonGreen, NAUnifiedInboxView())
                     areaTile("homekit", "Smart Home", .ncAmber, NASmartHomeView())
                     areaTile("apple.terminal", "Mac Agent", .ncPurple, NAMacAgentView())
