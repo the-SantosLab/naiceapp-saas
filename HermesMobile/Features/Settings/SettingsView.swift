@@ -197,6 +197,29 @@ struct SettingsView: View {
                     SettingsFootnote(String(localized: "On-device only keeps composer dictation audio off your Hermes server."))
                 }
 
+                // MARK: Security
+                if NABiometricAuth.shared.isAvailable {
+                    SettingsCard(title: String(localized: "Security")) {
+                        SettingsToggleRow(
+                            title: String(localized: "App Lock (\(NABiometricAuth.shared.biometryTypeLabel))"),
+                            systemImage: "lock.shield",
+                            isOn: Binding(
+                                get: { NABiometricAuth.shared.isEnabled },
+                                set: { newValue in
+                                    NABiometricAuth.shared.isEnabled = newValue
+                                    if newValue {
+                                        // Lock immediately so the user confirms it works
+                                        NABiometricAuth.shared.lock()
+                                        Task { await NABiometricAuth.shared.authenticate() }
+                                    }
+                                }
+                            )
+                        )
+
+                        SettingsFootnote(String(localized: "Locks nAIce with \(NABiometricAuth.shared.biometryTypeLabel) when the app goes to the background. Authenticate again to return."))
+                    }
+                }
+
                 SettingsCard(title: String(localized: "Chat")) {
                     SettingsToggleRow(
                         title: String(localized: "Thinking and Tool Cards"),
@@ -434,16 +457,16 @@ struct SettingsView: View {
                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                         Link(destination: settingsURL) {
                             SettingsAccessoryRow(
-                                title: String(localized: "Open Hermex Settings"),
+                                title: String(localized: "Open nAIce Settings"),
                                 systemImage: "gearshape",
                                 accessorySystemImage: "arrow.up.forward"
                             )
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("Open Hermex Settings")
+                        .accessibilityLabel("Open nAIce Settings")
                     }
 
-                    SettingsFootnote(String(localized: "Run Hermex actions like New Chat from Siri, Spotlight, the Lock Screen, or the iPhone Action button. Open Hermex Settings to manage its Siri & Search options. To assign an action to the Action button, open the iOS Settings app, choose Action Button, then Shortcut, and pick a Hermex action."))
+                    SettingsFootnote(String(localized: "Run nAIce actions like New Chat from Siri, Spotlight, the Lock Screen, or the iPhone Action button. Open nAIce Settings to manage its Siri & Search options. To assign an action to the Action button, open the iOS Settings app, choose Action Button, then Shortcut, and pick a nAIce action."))
                 }
 
                 serversCard

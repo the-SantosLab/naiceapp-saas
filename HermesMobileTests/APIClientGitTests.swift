@@ -426,13 +426,13 @@ final class APIClientGitTests: APIClientTestCase {
             // must use the server's "new" mode (issue #315 follow-up).
             XCTAssertEqual(body["mode"] as? String, "new")
             XCTAssertEqual(body["ref"] as? String, "main")
-            XCTAssertEqual(body["new_branch"] as? String, "hermex/test2")
-            return apiTestJSONResponse(#"{"ok":true,"current_branch":"hermex/test2","status":{"is_git":true,"branch":"hermex/test2"},"branches":{"is_git":true,"current":"hermex/test2"}}"#, for: request)
+            XCTAssertEqual(body["new_branch"] as? String, "nAIce/test2")
+            return apiTestJSONResponse(#"{"ok":true,"current_branch":"nAIce/test2","status":{"is_git":true,"branch":"nAIce/test2"},"branches":{"is_git":true,"current":"nAIce/test2"}}"#, for: request)
         }
 
-        let target = GitCheckoutTarget(ref: "main", mode: .local, newBranch: "hermex/test2")
+        let target = GitCheckoutTarget(ref: "main", mode: .local, newBranch: "nAIce/test2")
         let response = try await client.gitCheckout(sessionID: "abc123", target: target)
-        XCTAssertEqual(response.currentBranch, "hermex/test2")
+        XCTAssertEqual(response.currentBranch, "nAIce/test2")
     }
 
     func testGitErrorEnvelopeExposesStructuredCodeAndMessage() async throws {

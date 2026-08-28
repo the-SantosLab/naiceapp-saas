@@ -1,5 +1,157 @@
 import Foundation
 import SwiftUI
+import HomeKit
+
+// MARK: - HomeKit Bridge
+
+/// Wraps HMHomeManager to discover and control HomeKit accessories.
+/// Apple's HomeKit framework requires the `com.apple.developer.homekit`
+/// entitlement and `NSHomeKitUsageDescription` in Info.plist.
+@MainActor
+final class NAHomeKitBridge: NSObject, ObservableObject, HMHomeManagerDelegate {
+    static let shared = NAHomeKitBridge()
+
+    private let homeManager = HMHomeManager()
+    private var homes: [HMHome] { homeManager.homes }
+
+    @Published var isReady = false
+    @Published var lastError: String?
+
+    private override init() {
+        super.init()
+        homeManager.delegate = self
+    }
+
+    // MARK: HMHomeManagerDelegate
+
+    nonisolated func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
+        Task { @MainActor in
+            isReady = true
+            objectWillChange.send()
+        }
+    }
+
+    nonisolated func homeManager(_ manager: HMHomeManager, didUpdate status: HMHomeManagerAuthorizationStatus) {
+        Task { @MainActor in
+            isReady = true
+        }
+    }
+
+    // MARK: Accessory Discovery
+
+    /// Returns a list of all HomeKit accessories across all homes as NAHomeDevice models.
+    var discoveredDevices: [NAHomeDevice] {
+        guard isReady else { return [] }
+        return homes.flatMap { home in
+            home.accessories.map { accessory in
+                let (isOn, brightness, temp) = accessoryState(accessory)
+                return NAHomeDevice(
+                    name: accessory.name,
+                    type: deviceType(for: accessory),
+                    isOn: isOn,
+                    brightness: brightness,
+                    temperature: temp,
+                    room: home.name,
+                    bridge: .homekit
+                )
+            }
+        }
+    }
+
+    // MARK: Control
+
+    func turnOn(_ accessory: HMAccessory) async {
+        await setPower(accessory, on: true)
+    }
+
+    func turnOff(_ accessory: HMAccessory) async {
+        await setPower(accessory, on: false)
+    }
+
+    func setBrightness(_ accessory: HMAccessory, _ value: Double) async {
+        let intVal = Int(value)
+        for service in accessory.services {
+            for char in service.characteristics where char.characteristicType == HMCharacteristicTypeBrightness {
+                do {
+                    try await char.writeValue(intVal)
+                } catch {
+                    lastError = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    func setTemperature(_ accessory: HMAccessory, _ celsius: Double) async {
+        for service in accessory.services {
+            for char in service.characteristics where char.characteristicType == HMCharacteristicTypeTargetTemperature {
+                do {
+                    try await char.writeValue(celsius)
+                } catch {
+                    lastError = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    // MARK: Helpers
+
+    /// Looks up an HMAccessory by its name and home name.
+    func accessory(named name: String, in homeName: String) -> HMAccessory? {
+        for home in homes where home.name == homeName {
+            if let accessory = home.accessories.first(where: { $0.name == name }) {
+                return accessory
+            }
+        }
+        return nil
+    }
+
+    private func setPower(_ accessory: HMAccessory, on: Bool) async {
+        for service in accessory.services {
+            for char in service.characteristics where char.characteristicType == HMCharacteristicTypePowerState {
+                do {
+                    try await char.writeValue(on)
+                } catch {
+                    lastError = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    private func accessoryState(_ accessory: HMAccessory) -> (isOn: Bool, brightness: Double, temperature: Double) {
+        var isOn = false
+        var brightness: Double = 100
+        var temp: Double = 20
+
+        for service in accessory.services {
+            for char in service.characteristics {
+                switch char.characteristicType {
+                case HMCharacteristicTypePowerState:
+                    isOn = (char.value as? Bool) ?? false
+                case HMCharacteristicTypeBrightness:
+                    brightness = Double((char.value as? Int) ?? 100)
+                case HMCharacteristicTypeCurrentTemperature:
+                    temp = (char.value as? Double) ?? 20
+                default:
+                    break
+                }
+            }
+        }
+        return (isOn, brightness, temp)
+    }
+
+    private func deviceType(for accessory: HMAccessory) -> DeviceType {
+        for service in accessory.services {
+            if service.serviceType == HMServiceTypeLightbulb { return .light }
+            if service.serviceType == HMServiceTypeThermostat { return .thermostat }
+            if service.serviceType == HMServiceTypeOutlet { return .plug }
+            if service.serviceType == HMServiceTypeWindowCovering { return .blind }
+            if service.serviceType == HMServiceTypeTemperatureSensor { return .sensor }
+        }
+        return .light
+    }
+}
+
+// MARK: - NAHomeDevice with HomeKit accessory reference
 
 // MARK: - Smart Home Device
 struct NAHomeDevice: Identifiable, Codable {
@@ -48,6 +200,29 @@ class NASmartHomeService: ObservableObject {
     init() {
         loadDevices()
         if devices.isEmpty { setupDefaultDevices() }
+        // HomeKit: sync discovered devices on next run loop
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2s warten bis HomeKit ready
+            syncHomeKitDevices()
+        }
+    }
+
+    // MARK: HomeKit Sync
+
+    /// Discovers HomeKit accessories and merges them into the device list.
+    /// Existing devices (matched by name + room) are preserved; new ones are added.
+    func syncHomeKitDevices() {
+        let bridge = NAHomeKitBridge.shared
+        guard bridge.isReady else { return }
+        let hkDevices = bridge.discoveredDevices
+        guard !hkDevices.isEmpty else { return }
+
+        for hkDevice in hkDevices {
+            if !devices.contains(where: { $0.name == hkDevice.name && $0.room == hkDevice.room }) {
+                devices.append(hkDevice)
+            }
+        }
+        saveDevices()
     }
 
     private func setupDefaultDevices() {
@@ -117,8 +292,38 @@ class NASmartHomeService: ObservableObject {
         sendBatch()
     }
 
-    // MARK: Server Sync
+    // MARK: Server Sync + HomeKit Control
     private func sendCommand(_ device: NAHomeDevice) {
+        // HomeKit: control directly via the HomeKit bridge
+        if device.bridge == .homekit {
+            let bridge = NAHomeKitBridge.shared
+            guard bridge.isReady else { return }
+            guard let accessory = bridge.accessory(named: device.name, in: device.room) else { return }
+
+            Task {
+                switch device.type {
+                case .light:
+                    if device.isOn {
+                        await bridge.turnOn(accessory)
+                        if device.brightness < 100 {
+                            await bridge.setBrightness(accessory, device.brightness)
+                        }
+                    } else {
+                        await bridge.turnOff(accessory)
+                    }
+                case .thermostat:
+                    await bridge.setTemperature(accessory, device.temperature)
+                case .plug:
+                    if device.isOn { await bridge.turnOn(accessory) }
+                    else { await bridge.turnOff(accessory) }
+                default:
+                    break
+                }
+            }
+            return
+        }
+
+        // Non-HomeKit: send to server bridge
         guard let url = URL(string: "\(serverURL)/\(device.bridge.rawValue)") else { return }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
@@ -132,11 +337,36 @@ class NASmartHomeService: ObservableObject {
     }
 
     private func sendBatch() {
+        // HomeKit: control each HomeKit device directly
+        let homeKitDevices = devices.filter { $0.bridge == .homekit }
+        if !homeKitDevices.isEmpty {
+            let bridge = NAHomeKitBridge.shared
+            guard bridge.isReady else { return }
+            Task {
+                for device in homeKitDevices {
+                    guard let accessory = bridge.accessory(named: device.name, in: device.room) else { continue }
+                    if device.isOn {
+                        await bridge.turnOn(accessory)
+                        if device.type == .thermostat {
+                            await bridge.setTemperature(accessory, device.temperature)
+                        } else if device.type == .light, device.brightness < 100 {
+                            await bridge.setBrightness(accessory, device.brightness)
+                        }
+                    } else {
+                        await bridge.turnOff(accessory)
+                    }
+                }
+            }
+        }
+
+        // Also send to server (non-HomeKit devices still need server sync)
+        let nonHomeKitDevices = devices.filter { $0.bridge != .homekit }
+        guard !nonHomeKitDevices.isEmpty else { return }
         guard let url = URL(string: "\(serverURL)/batch") else { return }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpBody = try? JSONEncoder().encode(devices)
+        req.httpBody = try? JSONEncoder().encode(nonHomeKitDevices)
         URLSession.shared.dataTask(with: req).resume()
     }
 

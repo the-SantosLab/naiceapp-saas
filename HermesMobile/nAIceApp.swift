@@ -152,11 +152,27 @@ struct nAIceApp: App {
     @UIApplicationDelegateAdaptor(NAIceAppDelegate.self) var appDelegate
     @State private var authManager = AuthManager()
     @AppStorage(AppTheme.storageKey) private var appThemeRawValue = AppTheme.system.rawValue
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var biometricAuth = NABiometricAuth.shared
 
     var body: some Scene {
         WindowGroup {
-            ContentView(authManager: authManager)
-                .preferredColorScheme(.dark)
+            ZStack {
+                ContentView(authManager: authManager)
+                    .preferredColorScheme(.dark)
+
+                if biometricAuth.isLocked {
+                    NAAppLockView()
+                }
+            }
+            .onChange(of: scenePhase) { newPhase in
+                if newPhase == .active, biometricAuth.isLocked {
+                    Task { await biometricAuth.authenticate() }
+                }
+                if newPhase == .background || newPhase == .inactive {
+                    biometricAuth.lock()
+                }
+            }
         }
         .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self])
         .commands { nAIceCommands(); SidebarCommands() }

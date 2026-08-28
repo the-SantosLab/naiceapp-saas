@@ -98,6 +98,12 @@
 	<true/>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>nAIce uses speech recognition to turn dictated audio into editable draft text.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>nAIce uses Face ID to lock the app and protect your sensitive agent conversations and data.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>nAIce integrates with Siri so you can start new chats and interact with your agent hands-free.</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>nAIce uses HomeKit to discover and control your smart home devices from within the app.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

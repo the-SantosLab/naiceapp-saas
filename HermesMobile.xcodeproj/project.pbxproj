@@ -397,6 +397,7 @@
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
 		FD5513154661E6D9D0E6B84D /* NAWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402AA464975A9B246B36F88 /* NAWorkflowService.swift */; };
 		b28a279b120846d3aca0f1b31b5d3c80 /* NAShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ecb3b09acbe482aaf9073bf17905b4d /* NAShoppingList.swift */; };
+		840D30CDEF25A0255AFABB1E /* NABiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -841,6 +842,7 @@
 		FDB8537D281F7636A743206F /* NACalendarService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACalendarService.swift; sourceTree = "<group>"; };
 		FE2CC284063C98B8181901DC /* JournalCheckinCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JournalCheckinCard.swift; path = AgentHub/Cards/JournalCheckinCard.swift; sourceTree = "<group>"; };
 		FFECE70D5133A83E3D4EA8EB /* NACameraView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACameraView.swift; sourceTree = "<group>"; };
+		F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NABiometricAuth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1096,6 +1098,7 @@
 			children = (
 				1A2B3C4D5E6F7000000000B1 /* AuthManager.swift */,
 				1A2B3C4D5E6F7000000000B0 /* KeychainStore.swift */,
+				F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -2140,6 +2143,7 @@
 				569F1CEAB141FFFA0273980A /* NAEmailService.swift in Sources */,
 				8A041BD2035129703F266316 /* NAMacAgentService.swift in Sources */,
 				5BFDFB88F7D53E056E214110 /* NAIceChatView.swift in Sources */,
+				840D30CDEF25A0255AFABB1E /* NABiometricAuth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2466,6 +2470,10 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
+			};
 			name = Debug;
 		};
 		1A2B3C4D5E6F700000000083 /* Release */ = {
@@ -2495,6 +2503,10 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
 			};
 			name = Release;
 		};

@@ -291,7 +291,7 @@ final class ComposerVoiceInputController {
         )
 
         let recordingURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("hermex-composer-stt-\(UUID().uuidString)")
+            .appendingPathComponent("nAIce-composer-stt-\(UUID().uuidString)")
             .appendingPathExtension("wav")
         let recorder = try AVAudioRecorder(url: recordingURL, settings: Self.serverRecordingSettings)
         recorder.prepareToRecord()
@@ -822,7 +822,7 @@ enum ComposerVoiceInputError: LocalizedError {
         case .invalidInputFormat:
             return String(localized: "Voice input is not available because the microphone input format is invalid.")
         case .appNotActive:
-            return String(localized: "Voice input can start only while Hermex is active.")
+            return String(localized: "Voice input can start only while nAIce is active.")
         case .audioEngineAlreadyRunning:
             return String(localized: "Voice input is already preparing the microphone. Try again in a moment.")
         case .audioRecorderStartFailed:
