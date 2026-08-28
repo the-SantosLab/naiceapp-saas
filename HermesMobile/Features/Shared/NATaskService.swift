@@ -11,7 +11,7 @@ struct NATaskItem: Identifiable, Codable, Hashable {
     var deadline: String?
     var source: String?
     var created: Int?
-    var isLocal: Bool = false
+    var isLocal: Bool
 
     var isCompleted: Bool {
         get { status == "done" }
@@ -93,6 +93,19 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         self.created = nil
         self.isLocal = false
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        project = try container.decodeIfPresent(String.self, forKey: .project)
+        priority = try container.decodeIfPresent(String.self, forKey: .priority) ?? "medium"
+        status = try container.decodeIfPresent(String.self, forKey: .status) ?? "open"
+        deadline = try container.decodeIfPresent(String.self, forKey: .deadline)
+        source = try container.decodeIfPresent(String.self, forKey: .source)
+        created = try container.decodeIfPresent(Int.self, forKey: .created)
+        isLocal = try container.decodeIfPresent(Bool.self, forKey: .isLocal) ?? false
+    }
 }
 
 // MARK: - Task Service
@@ -105,25 +118,46 @@ class NATaskService: ObservableObject {
     @Published var lastError: String?
 
     private let serverURL = "https://health.santoslab.de/api/naice/tasks"
+    private let completedKey = "naice_completed_tasks"
+    private var completedIds: Set<String> = []
 
-    private init() {}
+    private init() {
+        loadCompletedState()
+    }
+
+    private func loadCompletedState() {
+        if let data = UserDefaults.standard.data(forKey: completedKey),
+           let ids = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            completedIds = ids
+        }
+    }
+
+    private func saveCompletedState() {
+        if let data = try? JSONEncoder().encode(completedIds) {
+            UserDefaults.standard.set(data, forKey: completedKey)
+        }
+    }
 
     func fetch() async {
         isLoading = true
         defer { isLoading = false }
+        loadCompletedState()
 
         await NARollupService.shared.fetch()
         var merged: [NATaskItem] = []
 
+        // 1. Load rollup tasks
         if let rollupTasks = NARollupService.shared.tasks?.tasks {
             for t in rollupTasks {
-                let item = NATaskItem(from: t)
-                if item.status != "done" {
-                    merged.append(item)
+                var item = NATaskItem(from: t)
+                if completedIds.contains(t.id) {
+                    item.status = "done"
                 }
+                merged.append(item)
             }
         }
 
+        // 2. Load server tasks
         guard let url = URL(string: serverURL) else { return }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
@@ -132,12 +166,16 @@ class NATaskService: ObservableObject {
             for t in serverTasks where !rollupIds.contains(t.id) {
                 var item = t
                 item.isLocal = true
+                if completedIds.contains(item.id) {
+                    item.status = "done"
+                }
                 merged.append(item)
             }
         } catch {
             lastError = "Server: \(error.localizedDescription)"
         }
 
+        // Sort
         merged.sort { a, b in
             if a.status != b.status { return a.status == "open" && b.status != "open" }
             let pOrder = ["high": 0, "medium": 1, "low": 2]
@@ -148,6 +186,17 @@ class NATaskService: ObservableObject {
     }
 
     func addTask(title: String, project: String = "nAIce", priority: String = "medium", deadline: String? = nil) async {
+        let newTask = NATaskItem(
+            title: title,
+            project: project,
+            priority: priority,
+            deadline: deadline
+        )
+
+        // Add locally immediately
+        tasks.insert(newTask, at: 0)
+
+        // Sync to server
         guard let url = URL(string: serverURL) else { return }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
@@ -157,23 +206,36 @@ class NATaskService: ObservableObject {
         req.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         do {
-            let (_, _) = try await URLSession.shared.data(for: req)
-            // Refresh full list
-            await fetch()
+            let (data, _) = try await URLSession.shared.data(for: req)
+            if let result = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let serverTask = result["task"] as? [String: Any],
+               let serverId = serverTask["id"] as? String {
+                if let idx = tasks.firstIndex(where: { $0.id == newTask.id }) {
+                    tasks[idx].id = serverId
+                }
+            }
         } catch {
-            lastError = "Add failed: \(error.localizedDescription)"
+            lastError = "Sync failed: \(error.localizedDescription)"
         }
     }
 
     func toggleTask(_ task: NATaskItem) async {
         let newStatus = task.status == "done" ? "open" : "done"
 
-        // Local update first (instant UI)
+        // Update local state
         if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[idx].status = newStatus
         }
 
-        // If local task, sync to server
+        // Persist to UserDefaults (survives refresh)
+        if newStatus == "done" {
+            completedIds.insert(task.id)
+        } else {
+            completedIds.remove(task.id)
+        }
+        saveCompletedState()
+
+        // Sync to server if local task
         if task.isLocal {
             guard let url = URL(string: serverURL) else { return }
             var req = URLRequest(url: url)
@@ -185,23 +247,22 @@ class NATaskService: ObservableObject {
                 let (data, _) = try await URLSession.shared.data(for: req)
                 if let result = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                    result["ok"] as? Bool == false {
-                    // Server failed, revert
                     if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
                         tasks[idx].status = task.status
                     }
+                    completedIds.remove(task.id)
+                    saveCompletedState()
                 }
             } catch {
-                if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
-                    tasks[idx].status = task.status
-                }
+                // Keep local state
             }
         }
-        // For rollup tasks: just local state, no server sync
     }
 
     func deleteTask(_ task: NATaskItem) async {
-        // Local removal first
         tasks.removeAll { $0.id == task.id }
+        completedIds.remove(task.id)
+        saveCompletedState()
 
         if task.isLocal {
             guard let url = URL(string: serverURL) else { return }
