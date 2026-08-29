@@ -158,10 +158,13 @@ class NATaskService: ObservableObject {
         }
 
         // 2. Load server tasks
-        guard let url = URL(string: serverURL) else { return }
+        guard let url = URL(string: serverURL) else { print("[Tasks] No URL"); return }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
+            let raw = String(data: data, encoding: .utf8) ?? ""
+            print("[Tasks] Server response: \(raw.prefix(200))")
             let serverTasks = try JSONDecoder().decode([NATaskItem].self, from: data)
+            print("[Tasks] Decoded \(serverTasks.count) server tasks")
             let rollupIds = Set(merged.map { $0.id })
             for t in serverTasks where !rollupIds.contains(t.id) {
                 var item = t
@@ -172,6 +175,7 @@ class NATaskService: ObservableObject {
                 merged.append(item)
             }
         } catch {
+            print("[Tasks] Fetch error: \(error)")
             lastError = "Server: \(error.localizedDescription)"
         }
 
@@ -182,21 +186,14 @@ class NATaskService: ObservableObject {
             return (pOrder[a.priority] ?? 2) < (pOrder[b.priority] ?? 2)
         }
 
+        print("[Tasks] Final count: \(merged.count)")
         tasks = merged
     }
 
     func addTask(title: String, project: String = "nAIce", priority: String = "medium", deadline: String? = nil) async {
-        let newTask = NATaskItem(
-            title: title,
-            project: project,
-            priority: priority,
-            deadline: deadline
-        )
+        print("[Tasks] Adding task: \(title)")
 
-        // Add locally immediately
-        tasks.insert(newTask, at: 0)
-
-        // Sync to server
+        // Sync to server first
         guard let url = URL(string: serverURL) else { return }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
@@ -208,15 +205,20 @@ class NATaskService: ObservableObject {
         do {
             let (data, _) = try await URLSession.shared.data(for: req)
             if let result = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let serverTask = result["task"] as? [String: Any],
-               let serverId = serverTask["id"] as? String {
-                if let idx = tasks.firstIndex(where: { $0.id == newTask.id }) {
-                    tasks[idx].id = serverId
-                }
+               result["ok"] as? Bool == true {
+                print("[Tasks] Server sync OK, refreshing...")
+                // Refresh from server to get the exact state
+                await fetch()
+                return
             }
         } catch {
+            print("[Tasks] Sync failed: \(error)")
             lastError = "Sync failed: \(error.localizedDescription)"
         }
+
+        // Fallback: add locally if server sync fails
+        let task = NATaskItem(title: title, project: project, priority: priority, deadline: deadline)
+        tasks.insert(task, at: 0)
     }
 
     func toggleTask(_ task: NATaskItem) async {
