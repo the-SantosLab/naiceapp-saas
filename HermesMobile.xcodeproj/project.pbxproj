@@ -401,6 +401,7 @@
 		EF5BC9AB35AC8000C306BCE6 /* TrendCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21AE11BD3EC9267D81AB2C1 /* TrendCard.swift */; };
 		F2410366F553E993A5D8E8FC /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */; };
 		F53F3D0362CB8D531884E6DA /* NAPushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B195E23D236271E714A93 /* NAPushService.swift */; };
+		F6551043CA62FF975F0B1CA1 /* NAProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C79BEDE9514510E611214 /* NAProfileView.swift */; };
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
 		FD5513154661E6D9D0E6B84D /* NAWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402AA464975A9B246B36F88 /* NAWorkflowService.swift */; };
 		b28a279b120846d3aca0f1b31b5d3c80 /* NAShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ecb3b09acbe482aaf9073bf17905b4d /* NAShoppingList.swift */; };
@@ -619,6 +620,7 @@
 		933A6607F4CECE363F5D06DC /* NAInsightsChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAInsightsChart.swift; sourceTree = "<group>"; };
 		9560C4E6382D78890C8F7F74 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = WidgetKit.framework; sourceTree = SDKROOT; };
 		9AA036E99684473D66599039 /* NAHabitsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAHabitsService.swift; sourceTree = "<group>"; };
+		9C2C79BEDE9514510E611214 /* NAProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAProfileView.swift; sourceTree = "<group>"; };
 		9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIntentRouter.swift; sourceTree = "<group>"; };
 		A02400000000000000000002 /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A040C0DE0000000000000002 /* ProjectCreationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCreationSheet.swift; sourceTree = "<group>"; };
@@ -1634,6 +1636,7 @@
 				9AA036E99684473D66599039 /* NAHabitsService.swift */,
 				C5CA7B13094A274FE87CC526 /* NAHabitsView.swift */,
 				04F1916762962D32049688D5 /* NAServiceStatusView.swift */,
+				9C2C79BEDE9514510E611214 /* NAProfileView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2166,6 +2169,7 @@
 				BD644BDD3FC597576136C435 /* NAHabitsService.swift in Sources */,
 				1B2074CE3C70249C4A7D331C /* NAHabitsView.swift in Sources */,
 				EC747220B70C04046C53B984 /* NAServiceStatusView.swift in Sources */,
+				F6551043CA62FF975F0B1CA1 /* NAProfileView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2401,6 +2405,10 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = targeted;
 			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
+			};
 			name = Debug;
 		};
 		1A2B3C4D5E6F700000000081 /* Release */ = {
@@ -2462,6 +2470,10 @@
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				VALIDATE_PRODUCT = YES;
 			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
+			};
 			name = Release;
 		};
 		1A2B3C4D5E6F700000000082 /* Debug */ = {
@@ -2492,10 +2504,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
-			};
 			name = Debug;
 		};
 		1A2B3C4D5E6F700000000083 /* Release */ = {
@@ -2525,10 +2533,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
 			};
 			name = Release;
 		};
