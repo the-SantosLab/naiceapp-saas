@@ -155,6 +155,11 @@ struct nAIceApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @State private var biometricAuth = NABiometricAuth.shared
 
+    init() {
+        // Set push notification delegate
+        UNUserNotificationCenter.current().delegate = NADevPushDelegate()
+    }
+
     var body: some Scene {
         WindowGroup {
             ZStack {

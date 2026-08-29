@@ -11,15 +11,30 @@ class NAPushService: ObservableObject {
     @Published var deviceToken: String?
     @Published var pendingNotifications: [NAPushNotification] = []
     @Published var lastBriefing: String?
+    @Published var lastBriefingType: String?
+    @Published var unreadCount = 0
 
     private let tokenKey = "naice_push_token"
     private let pendingKey = "naice_pending_notifications"
+    private let lastSeenKey = "naice_last_push_id"
+    private var timer: Timer?
 
     private init() {
         loadPending()
+        startPolling()
     }
 
-    // MARK: - Register for remote notifications
+    // MARK: - Start polling
+    func startPolling() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 120, repeats: true) { [weak self] _ in
+            Task { [weak self] in await self?.pollServer() }
+        }
+        // Poll immediately
+        Task { await pollServer() }
+    }
+
+    // MARK: - Register
     func register() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
             guard granted else { return }
@@ -33,7 +48,6 @@ class NAPushService: ObservableObject {
         deviceToken = token
         isRegistered = true
         UserDefaults.standard.set(token, forKey: tokenKey)
-        // Send to server
         sendTokenToServer(token)
     }
 
@@ -46,24 +60,60 @@ class NAPushService: ObservableObject {
         URLSession.shared.dataTask(with: req).resume()
     }
 
-    // MARK: - Local Notifications
-    func scheduleLocal(title: String, body: String, at date: Date, id: String = UUID().uuidString) {
+    // MARK: - Poll
+    func pollServer() async {
+        guard let url = URL(string: "https://health.santoslab.de/api/push/queue") else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let result = try? JSONDecoder().decode(NAPushQueueResponse.self, from: data) {
+                let items = result.notifications.map { n in
+                    NAPushNotification(
+                        id: "\(n.id)",
+                        title: n.title,
+                        body: n.body,
+                        type: "briefing",
+                        createdAt: n.created_at,
+                        isRead: false
+                    )
+                }
+                // Check for new items
+                let lastSeen = UserDefaults.standard.integer(forKey: lastSeenKey)
+                let newItems = items.filter { $0.idInt > lastSeen }
+                if !newItems.isEmpty {
+                    unreadCount += newItems.count
+                    // Show local notification for latest
+                    if let latest = newItems.last {
+                        showLocalNotification(title: latest.title, body: latest.body, id: latest.id)
+                        lastBriefing = latest.body
+                        lastBriefingType = latest.type
+                    }
+                    // Update last seen
+                    if let maxId = items.map({ $0.idInt }).max() {
+                        UserDefaults.standard.set(maxId, forKey: lastSeenKey)
+                    }
+                }
+                pendingNotifications = items
+                savePending()
+            }
+        } catch {
+            print("[Push] Poll error: \(error)")
+        }
+    }
+
+    // MARK: - Local Notification
+    private func showLocalNotification(title: String, body: String, id: String) {
         let content = UNMutableNotificationContent()
         content.title = title
-        content.body = body
+        content.body = String(body.prefix(200))
         content.sound = .default
-        content.badge = 1
+        content.badge = NSNumber(value: unreadCount)
+        content.userInfo = ["type": "briefing"]
 
-        let trigger = UNCalendarNotificationTrigger(
-            dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date),
-            repeats: false
-        )
-
-        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: "proactive_\(id)", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
     }
 
-    // MARK: - Schedule Briefing
+    // MARK: - Schedule Morning Briefing (local fallback)
     func scheduleMorningBriefing() {
         var components = DateComponents()
         components.hour = 7
@@ -78,14 +128,9 @@ class NAPushService: ObservableObject {
         UNUserNotificationCenter.current().add(request)
     }
 
-    // MARK: - Poll pending from server
-    func pollServer() async {
-        guard let url = URL(string: "https://health.santoslab.de/api/push/pending") else { return }
-        guard let (data, _) = try? await URLSession.shared.data(from: url) else { return }
-        if let items = try? JSONDecoder().decode([NAPushNotification].self, from: data) {
-            pendingNotifications = items
-            savePending()
-        }
+    func markAllRead() {
+        unreadCount = 0
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
 
     // MARK: - Persistence
@@ -99,29 +144,38 @@ class NAPushService: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: pendingKey),
               let items = try? JSONDecoder().decode([NAPushNotification].self, from: data) else { return }
         pendingNotifications = items
+        unreadCount = items.filter { !$0.isRead }.count
     }
 }
 
+// MARK: - Models
 struct NAPushNotification: Codable, Identifiable {
     var id: String
     let title: String
     let body: String
-    let type: String // "briefing", "deal", "contact", "budget", "general"
+    let type: String
     let createdAt: String
     var isRead: Bool = false
+
+    var idInt: Int { Int(id) ?? 0 }
+}
+
+struct NAPushQueueResponse: Codable {
+    let notifications: [NAPushQueueItem]
+    let count: Int
+}
+
+struct NAPushQueueItem: Codable {
+    let id: Int
+    let title: String
+    let body: String
+    let created_at: String
+    let tokens: [String]?
 }
 
 // MARK: - AppDelegate for Push
-class NAPushDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        NAPushService.shared.setToken(token)
-    }
-
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("[Push] Registration failed: \(error.localizedDescription)")
-    }
-
+@MainActor
+class NADevPushDelegate: NSObject, UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         return [.banner, .sound, .badge]
     }
@@ -129,8 +183,9 @@ class NAPushDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterD
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
         if let type = userInfo["type"] as? String {
-            // Handle deep link based on type
-            print("[Push] Tapped: \(type)")
+            if type == "briefing" {
+                NAIntentRouter.shared.pendingTab = "home"
+            }
         }
     }
 }

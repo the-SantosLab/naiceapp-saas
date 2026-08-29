@@ -76,6 +76,9 @@ struct AgentHubView: View {
                         .padding(.horizontal, 16)
                 }
 
+                // Proaktive Push-Benachrichtigungen
+                ProactiveBriefingCard()
+
                 // Summary Flags
                 if !rollup.flags.isEmpty {
                     flagsSection
@@ -574,6 +577,106 @@ struct AgentHubView: View {
         HStack(spacing: 4) {
             Circle().fill(c).frame(width: 5, height: 5)
             Text(t).font(.system(size: 8)).foregroundColor(.gray)
+        }
+    }
+}
+
+// MARK: - Proactive Briefing Card
+struct ProactiveBriefingCard: View {
+    @ObservedObject private var pushService = NAPushService.shared
+    @State private var showBriefing = false
+
+    var body: some View {
+        if let briefing = pushService.lastBriefing, !briefing.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 8) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.ncAmber.opacity(0.12))
+                            .frame(width: 28, height: 28)
+                        Image(systemName: "bell.badge.fill")
+                            .font(.system(size: 11))
+                            .foregroundColor(.ncAmber)
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Letztes Briefing")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(.white)
+                        Text("\(pushService.pendingNotifications.count) Push-Benachrichtigungen")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        showBriefing = true
+                    } label: {
+                        Text("Anzeigen")
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(.ncCyan)
+                    }
+                }
+
+                // Latest briefing preview
+                Text(String(briefing.prefix(120)) + (briefing.count > 120 ? "..." : ""))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .lineLimit(3)
+
+                if pushService.unreadCount > 0 {
+                    Button {
+                        pushService.markAllRead()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 8))
+                            Text("\(pushService.unreadCount) ungelesen - Als gelesen markieren")
+                                .font(.caption2)
+                        }
+                        .foregroundColor(.ncNeonGreen)
+                    }
+                }
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(red: 0.02, green: 0.02, blue: 0.04))
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.ncAmber.opacity(0.15), lineWidth: 0.5))
+            )
+            .padding(.horizontal, 16)
+            .sheet(isPresented: $showBriefing) {
+                BriefingDetailSheet(briefing: briefing)
+            }
+        }
+    }
+}
+
+// MARK: - Briefing Detail Sheet
+struct BriefingDetailSheet: View {
+    @Environment(\.dismiss) var dismiss
+    let briefing: String
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                ScrollView {
+                    Text(briefing)
+                        .font(.body)
+                        .foregroundColor(.white)
+                        .padding(20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .navigationTitle("Proaktives Briefing")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Schließen") { dismiss() }.foregroundColor(.ncCyan)
+                }
+            }
         }
     }
 }
