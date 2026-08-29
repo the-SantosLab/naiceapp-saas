@@ -155,6 +155,7 @@
 		76CD17639690EAA2C5BC8E2F /* NAWeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2E2D0145071523FC3BD8F2 /* NAWeatherService.swift */; };
 		7C90AF22A6DA860227E17A22 /* RadarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436754903A7D2D553102C754 /* RadarChart.swift */; };
 		7E7421CD5B04A7CFDBDEFF2C /* NAiceDynamicIsland.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */; };
+		7FF37F6D9C9B057134756504 /* NAWatchConnectivityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B53E4CC244DC057BD275B2 /* NAWatchConnectivityHandler.swift */; };
 		821707D29B1D51857BFCF78A /* NAJournalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D067B3957F4996F92E721A /* NAJournalService.swift */; };
 		840D30CDEF25A0255AFABB1E /* NABiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */; };
 		8618A9261B8047CEA6084798 /* SlashCommandAutocompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2A37872AC842629FBDDFA4 /* SlashCommandAutocompleteView.swift */; };
@@ -662,6 +663,7 @@
 		B5A220000000000000000004 /* MarkerMessageCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerMessageCardView.swift; sourceTree = "<group>"; };
 		B5A220000000000000000006 /* ChatMarkerMessageClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMarkerMessageClassifierTests.swift; sourceTree = "<group>"; };
 		B6C76C7D2073C284C97D9DA0 /* AmeliaContextProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmeliaContextProvider.swift; sourceTree = "<group>"; };
+		B7B53E4CC244DC057BD275B2 /* NAWatchConnectivityHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWatchConnectivityHandler.swift; sourceTree = "<group>"; };
 		BEEF02400000000000000002 /* ChatAttachmentPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAttachmentPreviewView.swift; sourceTree = "<group>"; };
 		BEEF02600000000000000002 /* FileExportSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileExportSupport.swift; sourceTree = "<group>"; };
 		C012400000000000000001 /* AppIconChoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconChoice.swift; sourceTree = "<group>"; };
@@ -1637,6 +1639,7 @@
 				C5CA7B13094A274FE87CC526 /* NAHabitsView.swift */,
 				04F1916762962D32049688D5 /* NAServiceStatusView.swift */,
 				9C2C79BEDE9514510E611214 /* NAProfileView.swift */,
+				B7B53E4CC244DC057BD275B2 /* NAWatchConnectivityHandler.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2170,6 +2173,7 @@
 				1B2074CE3C70249C4A7D331C /* NAHabitsView.swift in Sources */,
 				EC747220B70C04046C53B984 /* NAServiceStatusView.swift in Sources */,
 				F6551043CA62FF975F0B1CA1 /* NAProfileView.swift in Sources */,
+				7FF37F6D9C9B057134756504 /* NAWatchConnectivityHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -158,6 +158,8 @@ struct nAIceApp: App {
     init() {
         // Set push notification delegate
         UNUserNotificationCenter.current().delegate = NADevPushDelegate()
+        // Initialize Watch Connectivity
+        _ = NAWatchConnectivityHandler.shared
     }
 
     var body: some Scene {
