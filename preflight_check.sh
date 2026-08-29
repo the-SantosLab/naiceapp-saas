@@ -47,7 +47,26 @@ for cap in "com.apple.Siri" "com.apple.HomeKit"; do
         echo -e "  ${green}✅${nc} $cap"
     else
         echo -e "  ${red}❌${nc} $cap fehlt in SystemCapabilities!"
-        EXIT_CODE=1
+        # Auto-repair
+        echo -e "  ${yellow}🔧 Auto-repair...${nc}"
+        awk '
+        /name = Debug/ && !foundDebug {
+            print "\t\t\tSystemCapabilities = {"
+            print "\t\t\t\tcom.apple.HomeKit = 1;"
+            print "\t\t\t\tcom.apple.Siri = 1;"
+            print "\t\t\t};"
+            foundDebug = 1
+        }
+        /name = Release/ && !foundRelease && foundDebug {
+            print "\t\t\tSystemCapabilities = {"
+            print "\t\t\t\tcom.apple.HomeKit = 1;"
+            print "\t\t\t\tcom.apple.Siri = 1;"
+            print "\t\t\t};"
+            foundRelease = 1
+        }
+        { print }
+        ' "$PBX" > "${PBX}.tmp" && mv "${PBX}.tmp" "$PBX"
+        echo -e "  ${green}✅${nc} Repaired - $cap hinzugefügt"
     fi
 done
 

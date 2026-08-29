@@ -397,6 +397,7 @@
 		E38FCF95DB2BBF351033F108 /* NADonutChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15990341BD10919D01CE86C /* NADonutChart.swift */; };
 		E39D048B8C5C4AC5BBDAE93A /* WhatsAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */; };
 		E8DFEE26F289B67519C1B11B /* NAIntentRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */; };
+		EC747220B70C04046C53B984 /* NAServiceStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F1916762962D32049688D5 /* NAServiceStatusView.swift */; };
 		EF5BC9AB35AC8000C306BCE6 /* TrendCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21AE11BD3EC9267D81AB2C1 /* TrendCard.swift */; };
 		F2410366F553E993A5D8E8FC /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */; };
 		F53F3D0362CB8D531884E6DA /* NAPushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B195E23D236271E714A93 /* NAPushService.swift */; };
@@ -462,6 +463,7 @@
 		03103103103103103103100A /* DisplayMathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayMathView.swift; sourceTree = "<group>"; };
 		03103103103103103103100C /* MarkdownMathFormatter+Environments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarkdownMathFormatter+Environments.swift"; sourceTree = "<group>"; };
 		0485E1E1FFB64A24BB729CD4 /* SlashCommandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandTests.swift; sourceTree = "<group>"; };
+		04F1916762962D32049688D5 /* NAServiceStatusView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAServiceStatusView.swift; sourceTree = "<group>"; };
 		0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardsOfTheMoment.swift; sourceTree = "<group>"; };
 		0886BC48EE93A143B89604AA /* NAUnifiedInboxView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAUnifiedInboxView.swift; sourceTree = "<group>"; };
 		0D1CE5F12B9E4D4D9E5A01C1 /* SlashCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandExecutor.swift; sourceTree = "<group>"; };
@@ -1631,6 +1633,7 @@
 				629E8754B1AD2675BB5492E2 /* NANotesView.swift */,
 				9AA036E99684473D66599039 /* NAHabitsService.swift */,
 				C5CA7B13094A274FE87CC526 /* NAHabitsView.swift */,
+				04F1916762962D32049688D5 /* NAServiceStatusView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2162,6 +2165,7 @@
 				1DDAEF347D4A57D3DAED66EB /* NANotesView.swift in Sources */,
 				BD644BDD3FC597576136C435 /* NAHabitsService.swift in Sources */,
 				1B2074CE3C70249C4A7D331C /* NAHabitsView.swift in Sources */,
+				EC747220B70C04046C53B984 /* NAServiceStatusView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

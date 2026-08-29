@@ -179,6 +179,7 @@ struct AgentHubView: View {
                     areaTile("tray.fill", "Posteingang", .ncNeonGreen, NAUnifiedInboxView())
                     areaTile("homekit", "Smart Home", .ncAmber, NASmartHomeView())
                     areaTile("apple.terminal", "Mac Agent", .ncPurple, NAMacAgentView())
+                    areaTile("bolt.shield.fill", "Service Status", .ncNeonGreen, NAServiceStatusView())
                 }
                 .padding(.horizontal, 16)
             }
