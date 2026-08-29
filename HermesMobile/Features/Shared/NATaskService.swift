@@ -9,6 +9,9 @@ struct NATaskItem: Identifiable, Codable, Hashable {
     var priority: String
     var status: String
     var deadline: String?
+    var `repeat`: String?
+    var category: String?
+    var order: Int?
     var source: String?
     var created: Int?
     var isLocal: Bool
@@ -53,6 +56,29 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         return .gray
     }
 
+    var repeatLabel: String {
+        guard let r = `repeat`, !r.isEmpty else { return "" }
+        switch r {
+        case "daily": return "Täglich"
+        case "weekly": return "Wöchentlich"
+        case "monthly": return "Monatlich"
+        case "weekday": return "Wochentags"
+        default: return r
+        }
+    }
+
+    var projectColor: Color {
+        switch project?.lowercased() {
+        case "naice": return .ncCyan
+        case "foodloop": return .ncNeonGreen
+        case "schaffer-wine": return .ncAmber
+        case "parcelmate": return .ncPurple
+        case "einfachr": return .ncBlue
+        case "privat": return .ncRose
+        default: return .gray
+        }
+    }
+
     var statusDot: Color {
         switch status.lowercased() {
         case "open": return .ncAmber
@@ -68,6 +94,9 @@ struct NATaskItem: Identifiable, Codable, Hashable {
          priority: String = "medium",
          status: String = "open",
          deadline: String? = nil,
+         repeat: String? = nil,
+         category: String? = nil,
+         order: Int? = nil,
          source: String? = "ios",
          created: Int? = nil,
          isLocal: Bool = true) {
@@ -77,6 +106,9 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         self.priority = priority
         self.status = status
         self.deadline = deadline
+        self.repeat = `repeat`
+        self.category = category
+        self.order = order
         self.source = source
         self.created = created ?? Int(Date().timeIntervalSince1970)
         self.isLocal = isLocal
@@ -89,6 +121,9 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         self.priority = rollupTask.priority ?? "medium"
         self.status = rollupTask.status ?? "open"
         self.deadline = rollupTask.deadline
+        self.repeat = nil
+        self.category = nil
+        self.order = nil
         self.source = rollupTask.source
         self.created = nil
         self.isLocal = false
@@ -102,6 +137,9 @@ struct NATaskItem: Identifiable, Codable, Hashable {
         priority = try container.decodeIfPresent(String.self, forKey: .priority) ?? "medium"
         status = try container.decodeIfPresent(String.self, forKey: .status) ?? "open"
         deadline = try container.decodeIfPresent(String.self, forKey: .deadline)
+        `repeat` = try container.decodeIfPresent(String.self, forKey: .repeat)
+        category = try container.decodeIfPresent(String.self, forKey: .category)
+        order = try container.decodeIfPresent(Int.self, forKey: .order)
         source = try container.decodeIfPresent(String.self, forKey: .source)
         created = try container.decodeIfPresent(Int.self, forKey: .created)
         isLocal = try container.decodeIfPresent(Bool.self, forKey: .isLocal) ?? false
@@ -119,10 +157,13 @@ class NATaskService: ObservableObject {
 
     private let serverURL = "https://health.santoslab.de/api/naice/tasks"
     private let completedKey = "naice_completed_tasks"
+    private let orderKey = "naice_task_order"
     private var completedIds: Set<String> = []
+    private var savedOrder: [String] = []
 
     private init() {
         loadCompletedState()
+        loadOrderState()
     }
 
     private func loadCompletedState() {
@@ -138,10 +179,20 @@ class NATaskService: ObservableObject {
         }
     }
 
+    private func loadOrderState() {
+        savedOrder = UserDefaults.standard.stringArray(forKey: orderKey) ?? []
+    }
+
+    private func saveOrderState() {
+        let ids = tasks.filter { $0.isLocal && !$0.isCompleted }.map { $0.id }
+        UserDefaults.standard.set(ids, forKey: orderKey)
+    }
+
     func fetch() async {
         isLoading = true
         defer { isLoading = false }
         loadCompletedState()
+        loadOrderState()
 
         await NARollupService.shared.fetch()
         var merged: [NATaskItem] = []
@@ -158,13 +209,10 @@ class NATaskService: ObservableObject {
         }
 
         // 2. Load server tasks
-        guard let url = URL(string: serverURL) else { print("[Tasks] No URL"); return }
+        guard let url = URL(string: serverURL) else { return }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-            let raw = String(data: data, encoding: .utf8) ?? ""
-            print("[Tasks] Server response: \(raw.prefix(200))")
             let serverTasks = try JSONDecoder().decode([NATaskItem].self, from: data)
-            print("[Tasks] Decoded \(serverTasks.count) server tasks")
             let rollupIds = Set(merged.map { $0.id })
             for t in serverTasks where !rollupIds.contains(t.id) {
                 var item = t
@@ -175,61 +223,58 @@ class NATaskService: ObservableObject {
                 merged.append(item)
             }
         } catch {
-            print("[Tasks] Fetch error: \(error)")
             lastError = "Server: \(error.localizedDescription)"
         }
 
-        // Sort
+        // Sort: open first, then by priority, then by saved order
         merged.sort { a, b in
             if a.status != b.status { return a.status == "open" && b.status != "open" }
             let pOrder = ["high": 0, "medium": 1, "low": 2]
-            return (pOrder[a.priority] ?? 2) < (pOrder[b.priority] ?? 2)
+            let pa = pOrder[a.priority] ?? 2
+            let pb = pOrder[b.priority] ?? 2
+            if pa != pb { return pa < pb }
+            if let oa = a.order, let ob = b.order { return oa < ob }
+            let ia = savedOrder.firstIndex(of: a.id) ?? 999
+            let ib = savedOrder.firstIndex(of: b.id) ?? 999
+            return ia < ib
         }
 
-        print("[Tasks] Final count: \(merged.count)")
         tasks = merged
     }
 
-    func addTask(title: String, project: String = "nAIce", priority: String = "medium", deadline: String? = nil) async {
-        print("[Tasks] Adding task: \(title)")
-
-        // Sync to server first
+    func addTask(title: String, project: String = "nAIce", priority: String = "medium", deadline: String? = nil, repeat: String? = nil, category: String? = nil) async {
         guard let url = URL(string: serverURL) else { return }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         var body: [String: Any] = ["action": "add", "title": title, "project": project, "priority": priority]
         if let d = deadline { body["deadline"] = d }
+        if let r = `repeat` { body["repeat"] = r }
+        if let cat = category { body["category"] = cat }
         req.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         do {
             let (data, _) = try await URLSession.shared.data(for: req)
             if let result = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                result["ok"] as? Bool == true {
-                print("[Tasks] Server sync OK, refreshing...")
-                // Refresh from server to get the exact state
                 await fetch()
                 return
             }
         } catch {
-            print("[Tasks] Sync failed: \(error)")
             lastError = "Sync failed: \(error.localizedDescription)"
         }
 
-        // Fallback: add locally if server sync fails
-        let task = NATaskItem(title: title, project: project, priority: priority, deadline: deadline)
+        let task = NATaskItem(title: title, project: project, priority: priority, deadline: deadline, repeat: `repeat`, category: category)
         tasks.insert(task, at: 0)
     }
 
     func toggleTask(_ task: NATaskItem) async {
         let newStatus = task.status == "done" ? "open" : "done"
 
-        // Update local state
         if let idx = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[idx].status = newStatus
         }
 
-        // Persist to UserDefaults (survives refresh)
         if newStatus == "done" {
             completedIds.insert(task.id)
         } else {
@@ -237,7 +282,6 @@ class NATaskService: ObservableObject {
         }
         saveCompletedState()
 
-        // Sync to server if local task
         if task.isLocal {
             guard let url = URL(string: serverURL) else { return }
             var req = URLRequest(url: url)
@@ -255,9 +299,7 @@ class NATaskService: ObservableObject {
                     completedIds.remove(task.id)
                     saveCompletedState()
                 }
-            } catch {
-                // Keep local state
-            }
+            } catch {}
         }
     }
 
@@ -273,11 +315,32 @@ class NATaskService: ObservableObject {
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
             let body: [String: Any] = ["action": "delete", "task_id": task.id]
             req.httpBody = try? JSONSerialization.data(withJSONObject: body)
-            do {
-                let (_, _) = try await URLSession.shared.data(for: req)
-            } catch {
-                lastError = "Delete failed: \(error.localizedDescription)"
-            }
+            do { let (_, _) = try await URLSession.shared.data(for: req) } catch {}
         }
+    }
+
+    func reorderTasks(from source: IndexSet, to destination: Int) {
+        // We only reorder open, local tasks
+        var openLocal = tasks.enumerated().filter { $0.element.status == "open" && $0.element.isLocal }
+        let idsBefore = openLocal.map { $0.element.id }
+        openLocal.move(fromOffsets: source, toOffset: destination)
+
+        let reorderedIds = openLocal.map { $0.element.id }
+        savedOrder = reorderedIds
+        saveOrderState()
+
+        // Update order on server
+        Task {
+            guard let url = URL(string: serverURL) else { return }
+            var req = URLRequest(url: url)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let body: [String: Any] = ["action": "reorder", "order": reorderedIds]
+            req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+            do { let (_, _) = try await URLSession.shared.data(for: req) } catch {}
+        }
+
+        // Re-fetch to reflect order
+        Task { await fetch() }
     }
 }
