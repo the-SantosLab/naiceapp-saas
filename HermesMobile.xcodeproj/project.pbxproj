@@ -2508,6 +2508,10 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
+			};
 			name = Debug;
 		};
 		1A2B3C4D5E6F700000000083 /* Release */ = {
@@ -2537,6 +2541,10 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
 			};
 			name = Release;
 		};
