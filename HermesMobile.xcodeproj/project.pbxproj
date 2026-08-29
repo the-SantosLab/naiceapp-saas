@@ -406,6 +406,17 @@
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
 		FD5513154661E6D9D0E6B84D /* NAWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402AA464975A9B246B36F88 /* NAWorkflowService.swift */; };
 		b28a279b120846d3aca0f1b31b5d3c80 /* NAShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ecb3b09acbe482aaf9073bf17905b4d /* NAShoppingList.swift */; };
+
+		8138ACC9F93ED95D6EDA3A13 /* NAiceWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776B627862ADD0FEF5D658A /* NAiceWatchApp.swift */; };
+		9207287668400FA6ADAD6584 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72846051BC37F009F54442FD /* WatchConnectivityManager.swift */; };
+		7FAF5864359B87671F705FCC /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E60361AE67F0263A3CBE6B2 /* ComplicationController.swift */; };
+		C304890DE9AE530C44C7F369 /* MoodLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE82E7B318BEB5668A6CB26B /* MoodLogView.swift */; };
+		421DE943E59618BB132B6C07 /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8E300D9EECD707C43C0514 /* TasksView.swift */; };
+		ABBA95821812763B97188366 /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0FB1ACB650893D190A9030 /* HabitsView.swift */; };
+		4F03681B186A527196C86616 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E98807793634CF90E84BBCC9 /* ChatView.swift */; };
+		085301508210E4B3072C80A0 /* BriefingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD16A5D77FEFA20B17DC8A3 /* BriefingView.swift */; };
+		1854E8A9DE0556742500EAD3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F080D56E437CDD645EEA6514 /* ContentView.swift */; };
+		394B9017C754B8909E90F4EA /* NAiceWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 374A0792027787A3F8498E03 /* NAiceWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -450,6 +461,18 @@
 				545C8D3258D235795A7D9B03 /* HermesLiveActivityWidget.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		E5523374BF07C8D9B141FD05 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				394B9017C754B8909E90F4EA /* NAiceWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -859,6 +882,17 @@
 		FDB8537D281F7636A743206F /* NACalendarService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACalendarService.swift; sourceTree = "<group>"; };
 		FE2CC284063C98B8181901DC /* JournalCheckinCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JournalCheckinCard.swift; path = AgentHub/Cards/JournalCheckinCard.swift; sourceTree = "<group>"; };
 		FFECE70D5133A83E3D4EA8EB /* NACameraView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACameraView.swift; sourceTree = "<group>"; };
+
+		374A0792027787A3F8498E03 /* NAiceWatch.app */ = {isa = PBXFileReference; explicitFileType = "wrapper.application"; includeInIndex = 0; path = NAiceWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D776B627862ADD0FEF5D658A /* NAiceWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NAiceWatchApp.swift"; sourceTree = "<group>"; };
+		72846051BC37F009F54442FD /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WatchConnectivityManager.swift"; sourceTree = "<group>"; };
+		2E60361AE67F0263A3CBE6B2 /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComplicationController.swift"; sourceTree = "<group>"; };
+		EE82E7B318BEB5668A6CB26B /* MoodLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoodLogView.swift"; sourceTree = "<group>"; };
+		4A8E300D9EECD707C43C0514 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TasksView.swift"; sourceTree = "<group>"; };
+		ED0FB1ACB650893D190A9030 /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HabitsView.swift"; sourceTree = "<group>"; };
+		E98807793634CF90E84BBCC9 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatView.swift"; sourceTree = "<group>"; };
+		9FD16A5D77FEFA20B17DC8A3 /* BriefingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BriefingView.swift"; sourceTree = "<group>"; };
+		F080D56E437CDD645EEA6514 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -910,6 +944,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B5A100000000000000000020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		4F974F79C9023079688DD92E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -991,7 +1033,8 @@
 				A04500000000000000000017 /* HermesLiveActivityWidget.appex */,
 				2F0C7C8B2075D3BDB45D6D3B /* NAiceWidget.appex */,
 				7C25C1CD56AAC96FB4481A5F /* HermesMobileWidgets.appex */,
-			);
+			
+				374A0792027787A3F8498E03 /* NAiceWatch.app */,);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -1657,6 +1700,55 @@
 			path = Kanban;
 			sourceTree = "<group>";
 		};
+
+		68512823A42FF748A1334796 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				EE82E7B318BEB5668A6CB26B /* MoodLogView.swift */,
+				4A8E300D9EECD707C43C0514 /* TasksView.swift */,
+				ED0FB1ACB650893D190A9030 /* HabitsView.swift */,
+				E98807793634CF90E84BBCC9 /* ChatView.swift */,
+				9FD16A5D77FEFA20B17DC8A3 /* BriefingView.swift */,
+				F080D56E437CDD645EEA6514 /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		3421CECD7713372A2CAB4681 /* Complication */ = {
+			isa = PBXGroup;
+			children = (
+				2E60361AE67F0263A3CBE6B2 /* ComplicationController.swift */,
+			);
+			path = Complication;
+			sourceTree = "<group>";
+		};
+		D6C3983DE011FC635FFB5422 /* Connectivity */ = {
+			isa = PBXGroup;
+			children = (
+				72846051BC37F009F54442FD /* WatchConnectivityManager.swift */,
+			);
+			path = Connectivity;
+			sourceTree = "<group>";
+		};
+		537E9EB210F81E4CD31C5AB7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B76DE5D5C952B1A307966CB8 /* NAiceWatch */ = {
+			isa = PBXGroup;
+			children = (
+				68512823A42FF748A1334796 /* Views */,
+				3421CECD7713372A2CAB4681 /* Complication */,
+				D6C3983DE011FC635FFB5422 /* Connectivity */,
+				537E9EB210F81E4CD31C5AB7 /* Resources */,
+				D776B627862ADD0FEF5D658A /* NAiceWatchApp.swift */,
+			);
+			path = NAiceWatch;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1777,6 +1869,24 @@
 			productReference = B5A100000000000000000017 /* HermesShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+
+		AAECFC7C889715474DFDF385 /* NAiceWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B0247D4FB6596BA6BBA3F55 /* Build configuration list for PBXNativeTarget "NAiceWatch" */;
+			buildPhases = (
+				19AB1E00F865389F0B6B5B03 /* Sources */,
+				4F974F79C9023079688DD92E /* Frameworks */,
+				9B7AA4046E486A5336CA095B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NAiceWatch;
+			productName = NAiceWatch;
+			productReference = 374A0792027787A3F8498E03;
+			productType = "com.apple.product-type.application.watchapp2";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1846,7 +1956,8 @@
 				A04500000000000000000040 /* HermesLiveActivityWidget */,
 				308C41D08C2059EB52FCF406 /* NAiceWidget */,
 				A1E6EB1EB66DC27B3A3D56F2 /* HermesMobileWidgets */,
-			);
+			
+				AAECFC7C889715474DFDF385 /* NAiceWatch */,);
 		};
 /* End PBXProject section */
 
@@ -1886,6 +1997,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F3338C6437FD8FF50EA1ED04 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		9B7AA4046E486A5336CA095B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2313,6 +2432,23 @@
 				B5A100000000000000000002 /* SharedDraftStore.swift in Sources */,
 				B5A100000000000000000003 /* ShareViewController.swift in Sources */,
 				B5A100000000000000000007 /* ShareInputReader.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		19AB1E00F865389F0B6B5B03 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8138ACC9F93ED95D6EDA3A13 /* NAiceWatchApp.swift in Sources */,
+				9207287668400FA6ADAD6584 /* WatchConnectivityManager.swift in Sources */,
+				7FAF5864359B87671F705FCC /* ComplicationController.swift in Sources */,
+				C304890DE9AE530C44C7F369 /* MoodLogView.swift in Sources */,
+				421DE943E59618BB132B6C07 /* TasksView.swift in Sources */,
+				ABBA95821812763B97188366 /* HabitsView.swift in Sources */,
+				4F03681B186A527196C86616 /* ChatView.swift in Sources */,
+				085301508210E4B3072C80A0 /* BriefingView.swift in Sources */,
+				1854E8A9DE0556742500EAD3 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2790,6 +2926,55 @@
 			};
 			name = Release;
 		};
+
+		253B8C8E6C49B9103197FC14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GX89CS2T99;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NAiceWatch/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+									"$(inherited)",
+									"@executable_path/Frameworks",
+								);
+				MARKETING_VERSION = 1.5;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.watchkitapp;
+				PRODUCT_NAME = NAiceWatch;
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		3C02AC71B07832AD51660D93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GX89CS2T99;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NAiceWatch/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+									"$(inherited)",
+									"@executable_path/Frameworks",
+								);
+				MARKETING_VERSION = 1.5;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.watchkitapp;
+				PRODUCT_NAME = NAiceWatch;
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2852,6 +3037,16 @@
 			buildConfigurations = (
 				B5A100000000000000000042 /* Debug */,
 				B5A100000000000000000043 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+
+		7B0247D4FB6596BA6BBA3F55 /* Build configuration list for PBXNativeTarget "NAiceWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				253B8C8E6C49B9103197FC14 /* Debug */,
+				3C02AC71B07832AD51660D93 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
