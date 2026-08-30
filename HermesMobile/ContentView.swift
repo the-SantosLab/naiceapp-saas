@@ -145,15 +145,13 @@ class ServiceManager: ObservableObject {
     }
 }
 
-// MARK: - Tab View
+// MARK: - NAIceTabView (was: ContentView Tab Container)
 @MainActor
 struct NAIceTabView: View {
     @Bindable var authManager: AuthManager; let server: URL
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: Tab = .home; @State private var ps: SharedImport?; @State private var pd: String?; @State private var pn: NewChatRequest?
-    @State private var showAmelia = false
     @StateObject private var intentRouter = NAIntentRouter.shared
-    @StateObject private var ameliaContext = AmeliaContextProvider.shared
     @StateObject private var health = HealthManager.shared; @StateObject private var calendar = CalendarManager.shared; @StateObject private var services = ServiceManager.shared; @StateObject private var rollup = NARollupService.shared; @StateObject private var journal = NAJournalService.shared; @StateObject private var contacts = NAContactService.shared; @StateObject private var waVM = WhatsAppViewModel.shared
     enum Tab: String, CaseIterable { case home; case life; case tasks; case agent; case more
         var title: String { switch self { case .home: return "Home"; case .life: return "Leben"; case .tasks: return "Aufgaben"; case .agent: return "Agent"; case .more: return "Mehr" } }
@@ -168,8 +166,6 @@ struct NAIceTabView: View {
                             SessionListView(authManager: authManager, server: server, pendingSharedImport: $ps, pendingDeepLinkedSessionID: $pd, requestedNewChat: $pn).tabItem { Label(Tab.agent.title, systemImage: Tab.agent.icon) }.tag(Tab.agent)
                             NavigationStack { NAIceMoreView() }.tabItem { Label(Tab.more.title, systemImage: Tab.more.icon) }.tag(Tab.more)
                         }.tint(Color.ncCyan).task { await health.requestAuth(); await calendar.requestAuth(); await services.requestAll(); await NAiceAPI.shared.fetchIdeas(); await NARollupService.shared.fetch(); await waVM.fetchPending() }
-                            .onAppear { ameliaContext.setContext(tab: selectedTab.rawValue) }
-                            .onChange(of: selectedTab) { newTab in ameliaContext.setContext(tab: newTab.rawValue) }
                             .onChange(of: intentRouter.pendingTab, perform: { tab in
                                                             if let t = tab, let newTab = Tab(rawValue: t) {
                                                                 selectedTab = newTab
@@ -201,29 +197,15 @@ struct NAIceTabView: View {
                                 }
                             })
 
-                        // AmeliaBar über der Tab-Leiste
-                        VStack(spacing: 0) {
-                            if NAgentActionHandler.shared.showConfirmation {
-                                NAgentActionConfirmationView()
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                                    .padding(.bottom, 8)
-                            }
-                            if selectedTab != .agent {
-                                AmeliaBar(showSlideUp: $showAmelia)
-                            }
+                        // Action Confirmation
+                        if NAgentActionHandler.shared.showConfirmation {
+                            NAgentActionConfirmationView()
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
+                                .padding(.horizontal, 12)
+                                .padding(.bottom, 54)
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 54) // über Tab-Leiste (49pt + 5pt Abstand)
                     }
             .animation(.spring(response: 0.3), value: NAgentActionHandler.shared.showConfirmation)
-            .ameliaSlideUp(isPresented: $showAmelia, onSend: { message in
-                pn = NewChatRequest(
-                    profileName: "santos-copilot",
-                    initialDraft: "[\(ameliaContext.slideUpContext)] \(message)"
-                )
-                selectedTab = .agent
-                showAmelia = false
-            })
     }
 }
 
