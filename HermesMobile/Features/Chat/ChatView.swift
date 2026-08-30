@@ -2260,8 +2260,8 @@ struct ChatView: View {
 
     // MARK: - Share Chat
     private func shareCurrentSession() {
-        guard let sessionID = session.sessionId?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !sessionID.isEmpty else { return }
+        let sessionID = session.sessionId?.trimmingCharacters(in: .whitespacesAndNewlines) ?? session.id
+        guard !sessionID.isEmpty else { return }
         isSharingSession = true
         Task {
             let url = await NAShareService.shareSession(sessionID: sessionID)
