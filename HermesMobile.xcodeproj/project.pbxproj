@@ -30,7 +30,6 @@
 		10CA110C0DE000000000B003 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 10CA110C0DE000000000B002 /* Localizable.xcstrings */; };
 		10CA110C0DE000000000C001 /* LocalizationCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CA110C0DE000000000C002 /* LocalizationCatalogTests.swift */; };
 		115E9CBADA0B60636DA1C621 /* SleepBreakdownCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA51F6C9BE72018CBD91F41D /* SleepBreakdownCard.swift */; };
-		1246FC6E3044091000789374 /* NaiceWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 1246FC643044090F00789374 /* NaiceWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1268CAAE6ED7C146C48FAFB4 /* LifeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DE2E91F54606E165014600 /* LifeView.swift */; };
 		171C5C880338A67EF0063629 /* NAProactiveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2D9CEAD2E5563AE50BA62 /* NAProactiveService.swift */; };
 		1854E8A9DE0556742500EAD3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F080D56E437CDD645EEA6514 /* ContentView.swift */; };
@@ -107,7 +106,6 @@
 		1A2B3C4D5E6F70000000410 /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F70000000411 /* OnboardingComponents.swift */; };
 		1B2074CE3C70249C4A7D331C /* NAHabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5CA7B13094A274FE87CC526 /* NAHabitsView.swift */; };
 		1DDAEF347D4A57D3DAED66EB /* NANotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 629E8754B1AD2675BB5492E2 /* NANotesView.swift */; };
-		1F401C3F57E7F1847EC884C2 /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB0B81877A905E369B0B243 /* NAiceWidgetBundle.swift */; };
 		21A27CFE2DA7D13DE29858D8 /* NACryptoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3A6878D4C92A894FFDB3B /* NACryptoService.swift */; };
 		2218CE382CB8F604BD01051F /* JournalCheckinCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2CC284063C98B8181901DC /* JournalCheckinCard.swift */; };
 		223C2CC4235EB7796DBA5780 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
@@ -419,13 +417,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1246FC6C3044091000789374 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1A2B3C4D5E6F700000000070 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1246FC633044090F00789374;
-			remoteInfo = "NaiceWatch Watch App";
-		};
 		1A2B3C4D5E6F700000000036 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A2B3C4D5E6F700000000070 /* Project object */;
@@ -457,17 +448,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1246FC6F3044091000789374 /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-				1246FC6E3044091000789374 /* NaiceWatch Watch App.app in Embed Watch Content */,
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3B3D052D4BA4D24EBA28A8DA /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -576,7 +556,6 @@
 		1A2B3C4D5E6F70000000411 /* OnboardingComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingComponents.swift; sourceTree = "<group>"; };
 		1AB43F55AB4F4262963E6A6E /* SlashCommandCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandCatalog.swift; sourceTree = "<group>"; };
 		1CAD6A4F60CF55B0BD8D7546 /* NARollupService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NARollupService.swift; sourceTree = "<group>"; };
-		1CB0B81877A905E369B0B243 /* NAiceWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidgetBundle.swift; sourceTree = "<group>"; };
 		1ecb3b09acbe482aaf9073bf17905b4d /* NAShoppingList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAShoppingList.swift; sourceTree = "<group>"; };
 		20EDDEA10686B09B18E1A077 /* LifeViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifeViewModel.swift; sourceTree = "<group>"; };
 		22AB000000000000000000F1 /* WorkspaceRegistryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceRegistryViewModel.swift; sourceTree = "<group>"; };
@@ -987,7 +966,6 @@
 		0F49707964BB58FB324DD914 /* NAiceWidget */ = {
 			isa = PBXGroup;
 			children = (
-				1CB0B81877A905E369B0B243 /* NAiceWidgetBundle.swift */,
 				48811DAC9B4F4C328A5F8C49 /* NAiceWidgetExtension.swift */,
 				DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */,
 				8ACDC6D12C6462690E0C7BA3 /* Info.plist */,
@@ -1767,7 +1745,6 @@
 				1A2B3C4D5E6F700000000060 /* Resources */,
 				1A2B3C4D5E6F700000000020 /* Frameworks */,
 				3B3D052D4BA4D24EBA28A8DA /* Embed App Extensions */,
-				1246FC6F3044091000789374 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
@@ -1775,7 +1752,6 @@
 				B5A100000000000000000031 /* PBXTargetDependency */,
 				A04500000000000000000031 /* PBXTargetDependency */,
 				3270CA5F0537D8F44E2A52EA /* PBXTargetDependency */,
-				1246FC6D3044091000789374 /* PBXTargetDependency */,
 			);
 			name = HermesMobile;
 			packageProductDependencies = (
@@ -2450,7 +2426,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F401C3F57E7F1847EC884C2 /* NAiceWidgetBundle.swift in Sources */,
 				D59FD2094829DE947A421A24 /* NAiceWidgetExtension.swift in Sources */,
 				7E7421CD5B04A7CFDBDEFF2C /* NAiceDynamicIsland.swift in Sources */,
 			);
@@ -2479,11 +2454,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1246FC6D3044091000789374 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1246FC633044090F00789374 /* NaiceWatch Watch App */;
-			targetProxy = 1246FC6C3044091000789374 /* PBXContainerItemProxy */;
-		};
 		1A2B3C4D5E6F700000000037 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1A2B3C4D5E6F700000000040 /* HermesMobile */;
@@ -2542,10 +2512,6 @@
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.5;
 			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
-			};
 			name = Debug;
 		};
 		1246FC713044091000789374 /* Release */ = {
@@ -2580,10 +2546,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.5;
-			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
 			};
 			name = Release;
 		};

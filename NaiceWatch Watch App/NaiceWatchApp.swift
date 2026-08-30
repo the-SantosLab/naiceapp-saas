@@ -1,17 +1,15 @@
-//
-//  NaiceWatchApp.swift
-//  NaiceWatch Watch App
-//
-//  Created by Nathalie  on 30.08.26.
-//
-
 import SwiftUI
 
 @main
-struct NaiceWatch_Watch_AppApp: App {
+struct NAiceWatchApp: App {
+    @StateObject private var connectivity = WatchConnectivityManager.shared
+    @StateObject private var dataStore = WatchDataStore.shared
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(connectivity)
+                .environmentObject(dataStore)
         }
     }
 }
