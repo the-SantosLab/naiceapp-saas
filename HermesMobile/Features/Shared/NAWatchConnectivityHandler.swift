@@ -143,10 +143,11 @@ class NAWatchConnectivityHandler: NSObject, WCSessionDelegate {
     }
 
     func pushDataToWatch() {
-        guard WCSession.default.isReachable else { return }
         Task { @MainActor in
             let data = await buildSyncData()
-            try? WCSession.default.updateApplicationContext(data)
+            if !data.isEmpty {
+                try? WCSession.default.updateApplicationContext(data)
+            }
         }
     }
 }

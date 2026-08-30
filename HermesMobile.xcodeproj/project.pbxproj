@@ -2481,7 +2481,6 @@
 		1246FC703044091000789374 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -2511,13 +2510,19 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+				STRIP_INSTALLED_PRODUCT = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				COPY_PHASE_STRIP = NO;
+			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
 			};
 			name = Debug;
 		};
 		1246FC713044091000789374 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -2546,6 +2551,13 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+				STRIP_INSTALLED_PRODUCT = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				COPY_PHASE_STRIP = NO;
+			};
+			SystemCapabilities = {
+				com.apple.HomeKit = 1;
+				com.apple.Siri = 1;
 			};
 			name = Release;
 		};
