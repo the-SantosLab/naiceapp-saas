@@ -844,6 +844,25 @@ struct SessionRowContextMenu: View {
                     Label("Copy Deeplink", systemImage: "doc.on.doc")
                 }
             }
+
+            Divider()
+            Button {
+                Task {
+                    guard let sid = session.sessionId?.trimmingCharacters(in: .whitespacesAndNewlines),
+                          !sid.isEmpty else { return }
+                    if let url = await NAShareService.shareSession(sessionID: sid),
+                       let shareURL = URL(string: url) {
+                        let av = UIActivityViewController(activityItems: [shareURL], applicationActivities: nil)
+                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let window = scene.windows.first,
+                           let root = window.rootViewController {
+                            root.present(av, animated: true)
+                        }
+                    }
+                }
+            } label: {
+                Label("nAIce Link teilen", systemImage: "link.badge.plus")
+            }
         } label: {
             Label("Export", systemImage: "square.and.arrow.up")
         }

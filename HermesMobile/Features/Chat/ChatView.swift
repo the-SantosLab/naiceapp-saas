@@ -308,6 +308,8 @@ struct ChatView: View {
     @State private var showsGoalSheet = false
     @State private var activeGitSheet: ActiveGitSheet?
     @State private var turnDiffPresentation: TurnDiffPresentation?
+    @State private var sharingSessionURL: IdentifiableURL?
+    @State private var isSharingSession = false
     @State private var viewModel: ChatViewModel
     @State private var gitAvailabilityViewModel: GitWorkspaceAvailabilityViewModel
     @State private var gitToastState = GitActionToastState()
@@ -658,6 +660,17 @@ struct ChatView: View {
                                 gitActionsMenu
                             }
                         }
+
+                        // Share Button
+                        ChatToolbarActionSlot {
+                            Button {
+                                shareCurrentSession()
+                            } label: {
+                                Label("Teilen", systemImage: "square.and.arrow.up")
+                            }
+                            .disabled(isSharingSession || viewModel.isViewingCachedData)
+                            .accessibilityLabel("Chat teilen")
+                        }
                     }
                 }
             }
@@ -682,6 +695,9 @@ struct ChatView: View {
             }
             .sheet(item: $transcriptMediaPreviewItem, content: transcriptMediaPreviewView)
             .sheet(item: $activeGitSheet, content: gitSheet)
+            .sheet(item: $sharingSessionURL) { item in
+                ActivityView(activityItems: [item.url])
+            }
             .sheet(item: $turnDiffPresentation, content: turnDiffSheet)
             .alert(item: $gitAlert, content: gitAlertPresentation)
             .sheet(isPresented: $showsGoalSheet) {
@@ -2240,6 +2256,20 @@ struct ChatView: View {
         }
 
         return max(0, transcriptMessages.count - 1 - index)
+    }
+
+    // MARK: - Share Chat
+    private func shareCurrentSession() {
+        guard let sessionID = session.sessionId?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !sessionID.isEmpty else { return }
+        isSharingSession = true
+        Task {
+            let url = await NAShareService.shareSession(sessionID: sessionID)
+            isSharingSession = false
+            if let url, let shareURL = URL(string: url) {
+                sharingSessionURL = IdentifiableURL(url: shareURL)
+            }
+        }
     }
 }
 
