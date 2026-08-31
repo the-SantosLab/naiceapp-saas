@@ -2260,15 +2260,34 @@ struct ChatView: View {
 
     // MARK: - Share Chat
     private func shareCurrentSession() {
-        let sessionID = session.sessionId?.trimmingCharacters(in: .whitespacesAndNewlines) ?? session.id
-        guard !sessionID.isEmpty else { return }
+        guard let sessionID = session.sessionId?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !sessionID.isEmpty else {
+            print("[Share] Keine Server-Session-ID")
+            showAlert(title: "Nicht möglich", message: "Dieser Chat wurde noch nicht mit dem Server synchronisiert. Sende eine Nachricht und versuche es erneut.")
+            return
+        }
+        print("[Share] Teile Session: \(sessionID)")
         isSharingSession = true
         Task {
             let url = await NAShareService.shareSession(sessionID: sessionID)
             isSharingSession = false
             if let url, let shareURL = URL(string: url) {
+                print("[Share] Erfolg: \(url)")
                 sharingSessionURL = IdentifiableURL(url: shareURL)
+            } else {
+                print("[Share] Fehlgeschlagen")
+                showAlert(title: "Fehler", message: "Server konnte keinen Share-Link erstellen.")
             }
+        }
+    }
+    
+    private func showAlert(title: String, message: String) {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = scene.windows.first,
+           let root = window.rootViewController {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            root.present(alert, animated: true)
         }
     }
 }
