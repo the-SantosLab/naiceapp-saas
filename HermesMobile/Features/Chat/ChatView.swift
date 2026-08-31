@@ -3,6 +3,7 @@ import SwiftData
 import UIKit
 import PhotosUI
 import UniformTypeIdentifiers
+import AVFoundation
 
 private enum GitChatAlert: Identifiable {
     case confirmRemote(GitRemoteAction)
@@ -1650,12 +1651,42 @@ struct ChatView: View {
 
     private func handlePhotoSelection(_ item: PhotosPickerItem) async {
         do {
-            guard let data = try await item.loadTransferable(type: Data.self) else {
-                viewModel.setUploadAttachmentError(String(localized: "Could not read the selected photo."))
-                return
+            // Prüfen ob es ein Video ist
+            let movieType = item.supportedContentTypes.first { $0.conforms(to: .movie) }
+
+            if let movieType {
+                // Video: Daten laden, Dateiendung aus dem Content-Type bestimmen
+                guard let data = try await item.loadTransferable(type: Data.self) else {
+                    viewModel.setUploadAttachmentError(String(localized: "Could not read the selected video."))
+                    return
+                }
+                let ext = movieType.preferredFilenameExtension ?? "mov"
+                let filename = "video_\(Int(Date().timeIntervalSince1970))_\(UUID().uuidString.prefix(4)).\(ext)"
+
+                // Thumbnail generieren (Video-Daten temporär als Datei ablegen)
+                var previewData: Data?
+                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("thumb_\(UUID().uuidString).\(ext)")
+                do {
+                    try data.write(to: tempURL)
+                    let avAsset = AVAsset(url: tempURL)
+                    let generator = AVAssetImageGenerator(asset: avAsset)
+                    generator.appliesPreferredTrackTransform = true
+                    let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil)
+                    previewData = cgImage.flatMap { UIImage(cgImage: $0).jpegData(compressionQuality: 0.5) }
+                    try? FileManager.default.removeItem(at: tempURL)
+                } catch {
+                    try? FileManager.default.removeItem(at: tempURL)
+                }
+
+                await viewModel.uploadAttachment(data: data, filename: filename, previewData: previewData ?? data)
+            } else {
+                guard let data = try await item.loadTransferable(type: Data.self) else {
+                    viewModel.setUploadAttachmentError(String(localized: "Could not read the selected photo."))
+                    return
+                }
+                let filename = "image_\(Int(Date().timeIntervalSince1970))_\(UUID().uuidString.prefix(4)).jpg"
+                await viewModel.uploadAttachment(data: data, filename: filename, previewData: data)
             }
-            let filename = "image_\(Int(Date().timeIntervalSince1970))_\(UUID().uuidString.prefix(4)).jpg"
-            await viewModel.uploadAttachment(data: data, filename: filename, previewData: data)
         } catch {
             viewModel.setUploadAttachmentError(error.localizedDescription)
         }
