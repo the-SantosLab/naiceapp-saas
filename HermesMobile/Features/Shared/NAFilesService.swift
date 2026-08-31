@@ -105,16 +105,16 @@ class NAFilesService: ObservableObject {
         if let sv = activeFilter.serverValue {
             result = result.filter { $0.source == sv }
         }
-        // Filter by folder
+        // Filter by folder – auch "uploads/"-Prefix prüfen
         if let folder = selectedFolder, !folder.isEmpty {
-            result = result.filter { $0.folder == folder }
+            result = result.filter { $0.folder == folder || $0.folder == "uploads/" + folder }
         }
         return result
     }
 
     var currentFolderFiles: [NFile] {
         if let folder = selectedFolder, !folder.isEmpty {
-            return files.filter { $0.folder == folder }
+            return files.filter { $0.folder == folder || $0.folder == "uploads/" + folder }
         }
         return filteredFiles
     }
@@ -149,10 +149,17 @@ class NAFilesService: ObservableObject {
         isLoading = true
         selectedFolder = folder
         do {
-            let urlStr = baseURL + "?folder=" + folder.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-            let url = URL(string: urlStr)!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let response = try JSONDecoder().decode(NFileListResponse.self, from: data)
+            // Server erwartet "uploads/" + folder, probiere beides
+            var urlStr = baseURL + "?folder=" + folder.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            var url = URL(string: urlStr)!
+            var (data, _) = try await URLSession.shared.data(from: url)
+            var response = try JSONDecoder().decode(NFileListResponse.self, from: data)
+            if response.files.isEmpty {
+                urlStr = baseURL + "?folder=uploads/" + folder.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                url = URL(string: urlStr)!
+                (data, _) = try await URLSession.shared.data(from: url)
+                response = try JSONDecoder().decode(NFileListResponse.self, from: data)
+            }
             files = response.files
             buildFolders()
         } catch {
