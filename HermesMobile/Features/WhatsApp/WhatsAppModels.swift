@@ -14,8 +14,11 @@ struct WAPendingResponse: Codable {
 }
 
 struct WAPendingChat: Codable, Identifiable {
-    var id: String { remoteJid ?? UUID().uuidString }
-    let remoteJid: String?
+    /// Die JID ist stabil sobald sie gesetzt ist. Fallback: Kontaktname
+    /// (KEINE random UUID – die würde die Archive-IDs der Vorschläge bei jedem
+    ///  Neuladen verändern und archivierte Vorschläge wieder einblenden).
+    var id: String { remoteJid ?? "wa-\(contact)" }
+    var remoteJid: String?
     let contact: String
     let lastIncomingTs: Int64
     let lastIncomingText: String?

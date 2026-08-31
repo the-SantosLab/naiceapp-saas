@@ -93,8 +93,20 @@ class WhatsAppViewModel: ObservableObject {
                 return
             }
             let decoded = try JSONDecoder().decode(WAPendingResponse.self, from: data)
-            pendingBusiness = Array(decoded.business.values)
-            pendingPrivat = Array(decoded.privat.values)
+            // Der Server sendet remoteJid NICHT im Body – die JID ist der Dict-Key.
+            // Ohne Rückübernahme wäre chat.id eine zufällige UUID bei jedem Fetch
+            // (60s-Timer!), wodurch Vorschlags-Archive-IDs permanent wechseln.
+            func withJid(from dict: [String: WAPendingChat]) -> [WAPendingChat] {
+                dict.map { jid, chat in
+                    var c = chat
+                    if c.remoteJid == nil || c.remoteJid!.isEmpty {
+                        c.remoteJid = jid
+                    }
+                    return c
+                }
+            }
+            pendingBusiness = withJid(from: decoded.business)
+            pendingPrivat = withJid(from: decoded.privat)
             isLoading = false
         } catch {
             lastError = error.localizedDescription
