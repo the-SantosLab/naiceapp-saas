@@ -103,12 +103,12 @@ struct AgentHubView: View {
                 }
 
                 // Proaktive Vorschläge
-                if !proactive.suggestions.isEmpty {
-                    sectionHeader(icon: "sparkle.magnifyingglass", title: "Vorschlage")
+                if !proactive.activeSuggestions.isEmpty {
+                    sectionHeader(icon: "sparkle.magnifyingglass", title: "Vorschläge")
                         .padding(.horizontal, 20)
                     VStack(spacing: 6) {
-                        ForEach(proactive.suggestions.prefix(5)) { suggestion in
-                            NASuggestionCard(suggestion: suggestion)
+                        ForEach(proactive.activeSuggestions.prefix(5)) { suggestion in
+                            NASuggestionCard(suggestion: suggestion, onArchive: { proactive.archiveSuggestion(suggestion.archiveId) })
                         }
                     }
                     .padding(.horizontal, 16)

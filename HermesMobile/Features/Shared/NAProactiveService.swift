@@ -14,7 +14,34 @@ class NAProactiveService: ObservableObject {
     private let calendar = CalendarManager.shared
     private let contacts = NAContactService.shared
     private let waVM = WhatsAppViewModel.shared
-
+    
+    @Published var archivedIDs: [String] = [] {
+        didSet { UserDefaults.standard.set(archivedIDs, forKey: "na_archived_suggestions") }
+    }
+    
+    init() {
+        if let saved = UserDefaults.standard.stringArray(forKey: "na_archived_suggestions") {
+            archivedIDs = saved
+        }
+    }
+    
+    var archivedSuggestions: [NASuggestion] {
+        suggestions.filter { archivedIDs.contains($0.archiveId) }
+    }
+    var activeSuggestions: [NASuggestion] {
+        suggestions.filter { !archivedIDs.contains($0.archiveId) }
+    }
+    
+    func archiveSuggestion(_ id: String) {
+        if !archivedIDs.contains(id) {
+            archivedIDs.append(id)
+        }
+    }
+    
+    func unarchiveSuggestion(_ id: String) {
+        archivedIDs.removeAll { $0 == id }
+    }
+    
     func generate() {
         var newSuggestions: [NASuggestion] = []
         let now = Date()
@@ -28,7 +55,8 @@ class NAProactiveService: ObservableObject {
                     title: "Termin: \(event.title)",
                     subtitle: "\(event.startDate.formatted(date: .numeric, time: .shortened))",
                     action: "erinnern",
-                    priority: .high
+                    priority: .high,
+                archiveId: "sug_erinnern",
                 ))
             }
         }
@@ -41,7 +69,8 @@ class NAProactiveService: ObservableObject {
                 title: "\(chat.contact) schreibt",
                 subtitle: chat.lastIncomingText ?? "Nachricht gelesen?",
                 action: "whatsapp_\(chat.id)",
-                priority: chat.urgency == .red ? .high : .medium
+                priority: chat.urgency == .red ? .high : .medium,
+                archiveId: "sug_wa_\(chat.id)"
             ))
         }
 
@@ -54,7 +83,8 @@ class NAProactiveService: ObservableObject {
                     title: "\(contact.fullName) vermisst dich",
                     subtitle: "\(days) Tage kein Kontakt",
                     action: "contact_\(contact.id)",
-                    priority: days > 30 ? .high : .medium
+                    priority: days > 30 ? .high : .medium,
+                archiveId: "sug_contact_\(contact.id)"
                 ))
             }
         }
@@ -67,7 +97,8 @@ class NAProactiveService: ObservableObject {
                     title: "Budget \(NAFinanceService.categoryLabel(cat)) fast aufgebraucht",
                     subtitle: "\(Int(spent))/\(Int(limit))€ (\(Int(pct))%)",
                     action: "budget_\(cat)",
-                    priority: pct > 95 ? .high : .medium
+                    priority: pct > 95 ? .high : .medium,
+                archiveId: "sug_budget_\(cat)"
                 ))
             }
         }
@@ -80,7 +111,8 @@ class NAProactiveService: ObservableObject {
                 title: "Zahlung eingegangen: \(Int(income.amount))€",
                 subtitle: income.note,
                 action: "income",
-                priority: .medium
+                priority: .medium,
+                archiveId: "sug_income"
             ))
         }
 
@@ -91,7 +123,8 @@ class NAProactiveService: ObservableObject {
                 title: "Heute schonen! Recovery nur \(rec.score ?? 0)%",
                 subtitle: "HRV: \(rec.hrv ?? 0) ms · RHR: \(rec.rhr ?? 0) bpm",
                 action: "health",
-                priority: .high
+                priority: .high,
+                archiveId: "sug_health"
             ))
         }
 
@@ -103,7 +136,8 @@ class NAProactiveService: ObservableObject {
                 title: "Kein Journal-Eintrag heute",
                 subtitle: "Kurze Reflexion: Was war gut?",
                 action: "journal",
-                priority: .low
+                priority: .low,
+                archiveId: "sug_journal"
             ))
         }
 
@@ -115,7 +149,8 @@ class NAProactiveService: ObservableObject {
                 title: "\(contact.fullName) hat bald Geburtstag",
                 subtitle: days == 0 ? "Heute!" : "in \(days) Tagen",
                 action: "birthday_\(contact.id)",
-                priority: days <= 3 ? .high : .medium
+                priority: days <= 3 ? .high : .medium,
+                archiveId: "sug_birthday_\(contact.id)"
             ))
         }
 
@@ -196,6 +231,7 @@ struct NASuggestion: Identifiable {
     let subtitle: String
     let action: String
     let priority: SuggestionPriority
+    let archiveId: String
 }
 
 enum SuggestionPriority: Int, Comparable {
@@ -212,6 +248,7 @@ enum SuggestionPriority: Int, Comparable {
 struct NASuggestionCard: View {
     let suggestion: NASuggestion
     var onTap: (() -> Void)?
+    var onArchive: (() -> Void)?
 
     var body: some View {
         HStack(spacing: 10) {
@@ -234,6 +271,18 @@ struct NASuggestionCard: View {
             }
 
             Spacer()
+
+            if let onArchive = onArchive {
+                Button {
+                    onArchive()
+                } label: {
+                    Image(systemName: "archivebox")
+                        .font(.system(size: 11))
+                        .foregroundColor(.gray.opacity(0.6))
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 4)
+            }
 
             priorityDot
         }
