@@ -49,7 +49,7 @@ class NAProactiveService: ObservableObject {
         // 1. Calendar: upcoming events
         for event in calendar.upcomingEvents.prefix(2) {
             let timeUntil = event.startDate.timeIntervalSince(now)
-            if timeUntil > 0 && timeUntil < 86400 { // within 24h
+            if timeUntil > 0 && timeUntil < 86400 {
                 newSuggestions.append(NASuggestion(
                     icon: "calendar.badge.clock",
                     title: "Termin: \(event.title)",
@@ -154,7 +154,24 @@ class NAProactiveService: ObservableObject {
             ))
         }
 
-        suggestions = newSuggestions.sorted { $0.priority.rawValue > $1.priority.rawValue }
+        // MERGE mit bestehenden Vorschlägen:
+        // Bereits archivierte Vorschläge behalten ihr Objekt (und damit ihre Archive-ID).
+        // Nur VORSCHLÄGE, die wirklich NEU sind, werden hinzugefügt.
+        // Vorschläge, die nicht mehr generiert werden, fliegen raus.
+        let oldByArchiveId = Dictionary(uniqueKeysWithValues: suggestions.map { ($0.archiveId, $0) })
+        let newArchiveIds = Set(newSuggestions.map { $0.archiveId })
+        var merged: [NASuggestion] = []
+
+        for ns in newSuggestions {
+            if let existing = oldByArchiveId[ns.archiveId] {
+                // Alten Vorschlag behalten (archiviert bleibt archiviert)
+                merged.append(existing)
+            } else {
+                merged.append(ns)
+            }
+        }
+
+        suggestions = merged.sorted { $0.priority.rawValue > $1.priority.rawValue }
     }
 
     func generateBriefing() -> String {
