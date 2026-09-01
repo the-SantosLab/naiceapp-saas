@@ -1,0 +1,1 @@
+⌛ News-Feed API ist LIVE!\n   GET https://health.santoslab.de/api/news/feed\n   30+ Artikel, relevance_filter aktiv.\n   Spec in news-feature-prompt.md.\n   Bitte iOS-Card + Feed-Screen bauen. -Amelia

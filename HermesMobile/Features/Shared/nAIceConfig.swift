@@ -26,6 +26,9 @@ extension Color {
     static let ncSand = Color(red: 0.420, green: 0.439, blue: 0.502)     // was sand, now gray
     static let ncSage = Color(red: 0.0, green: 0.898, blue: 1.0)        // was sage green, now cyan
     static let ncGreen = Color(red: 0.0, green: 0.902, blue: 0.463)     // was dark green, now neon green
+    
+    // News-Feed specific
+    static let ncNewsTag = Color(red: 0.239, green: 0.353, blue: 0.278) // #3D5A47 dark green
     static let ncGreenLight = Color(red: 0.231, green: 0.510, blue: 0.965) // was light green, now blue
     static let ncDark = Color(red: 0.965, green: 0.965, blue: 0.980)    // was dark brown, now white
     static let ncMuted = Color(red: 0.420, green: 0.439, blue: 0.502)   // stays muted gray

@@ -184,7 +184,7 @@ struct nAIceApp: App {
                 handleDeepLink(url)
             }
         }
-        .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self])
+        .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self, NewsArticle.self])
         .commands { nAIceCommands(); SidebarCommands() }
     }
 

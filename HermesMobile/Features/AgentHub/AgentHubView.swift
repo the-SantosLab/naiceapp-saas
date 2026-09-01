@@ -11,6 +11,10 @@ struct AgentHubView: View {
     @Binding var requestedNewChat: NewChatRequest?
     @ObservedObject private var rollup = NARollupService.shared
     @ObservedObject private var proactive = NAProactiveService.shared
+    @ObservedObject private var goals = NAGoalService.shared
+    @ObservedObject private var companies = NACompanyService.shared
+    @ObservedObject private var waVM = WhatsAppViewModel.shared
+    @State private var showLifeScore = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -40,6 +44,43 @@ struct AgentHubView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
+
+                // Life Score (Einer-Blick)
+                Button { showLifeScore = true } label: {
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle().stroke(Color.white.opacity(0.08), lineWidth: 4).frame(width: 44, height: 44)
+                            Circle()
+                                .trim(from: 0, to: 0.72)
+                                .stroke(Color.ncNeonGreen, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                                .frame(width: 44, height: 44).rotationEffect(.degrees(-90))
+                            Text("72").font(.caption.weight(.bold)).foregroundColor(.ncNeonGreen)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Life Score").font(.subheadline.weight(.semibold)).foregroundColor(.white)
+                            let unread = waVM.unrepliedChats.count
+                            let tasks = rollup.tasks
+                            let parts: String = {
+                                var p: [String] = []
+                                if let rec = rollup.whoop?.recovery?.score { p.append("Recovery \(rec)%") }
+                                if let t = tasks, t.active > 0 { p.append("\(t.active) Tasks") }
+                                if unread > 0 { p.append("\(unread) WhatsApp") }
+                                return p.isEmpty ? "Alles im Blick →" : p.joined(separator: " · ")
+                            }()
+                            Text(parts).font(.caption).foregroundColor(.gray).lineLimit(1)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right").font(.caption2).foregroundColor(.gray)
+                    }
+                    .padding(12)
+                    .background(
+                        LinearGradient(colors: [Color.ncNeonGreen.opacity(0.08), Color.ncCyan.opacity(0.04)], startPoint: .leading, endPoint: .trailing),
+                        in: RoundedRectangle(cornerRadius: 14)
+                    )
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.ncNeonGreen.opacity(0.15), lineWidth: 0.5))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 16)
 
                 // Sync status
                 HStack {
@@ -165,6 +206,8 @@ struct AgentHubView: View {
                 // Meine Bereiche
                 sectionHeader(icon: "square.grid.2x2", title: "Meine Bereiche")
                     .padding(.horizontal, 20)
+                NewsFeedCard()
+                    .padding(.bottom, 4)
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                     areaTile("heart.fill", "Gesundheit", .ncRose, HealthDetailView())
                     areaTile("briefcase.fill", "Arbeit", .ncCyan, WorkDetailView())
@@ -175,7 +218,8 @@ struct AgentHubView: View {
                     areaTile("camera.viewfinder", "Scanner", .ncCyan, NACameraView())
                     areaTile("note.text", "Notizen", .ncBlue, NANotesView())
                     areaTile("figure.walk", "Habits", .ncNeonGreen, NAHabitsView())
-                    areaTile("target", "Ziele", .ncAmber, NAGoalsView())
+                    areaTile("target", "Ziele", .ncAmber, NALifeGoalsView())
+                    areaTile("building.2.fill", "Unternehmen", .ncAmber, NACompaniesView())
                     areaTile("tray.fill", "Posteingang", .ncNeonGreen, NAUnifiedInboxView())
                     areaTile("homekit", "Smart Home", .ncAmber, NASmartHomeView())
                     areaTile("apple.terminal", "Mac Agent", .ncPurple, NAMacAgentView())
@@ -193,6 +237,11 @@ struct AgentHubView: View {
         .task {
             proactive.generate()
             await rollup.fetch()
+            await goals.fetch()
+            await companies.fetch()
+        }
+        .sheet(isPresented: $showLifeScore) {
+            NavigationStack { NALifeScoreView() }
         }
     }
 
@@ -200,6 +249,10 @@ struct AgentHubView: View {
     private func refreshAll() async {
         await rollup.fetch()
         await NAJournalService.shared.fetch()
+        await goals.fetch()
+        await companies.fetch()
+        await waVM.fetchPending()
+        proactive.generate()
     }
 
     // MARK: - Briefing Section
