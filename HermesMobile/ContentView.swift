@@ -32,6 +32,9 @@ struct ContentView: View {
         }
     }
     private func handleOpenURL(_ url: URL) {
+        // ShareSheet extension deep links are handled by nAIceApp.swift
+        if url.scheme == "naice" && url.host == "share" { return }
+
         // Widget deep links
         if url.scheme == "naice" {
             switch url.path {
@@ -174,7 +177,9 @@ struct NAIceTabView: View {
                                                         })
                             .onChange(of: intentRouter.pendingNewChat, perform: { val in
                                 if val {
-                                    pn = NewChatRequest()
+                                    let draft = intentRouter.pendingShareText
+                                    pn = NewChatRequest(initialDraft: draft)
+                                    intentRouter.pendingShareText = ""
                                     intentRouter.pendingNewChat = false
                                 }
                             })

@@ -7,6 +7,7 @@ final class NAIntentRouter: ObservableObject {
     static let shared = NAIntentRouter()
     @Published var pendingTab: String? = nil
     @Published var pendingNewChat = false
+    @Published var pendingShareText: String = ""
     private init() {}
 }
 

@@ -21,6 +21,20 @@
                ReferencedContainer = "container:HermesMobile.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B5A100000000000000000040"
+               BuildableName = "HermesShareExtension.appex"
+               BlueprintName = "HermesShareExtension"
+               ReferencedContainer = "container:HermesMobile.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

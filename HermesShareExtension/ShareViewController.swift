@@ -1,192 +1,123 @@
 import UIKit
+import UniformTypeIdentifiers
 
 @MainActor
 final class ShareViewController: UIViewController {
-    private let statusLabel = UILabel()
     private var didStartOpening = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureView()
+        view.backgroundColor = .clear
+        view.isOpaque = false
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         guard !didStartOpening else { return }
         didStartOpening = true
 
         Task {
-            await saveDraftAndOpenHermes()
+            await handleSharedContent()
         }
     }
 
-    private func configureView() {
-        view.backgroundColor = .clear
-        view.isOpaque = false
-
-        statusLabel.text = "Opening nAIce..."
-        statusLabel.font = .preferredFont(forTextStyle: .headline)
-        statusLabel.textAlignment = .center
-        statusLabel.textColor = .secondaryLabel
-        statusLabel.adjustsFontForContentSizeCategory = true
-        statusLabel.numberOfLines = 0
-        statusLabel.isHidden = true
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(statusLabel)
-
-        NSLayoutConstraint.activate([
-            statusLabel.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            statusLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            statusLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-    }
-
-    private func saveDraftAndOpenHermes() async {
-        let input = await ShareInputReader.input(from: extensionContext)
-        let draft = HermesShareDraft.draftText(textSnippets: input.textSnippets, urls: input.urls)
-
-        guard !draft.isEmpty || !input.attachments.isEmpty else {
-            showStatus("nAIce accepts text, URLs, images, PDFs, and files up to 20 MB.")
-            completeRequest(after: 0.8)
+    private func handleSharedContent() async {
+        guard let context = extensionContext,
+              let item = context.inputItems.first as? NSExtensionItem,
+              let attachments = item.attachments else {
+            completeRequest()
             return
         }
 
-        guard let directory = HermesShareDraft.containerURL() else {
-            showStatus("Could not access nAIce storage.")
-            completeRequest(after: 0.8)
-            return
-        }
+        var textParts: [String] = []
+        var urlParts: [String] = []
 
-        do {
-            try HermesShareDraft.savePendingImport(draft: draft, attachments: input.attachments, in: directory)
-        } catch {
-            showStatus("Could not save shared content.")
-            completeRequest(after: 0.8)
-            return
-        }
-
-        openHermes()
-    }
-
-    private func showStatus(_ text: String) {
-        statusLabel.text = text
-        statusLabel.isHidden = false
-    }
-
-    private func openHermes() {
-        let url = HermesShareDraft.openURL
-
-        extensionContext?.open(url, completionHandler: { [weak self] success in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                if success {
-                    self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
-                } else {
-                    self.openHermesViaWorkaround(url)
+        for provider in attachments {
+            // First try to get a URL
+            if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                if let url = await loadItem(from: provider, type: UTType.url.identifier) as? URL {
+                    urlParts.append(url.absoluteString)
+                    continue
+                }
+                if let urlStr = await loadItem(from: provider, type: UTType.url.identifier) as? String {
+                    urlParts.append(urlStr)
+                    continue
                 }
             }
-        })
-    }
 
-    private func openHermesViaWorkaround(_ url: URL) {
-        let application = containingApplicationResponder()
-        if let application, open(url, using: application) {
-            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+            // Then try text
+            if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
+                if let text = await loadItem(from: provider, type: UTType.plainText.identifier) as? String {
+                    textParts.append(text)
+                    continue
+                }
+            }
+
+            // Try text as fallback
+            if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
+                if let text = await loadItem(from: provider, type: UTType.text.identifier) as? String {
+                    textParts.append(text)
+                    continue
+                }
+            }
+        }
+
+        // Build the shared text
+        var sharedText = ""
+        if !urlParts.isEmpty {
+            sharedText = urlParts.joined(separator: "\n")
+        }
+        if !textParts.isEmpty {
+            let text = textParts.joined(separator: "\n\n")
+            sharedText = sharedText.isEmpty ? text : "\(text)\n\n\(sharedText)"
+        }
+
+        // Open nAIce with the shared content via URL
+        guard !sharedText.isEmpty else {
+            completeRequest()
             return
         }
 
-        if openViaResponderChain(url) || openViaContainingApplication(url) {
-            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+        guard var components = URLComponents(string: "naice://share") else {
+            completeRequest()
+            return
+        }
+        components.queryItems = [URLQueryItem(name: "text", value: sharedText)]
+
+        guard let url = components.url else {
+            completeRequest()
             return
         }
 
-        // Fallback if everything fails
-        showStatus("Shared content saved. Open nAIce manually.")
-        completeRequest(after: 1.5)
-    }
-
-    private func openViaContainingApplication(_ url: URL) -> Bool {
-        // Owner-accepted App Review risk: share extensions have no guaranteed
-        // containing-app launcher, but this preserves the current fast return UX.
-        let sharedApplicationSelector = NSSelectorFromString("sharedApplication")
-        let openURLModernSelector = NSSelectorFromString("openURL:options:completionHandler:")
-
-        guard
-            let applicationClass = NSClassFromString("UIApplication") as? NSObject.Type,
-            applicationClass.responds(to: sharedApplicationSelector),
-            let application = applicationClass.perform(sharedApplicationSelector)?.takeUnretainedValue() as? NSObject
-        else {
-            return false
-        }
-
-        if application.responds(to: openURLModernSelector),
-           let implementation = application.method(for: openURLModernSelector) {
-            typealias OpenURLModernFunction = @convention(c) (NSObject, Selector, NSURL, NSDictionary, Any?) -> Void
-            let openURL = unsafeBitCast(implementation, to: OpenURLModernFunction.self)
-            openURL(application, openURLModernSelector, url as NSURL, [:] as NSDictionary, nil)
-            return true
-        }
-
-        return false
-    }
-
-    private func containingApplicationResponder() -> UIResponder? {
-        guard let applicationClass = NSClassFromString("UIApplication") else {
-            return nil
-        }
-
-        var responder: UIResponder? = self
-        while let currentResponder = responder {
-            if currentResponder.isKind(of: applicationClass) {
-                return currentResponder
+        // Open the main app
+        context.open(url) { [weak self] success in
+            if !success {
+                // Fallback: try via UIApplication
+                let selector = NSSelectorFromString("sharedApplication")
+                if let appClass = NSClassFromString("UIApplication") as? NSObject.Type,
+                   appClass.responds(to: selector),
+                   let app = appClass.perform(selector)?.takeUnretainedValue() as? NSObject {
+                    let openSelector = NSSelectorFromString("openURL:options:completionHandler:")
+                    if app.responds(to: openSelector) {
+                        typealias OpenFunc = @convention(c) (NSObject, Selector, NSURL, NSDictionary, Any?) -> Void
+                        let open = unsafeBitCast(app.method(for: openSelector), to: OpenFunc.self)
+                        open(app, openSelector, url as NSURL, [:] as NSDictionary, nil)
+                    }
+                }
             }
-
-            responder = currentResponder.next
+            self?.completeRequest()
         }
-
-        return nil
     }
 
-    private func openViaResponderChain(_ url: URL) -> Bool {
-        var responder: UIResponder? = self
-
-        while let currentResponder = responder {
-            if open(url, using: currentResponder) {
-                return true
+    private func loadItem(from provider: NSItemProvider, type: String) async -> NSSecureCoding? {
+        await withCheckedContinuation { continuation in
+            provider.loadItem(forTypeIdentifier: type, options: nil) { item, _ in
+                continuation.resume(returning: item)
             }
-
-            responder = currentResponder.next
         }
-
-        return false
     }
 
-    private func open(_ url: URL, using responder: UIResponder) -> Bool {
-        // Owner-accepted App Review risk; this is a fallback for hosts where
-        // NSExtensionContext.open does not route to the containing app.
-        if let application = responder as? UIApplication {
-            application.open(url, options: [:], completionHandler: nil)
-            return true
-        }
-
-        let openURLModernSelector = NSSelectorFromString("openURL:options:completionHandler:")
-        if responder.responds(to: openURLModernSelector),
-           let implementation = responder.method(for: openURLModernSelector) {
-            typealias OpenURLModernFunction = @convention(c) (UIResponder, Selector, NSURL, NSDictionary, Any?) -> Void
-            let openURL = unsafeBitCast(implementation, to: OpenURLModernFunction.self)
-            openURL(responder, openURLModernSelector, url as NSURL, [:] as NSDictionary, nil)
-            return true
-        }
-
-        return false
-    }
-
-    private func completeRequest(after delay: TimeInterval) {
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
-        }
+    private func completeRequest() {
+        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }

@@ -206,8 +206,6 @@ struct AgentHubView: View {
                 // Meine Bereiche
                 sectionHeader(icon: "square.grid.2x2", title: "Meine Bereiche")
                     .padding(.horizontal, 20)
-                NewsFeedCard()
-                    .padding(.bottom, 4)
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                     areaTile("heart.fill", "Gesundheit", .ncRose, HealthDetailView())
                     areaTile("briefcase.fill", "Arbeit", .ncCyan, WorkDetailView())

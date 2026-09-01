@@ -27,7 +27,7 @@ struct NFile: Codable, Identifiable {
         if Calendar.current.isDateInToday(d) { return "Heute" }
         if Calendar.current.isDateInYesterday(d) { return "Gestern" }
         let df = DateFormatter()
-        df.dateFormat = "dd.MM."
+        df.dateFormat = "dd.MM.yy"
         return df.string(from: d)
     }
 
@@ -39,6 +39,8 @@ struct NFile: Codable, Identifiable {
         case "md": return "doc.text"
         case "txt": return "doc.plaintext"
         case "image": return "photo"
+        case "video": return "video.fill"
+        case "audio": return "music.note"
         default: return "doc"
         }
     }
@@ -51,6 +53,8 @@ struct NFile: Codable, Identifiable {
         case "md": return .purple
         case "txt": return .gray
         case "image": return .green
+        case "video": return .ncRose
+        case "audio": return .ncAmber
         default: return .ncMuted
         }
     }
@@ -67,6 +71,23 @@ struct NFolder: Identifiable, Hashable {
     let fileCount: Int
 }
 
+// MARK: - Sort & Filter
+enum FileSortBy: String, CaseIterable {
+    case date = "Datum"
+    case name = "Name"
+    case size = "Größe"
+    case type = "Typ"
+}
+
+enum FileTypeFilter: String, CaseIterable {
+    case all = "Alle"
+    case pdf = "PDFs"
+    case image = "Bilder"
+    case text = "Text"
+    case html = "HTML"
+    case other = "Sonstiges"
+}
+
 // MARK: - File Service
 @MainActor
 class NAFilesService: ObservableObject {
@@ -80,6 +101,10 @@ class NAFilesService: ObservableObject {
     @Published var activeFilter: FileFilter = .all
     @Published var selectedFolder: String?
     @Published var serverFolders: [String] = []
+
+    @Published var sortBy: FileSortBy = .date
+    @Published var sortAscending = false
+    @Published var typeFilter: FileTypeFilter = .all
 
     enum FileFilter: String, CaseIterable {
         case all = "Alle"
@@ -99,26 +124,58 @@ class NAFilesService: ObservableObject {
 
     private let baseURL = "https://health.santoslab.de/api/naice/files"
 
-    var filteredFiles: [NFile] {
+    // MARK: - Filtered + Sorted Files
+    var sortedFiles: [NFile] {
+        let filtered = applyAllFilters()
+        return filtered.sorted { a, b in
+            let result: Bool
+            switch sortBy {
+            case .date: result = a.mtime > b.mtime
+            case .name: result = a.name.lowercased() < b.name.lowercased()
+            case .size: result = a.size > b.size
+            case .type: result = a.type < b.type
+            }
+            return sortAscending ? !result : result
+        }
+    }
+
+    var folderFiles: [NFile] {
+        // Files in the currently selected folder
+        let filtered = applyAllFilters()
+        if let folder = selectedFolder, !folder.isEmpty {
+            return filtered.filter { $0.folder == folder || $0.folder == "uploads/" + folder }
+        }
+        return filtered
+    }
+
+    private func applyAllFilters() -> [NFile] {
         var result = files
-        // Filter by source
+
+        // Source filter
         if let sv = activeFilter.serverValue {
             result = result.filter { $0.source == sv }
         }
-        // Filter by folder – auch "uploads/"-Prefix prüfen
-        if let folder = selectedFolder, !folder.isEmpty {
-            result = result.filter { $0.folder == folder || $0.folder == "uploads/" + folder }
+
+        // Type filter
+        if typeFilter != .all {
+            result = result.filter { fileTypeMatches($0.type) }
         }
+
         return result
     }
 
-    var currentFolderFiles: [NFile] {
-        if let folder = selectedFolder, !folder.isEmpty {
-            return files.filter { $0.folder == folder || $0.folder == "uploads/" + folder }
+    private func fileTypeMatches(_ t: String) -> Bool {
+        switch typeFilter {
+        case .all: return true
+        case .pdf: return t == "pdf"
+        case .image: return t == "image"
+        case .text: return ["txt", "md", "docx"].contains(t)
+        case .html: return t == "html"
+        case .other: return !["pdf", "image", "txt", "md", "docx", "html"].contains(t)
         }
-        return filteredFiles
     }
 
+    // MARK: - API
     func fetchFiles() async {
         isLoading = true
         errorMessage = nil
@@ -140,7 +197,6 @@ class NAFilesService: ObservableObject {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             let result = try JSONDecoder().decode([String: [String]].self, from: data)
-            // Filter out subpaths with / and the bare 'uploads' folder
             serverFolders = (result["folders"] ?? []).filter { !$0.contains("/") && $0 != "uploads" }
         } catch {}
     }
@@ -149,7 +205,6 @@ class NAFilesService: ObservableObject {
         isLoading = true
         selectedFolder = folder
         do {
-            // Server erwartet "uploads/" + folder, probiere beides
             var urlStr = baseURL + "?folder=" + folder.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             var url = URL(string: urlStr)!
             var (data, _) = try await URLSession.shared.data(from: url)
@@ -173,6 +228,7 @@ class NAFilesService: ObservableObject {
         folders = folderDict.filter { !$0.key.isEmpty }.map { NFolder(name: $0.key, fileCount: $0.value.count) }.sorted { $0.name < $1.name }
     }
 
+    // MARK: - Download
     func downloadFile(_ file: NFile) async -> Data? {
         if let cached = downloadedFiles[file.path] { return cached }
         let urlStr = baseURL + "/download?path=" + file.path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
@@ -186,6 +242,21 @@ class NAFilesService: ObservableObject {
         }
     }
 
+    // MARK: - Share (echte Datei, nicht nur Link)
+    func downloadForSharing(_ file: NFile) async -> URL? {
+        guard let data = await downloadFile(file) else { return nil }
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("naice_share", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let tempFile = tempDir.appendingPathComponent(file.name)
+        do {
+            try data.write(to: tempFile)
+            return tempFile
+        } catch {
+            return nil
+        }
+    }
+
+    // MARK: - Upload
     func uploadFile(name: String, data: Data, folder: String = "") async -> Bool {
         let urlStr = baseURL + "/upload"
         guard let url = URL(string: urlStr) else { return false }
@@ -204,13 +275,36 @@ class NAFilesService: ObservableObject {
         }
     }
 
-    func createFolder(name: String, parent: String = "") async -> Bool {
-        let urlStr = baseURL + "/folder/create"
+    // MARK: - Delete
+    func deleteFile(_ file: NFile) async -> Bool {
+        let urlStr = baseURL + "/delete"
         guard let url = URL(string: urlStr) else { return false }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["name": name, "parent": parent]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: ["path": file.path])
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let result = try JSONDecoder().decode([String: AnyCodable].self, from: data)
+            if result["ok"]?.boolValue == true {
+                files.removeAll { $0.path == file.path }
+                buildFolders()
+                return true
+            }
+            return false
+        } catch {
+            return false
+        }
+    }
+
+    // MARK: - Move
+    func moveFile(_ file: NFile, toFolder: String) async -> Bool {
+        let urlStr = baseURL + "/move"
+        guard let url = URL(string: urlStr) else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["path": file.path, "folder": toFolder]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         do {
             let (_, _) = try await URLSession.shared.data(for: request)
@@ -221,13 +315,14 @@ class NAFilesService: ObservableObject {
         }
     }
 
-    func moveFile(file: NFile, toFolder: String) async -> Bool {
-        let urlStr = baseURL + "/move"
+    // MARK: - Folder Management
+    func createFolder(name: String, parent: String = "") async -> Bool {
+        let urlStr = baseURL + "/folder/create"
         guard let url = URL(string: urlStr) else { return false }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["path": file.path, "folder": toFolder]
+        let body: [String: Any] = ["name": name, "parent": parent]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         do {
             let (_, _) = try await URLSession.shared.data(for: request)
@@ -269,4 +364,28 @@ class NAFilesService: ObservableObject {
             return false
         }
     }
+}
+
+// MARK: - Helper for dynamic JSON decoding
+struct AnyCodable: Codable {
+    let value: Any
+
+    init(_ value: Any) { self.value = value }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let int = try? container.decode(Int.self) { value = int }
+        else if let double = try? container.decode(Double.self) { value = double }
+        else if let bool = try? container.decode(Bool.self) { value = bool }
+        else if let str = try? container.decode(String.self) { value = str }
+        else { value = try container.decode([String: AnyCodable].self) }
+    }
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        if let int = value as? Int { try container.encode(int) }
+        else if let double = value as? Double { try container.encode(double) }
+        else if let bool = value as? Bool { try container.encode(bool) }
+        else if let str = value as? String { try container.encode(str) }
+    }
+
+    var boolValue: Bool? { value as? Bool }
 }

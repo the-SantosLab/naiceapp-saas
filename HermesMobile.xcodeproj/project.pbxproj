@@ -113,7 +113,6 @@
 		22AB000000000000000000B1 /* WorkspaceRegistryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AB000000000000000000F1 /* WorkspaceRegistryViewModel.swift */; };
 		22AB000000000000000000B2 /* WorkspaceManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AB000000000000000000F2 /* WorkspaceManagerView.swift */; };
 		22AB000000000000000000B3 /* WorkspaceRegistryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AB000000000000000000F3 /* WorkspaceRegistryViewModelTests.swift */; };
-		239E3984DE8227622FAD895B /* NewsFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B829FCF4E1EBF271F5B8BF /* NewsFeedView.swift */; };
 		25B6A02B37F07C035BED2312 /* NACompaniesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE4D75EEA6419DA425D3C79E /* NACompaniesView.swift */; };
 		26AB000000000000000000B1 /* ProvidersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AB000000000000000000F1 /* ProvidersViewModel.swift */; };
 		26AB000000000000000000B2 /* ProvidersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AB000000000000000000F2 /* ProvidersView.swift */; };
@@ -146,6 +145,7 @@
 		530A31DFAB00FE64EF2CDD5D /* TimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A57EFEEBF94F038FC1A64D /* TimelineCard.swift */; };
 		5417A7400000000000000092 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = 5417A7400000000000000091 /* SwiftMath */; };
 		545C8D3258D235795A7D9B03 /* HermesLiveActivityWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A04500000000000000000017 /* HermesLiveActivityWidget.appex */; };
+		B5A100000000000000000070 /* HermesShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B5A100000000000000000017 /* HermesShareExtension.appex */; };
 		54CAEBE2C4329017C4D999DD /* NAFinanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B309F61E3B80BDB41121439 /* NAFinanceService.swift */; };
 		553CBCE7FAC71D41BF9B3B47 /* NACRMDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B5B2A9C25D806D0061FF5 /* NACRMDetailView.swift */; };
 		56063D74CA7FC2BAFD989D68 /* nAIceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDE1D8F965B2A6A10696036 /* nAIceConfig.swift */; };
@@ -163,7 +163,6 @@
 		7FF37F6D9C9B057134756504 /* NAWatchConnectivityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B53E4CC244DC057BD275B2 /* NAWatchConnectivityHandler.swift */; };
 		8138ACC9F93ED95D6EDA3A13 /* NAiceWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776B627862ADD0FEF5D658A /* NAiceWatchApp.swift */; };
 		821707D29B1D51857BFCF78A /* NAJournalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D067B3957F4996F92E721A /* NAJournalService.swift */; };
-		831949F1702E6AE20A842DB6 /* NewsFeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E95FF15B1F3DB3A2F9E8083 /* NewsFeedService.swift */; };
 		840D30CDEF25A0255AFABB1E /* NABiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */; };
 		8618A9261B8047CEA6084798 /* SlashCommandAutocompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2A37872AC842629FBDDFA4 /* SlashCommandAutocompleteView.swift */; };
 		8A041BD2035129703F266316 /* NAMacAgentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED34C29439AE2FB042C4E32 /* NAMacAgentService.swift */; };
@@ -417,7 +416,6 @@
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
 		FB54FE269D1028591833C6E5 /* NACompanyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9301C21F08024C31D70572B9 /* NACompanyService.swift */; };
 		FD5513154661E6D9D0E6B84D /* NAWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402AA464975A9B246B36F88 /* NAWorkflowService.swift */; };
-		FFF89B49B0AF9680E22107DC /* NewsArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7D7BC298B19DC46A61E97E /* NewsArticle.swift */; };
 		b28a279b120846d3aca0f1b31b5d3c80 /* NAShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ecb3b09acbe482aaf9073bf17905b4d /* NAShoppingList.swift */; };
 /* End PBXBuildFile section */
 
@@ -461,6 +459,7 @@
 			files = (
 				62AD82AB1A8D358CB53E66E6 /* NAiceWidget.appex in Embed App Extensions */,
 				545C8D3258D235795A7D9B03 /* HermesLiveActivityWidget.appex in Embed App Extensions */,
+				B5A100000000000000000070 /* HermesShareExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -589,7 +588,6 @@
 		374A0792027787A3F8498E03 /* NAiceWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAiceWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B309F61E3B80BDB41121439 /* NAFinanceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFinanceService.swift; sourceTree = "<group>"; };
 		3BAC4432EA7A7890B3BAB966 /* NAiceActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceActivity.swift; sourceTree = "<group>"; };
-		3E95FF15B1F3DB3A2F9E8083 /* NewsFeedService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewsFeed/NewsFeedService.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01011 /* Cron.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cron.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01012 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01013 /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
@@ -624,7 +622,6 @@
 		72846051BC37F009F54442FD /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
 		72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		735FA79E0914CEA8F3736236 /* NASmartHomeService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASmartHomeService.swift; sourceTree = "<group>"; };
-		73B829FCF4E1EBF271F5B8BF /* NewsFeedView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewsFeed/NewsFeedView.swift; sourceTree = "<group>"; };
 		7680D72A0B1646090D1AE45E /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = SDKROOT; };
 		7C25C1CD56AAC96FB4481A5F /* HermesMobileWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HermesMobileWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D44D7F9BE950C922C96F905 /* NAIceRelationsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAIceRelationsView.swift; path = AgentHub/DetailViews/NAIceRelationsView.swift; sourceTree = "<group>"; };
@@ -865,7 +862,6 @@
 		DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceDynamicIsland.swift; sourceTree = "<group>"; };
 		DF22AF4C99DC3882E3A8ADFD /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
 		DF451D7E79A66AC572524122 /* BusinessOverview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BusinessOverview.swift; path = AgentHub/DetailViews/BusinessOverview.swift; sourceTree = "<group>"; };
-		DF7D7BC298B19DC46A61E97E /* NewsArticle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewsFeed/NewsArticle.swift; sourceTree = "<group>"; };
 		E0B863BC687C467BF1BDDD85 /* NAMacAgentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAMacAgentView.swift; sourceTree = "<group>"; };
 		E15990341BD10919D01CE86C /* NADonutChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NADonutChart.swift; sourceTree = "<group>"; };
 		E1B3346AFD64AFEE7725B6E7 /* NAiceWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HermesMobileWidgets/NAiceWidgetBundle.swift; sourceTree = "<group>"; };
@@ -1490,9 +1486,6 @@
 		50B5D5CF6D5EBB743D67EC8F /* NewsFeed */ = {
 			isa = PBXGroup;
 			children = (
-				DF7D7BC298B19DC46A61E97E /* NewsArticle.swift */,
-				3E95FF15B1F3DB3A2F9E8083 /* NewsFeedService.swift */,
-				73B829FCF4E1EBF271F5B8BF /* NewsFeedView.swift */,
 			);
 			name = NewsFeed;
 			sourceTree = "<group>";
@@ -2652,7 +2645,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HERMES_URL_SCHEME = "hermes-agent$(APP_URL_SCHEME_SUFFIX)";
+				HERMES_URL_SCHEME = naice;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				KEYCHAIN_SERVICE = "$(APP_BUNDLE_IDENTIFIER)";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -2714,7 +2707,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HERMES_URL_SCHEME = "hermes-agent$(APP_URL_SCHEME_SUFFIX)";
+				HERMES_URL_SCHEME = naice;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				KEYCHAIN_SERVICE = "$(APP_BUNDLE_IDENTIFIER)";
 				MTL_ENABLE_DEBUG_INFO = NO;

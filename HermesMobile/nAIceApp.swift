@@ -184,7 +184,7 @@ struct nAIceApp: App {
                 handleDeepLink(url)
             }
         }
-        .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self, NewsArticle.self])
+        .modelContainer(for: [CachedSession.self, CachedMessage.self, MoodEntry.self, HabitLog.self, Expense.self, HabitDefinition.self])
         .commands { nAIceCommands(); SidebarCommands() }
     }
 
@@ -196,6 +196,13 @@ struct nAIceApp: App {
         case "chat":
             NAIntentRouter.shared.pendingTab = "agent"
             NAIntentRouter.shared.pendingNewChat = true
+        case "share":
+            // Shared content from ShareSheet extension
+            let text = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                .queryItems?.first(where: { $0.name == "text" })?.value ?? ""
+            NAIntentRouter.shared.pendingTab = "agent"
+            NAIntentRouter.shared.pendingNewChat = true
+            NAIntentRouter.shared.pendingShareText = text
         case "tasks":
             NAIntentRouter.shared.pendingTab = "tasks"
         case "mood", "journal":
