@@ -139,7 +139,7 @@ struct NAIceLifeView: View {
     private func refresh() async {
         await rollup.fetch()
         if let r = rollup.rollup {
-            vm.compute(from: r)
+            vm.compute(from: r, liveCalendarCount: calendarManager.todayEvents.count)
         }
     }
 

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FilesHeader: View {
     @ObservedObject var fs: NAFilesService
-    @Binding var showSortPicker: Bool
+    let onSort: () -> Void
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -11,7 +11,7 @@ struct FilesHeader: View {
             }
             Spacer()
             if fs.isLoading { ProgressView().scaleEffect(0.7).tint(.ncCyan) }
-            Button { showSortPicker = true } label: {
+            Button { onSort() } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.arrow.down").font(.caption)
                     Text(fs.sortBy.rawValue).font(.caption2)

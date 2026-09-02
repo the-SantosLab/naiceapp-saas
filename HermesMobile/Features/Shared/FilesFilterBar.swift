@@ -44,26 +44,19 @@ struct FilesFilterBar: View {
 
 struct FilesActionBar: View {
     @ObservedObject var fs: NAFilesService
-    @Binding var showUpload: Bool
-    @Binding var showCreateFolder: Bool
+    let onUpload: () -> Void
+    let onCreateFolder: () -> Void
     var body: some View {
         HStack(spacing: 8) {
-            btn("arrow.up.doc.fill", "Upload", .ncCyan) { showUpload = true }
-            btn("folder.badge.plus", "Ordner", .ncNeonGreen) { showCreateFolder = true }
+            btn("arrow.up.doc.fill", "Upload", .ncCyan, onUpload)
+            btn("folder.badge.plus", "Ordner", .ncNeonGreen, onCreateFolder)
             if fs.selectedFolder != nil {
-                btn("arrow.left", "Zuruck", .gray) {
-                    fs.selectedFolder = nil
-                    Task { await fs.fetchFiles() }
-                }
+                btn("arrow.left", "Zuruck", .gray) { fs.selectedFolder = nil; Task { await fs.fetchFiles() } }
             }
         }
     }
-    func btn(_ icon: String, _ label: String, _ color: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: icon).font(.caption)
-                Text(label).font(.caption.weight(.medium))
-            }
+    func btn(_ icon: String, _ label: String, _ color: Color, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) { HStack(spacing: 4) { Image(systemName: icon).font(.caption); Text(label).font(.caption.weight(.medium)) }
             .foregroundColor(color).padding(.horizontal, 12).padding(.vertical, 8)
             .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
         }
