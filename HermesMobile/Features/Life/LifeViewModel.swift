@@ -46,7 +46,7 @@ class LifeViewModel: ObservableObject {
     private var previousRecovery: Int = 0
     private var currentRecovery: Int = 0
 
-    func compute(from rollup: NARollup, liveCalendarCount: Int? = nil) {
+    func compute(from rollup: NARollup) {
         guard let w = rollup.whoop else { return }
 
         // ── Health Score ──
@@ -63,7 +63,7 @@ class LifeViewModel: ObservableObject {
         let relationsScore = min(100, max(0, 100 - waUnread * 10))
 
         // ── Daily Life Score ──
-        let todayEvents = liveCalendarCount ?? rollup.calendar?.count ?? 0
+        let todayEvents = rollup.calendar?.count ?? 0
         // Habits from SwiftData - approximate with journal entries today
         let todayHabits = rollup.journal?.entries?.filter {
             guard let created = $0.created_at else { return false }

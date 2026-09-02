@@ -1,4 +1,14 @@
 import SwiftUI
+import QuickLook
+
+class FilePreviewDataSource: NSObject, QLPreviewControllerDataSource {
+    let url: URL
+    init(url: URL) { self.url = url }
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as QLPreviewItem }
+}
+
+class FilePreviewDelegate: NSObject, QLPreviewControllerDelegate {}
 
 struct FilesFolderSection: View {
     @ObservedObject var fs: NAFilesService
@@ -34,7 +44,7 @@ struct FilesListSection: View {
                 Text(fs.selectedFolder ?? "Dateien").font(.subheadline.weight(.semibold)).foregroundColor(.white)
                 ForEach(files) { file in
                     HStack {
-                        NAFileRowView(file: file, onTap: {})
+                        NAFileRowView(file: file, onTap: { openFile(file) })
                         Spacer()
                         Menu {
                             Button("Teilen") { shareFile(file) }
@@ -53,7 +63,14 @@ struct FilesListSection: View {
     func computeFiles() -> [NFile] {
         var r = fs.files
         if let f = fs.selectedFolder, !f.isEmpty { r = r.filter { $0.folder == f || $0.folder == "uploads/"+f } }
-        if let s = fs.activeFilter.serverValue { r = r.filter { $0.source == s } }
+        // Apply type filter
+        switch fs.typeFilter {
+        case .pdf: r = r.filter { $0.type.lowercased() == "pdf" }
+        case .image: r = r.filter { ["jpg", "jpeg", "png", "gif", "webp"].contains($0.type.lowercased()) }
+        case .text: r = r.filter { ["txt", "md", "docx", "doc"].contains($0.type.lowercased()) }
+        case .html: r = r.filter { $0.type.lowercased() == "html" }
+        default: break
+        }
         if !searchText.isEmpty { r = r.filter { $0.name.localizedCaseInsensitiveContains(searchText) } }
         r.sort { a, b in
             switch fs.sortBy {
@@ -63,7 +80,25 @@ struct FilesListSection: View {
             case .type: return a.type < b.type
             }
         }
+        if !fs.sortAscending { r.reverse() }
         return r
+    }
+    func openFile(_ file: NFile) {
+        Task {
+            if let url = await NAFilesService.shared.downloadForSharing(file) {
+                await MainActor.run {
+                    guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                          let window = scene.windows.first,
+                          let root = window.rootViewController else { return }
+                    
+                    let preview = QLPreviewController()
+                    preview.dataSource = FilePreviewDataSource(url: url)
+                    preview.delegate = FilePreviewDelegate()
+                    
+                    root.present(preview, animated: true)
+                }
+            }
+        }
     }
     func shareFile(_ file: NFile) {
         Task {
