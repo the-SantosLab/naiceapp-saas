@@ -1,14 +1,4 @@
 import SwiftUI
-import QuickLook
-
-class FilePreviewDataSource: NSObject, QLPreviewControllerDataSource {
-    let url: URL
-    init(url: URL) { self.url = url }
-    func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
-    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as QLPreviewItem }
-}
-
-class FilePreviewDelegate: NSObject, QLPreviewControllerDelegate {}
 
 struct FilesFolderSection: View {
     @ObservedObject var fs: NAFilesService
@@ -33,6 +23,8 @@ struct FilesFolderSection: View {
 struct FilesListSection: View {
     @ObservedObject var fs: NAFilesService
     let searchText: String
+    @Binding var isSelecting: Bool
+    @Binding var selectedFiles: Set<String>
     let onDelete: (NFile) -> Void
     let onMove: (NFile) -> Void
     var body: some View {
@@ -44,7 +36,29 @@ struct FilesListSection: View {
                 Text(fs.selectedFolder ?? "Dateien").font(.subheadline.weight(.semibold)).foregroundColor(.white)
                 ForEach(files) { file in
                     HStack {
-                        NAFileRowView(file: file, onTap: { openFile(file) })
+                        if isSelecting {
+                            Button {
+                                if selectedFiles.contains(file.id) { selectedFiles.remove(file.id) }
+                                else { selectedFiles.insert(file.id) }
+                            } label: {
+                                Image(systemName: selectedFiles.contains(file.id) ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 18))
+                                    .foregroundColor(selectedFiles.contains(file.id) ? .ncCyan : .gray)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        if isSelecting {
+                            NAFileRowView(file: file)
+                                .onTapGesture {
+                                    if selectedFiles.contains(file.id) { selectedFiles.remove(file.id) }
+                                    else { selectedFiles.insert(file.id) }
+                                }
+                        } else {
+                            NavigationLink(destination: NFileViewerWrapper(file: file)) {
+                                NAFileRowView(file: file)
+                            }
+                            .buttonStyle(.plain)
+                        }
                         Spacer()
                         Menu {
                             Button("Teilen") { shareFile(file) }
@@ -54,6 +68,8 @@ struct FilesListSection: View {
                             Image(systemName: "ellipsis").font(.caption).foregroundColor(.gray).padding(6)
                         }
                     }
+                    .background(isSelecting && selectedFiles.contains(file.id) ? Color.ncCyan.opacity(0.05) : Color.clear)
+                    .cornerRadius(8)
                 }
             }
             .padding(16)
@@ -63,7 +79,7 @@ struct FilesListSection: View {
     func computeFiles() -> [NFile] {
         var r = fs.files
         if let f = fs.selectedFolder, !f.isEmpty { r = r.filter { $0.folder == f || $0.folder == "uploads/"+f } }
-        // Apply type filter
+        else { r = r.filter { $0.folder == nil || $0.folder!.isEmpty || !fs.serverFolders.contains($0.folder!) } }
         switch fs.typeFilter {
         case .pdf: r = r.filter { $0.type.lowercased() == "pdf" }
         case .image: r = r.filter { ["jpg", "jpeg", "png", "gif", "webp"].contains($0.type.lowercased()) }
@@ -83,30 +99,14 @@ struct FilesListSection: View {
         if !fs.sortAscending { r.reverse() }
         return r
     }
-    func openFile(_ file: NFile) {
-        Task {
-            if let url = await NAFilesService.shared.downloadForSharing(file) {
-                await MainActor.run {
-                    guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                          let window = scene.windows.first,
-                          let root = window.rootViewController else { return }
-                    
-                    let preview = QLPreviewController()
-                    preview.dataSource = FilePreviewDataSource(url: url)
-                    preview.delegate = FilePreviewDelegate()
-                    
-                    root.present(preview, animated: true)
-                }
-            }
-        }
-    }
     func shareFile(_ file: NFile) {
         Task {
             if let url = await NAFilesService.shared.downloadForSharing(file) {
-                if let s = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let w = s.windows.first, let r = w.rootViewController {
-                    r.present(UIActivityViewController(activityItems: [url], applicationActivities: nil), animated: true)
-                }
+                guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let window = scene.windows.first,
+                      let root = window.rootViewController else { return }
+                let ac = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                root.present(ac, animated: true)
             }
         }
     }

@@ -58,4 +58,63 @@ class NACalendarService: ObservableObject {
             return false
         }
     }
+
+    /// Create event from Agent Action params dict (e.g. from [ACTION:createCalendar,...])
+    /// Supports keys: title, start (ISO8601), end (ISO8601, optional), duration (minutes, optional), notes
+    @discardableResult
+    func createEvent(from params: [String: String]) -> Bool {
+        guard let title = params["title"], !title.isEmpty else {
+            print("[NACalendarService] Missing title")
+            return false
+        }
+
+        guard let startDate = parseISODate(params["start"]) else {
+            print("[NACalendarService] Missing or invalid start date")
+            return false
+        }
+
+        var endDate: Date?
+        if let endStr = params["end"], let parsed = parseISODate(endStr) {
+            endDate = parsed
+        } else if let durationStr = params["duration"], let mins = Double(durationStr) {
+            endDate = startDate.addingTimeInterval(mins * 60)
+        }
+
+        let notes = params["notes"]
+
+        return createEvent(title: title, startDate: startDate, endDate: endDate, notes: notes)
+    }
+
+    // MARK: - Helpers
+
+    /// Parse ISO8601 date strings like "2026-09-05T10:00" or "2026-09-05T10:00:00+02:00"
+    private func parseISODate(_ str: String?) -> Date? {
+        guard let str = str, !str.isEmpty else { return nil }
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds, .withDashSeparatorInDate, .withColonSeparatorInTime]
+
+        // Try full ISO8601 first
+        if let date = formatter.date(from: str) {
+            return date
+        }
+
+        // Try without timezone (e.g. "2026-09-05T10:00")
+        let simpleFormatter = DateFormatter()
+        simpleFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        simpleFormatter.locale = Locale(identifier: "en_US_POSIX")
+        simpleFormatter.timeZone = TimeZone.current
+        if let date = simpleFormatter.date(from: str) {
+            return date
+        }
+
+        // Try date only "2026-09-05" → start of day
+        simpleFormatter.dateFormat = "yyyy-MM-dd"
+        if let date = simpleFormatter.date(from: str) {
+            return date
+        }
+
+        print("[NACalendarService] Failed to parse date: \(str)")
+        return nil
+    }
 }

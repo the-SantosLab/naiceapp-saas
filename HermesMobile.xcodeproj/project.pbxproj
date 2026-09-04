@@ -24,6 +24,7 @@
 		096013A76B8A0238C7F8A0BF /* NAIceTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0143F869FA91749C03CCDDD2 /* NAIceTasksView.swift */; };
 		09718ECA64DC3EA0D93F6382 /* NAVisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E533B358B66057700CD6AAE8 /* NAVisionService.swift */; };
 		0D82B28493C6401D98DA9C0E /* SlashCommandExecutorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6809B8F1391248A4AA77C453 /* SlashCommandExecutorTests.swift */; };
+		0D91F45ACFE63FC57896F234 /* FileActionLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FBB02C0E8EE9F23CDB11FBF /* FileActionLabel.swift */; };
 		0DE1B30EF6B91B5A9D543B33 /* NAiceContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B22429E07FCB1A1DB490B70 /* NAiceContext.swift */; };
 		103200000000000000000002 /* DefaultProfilePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103200000000000000000001 /* DefaultProfilePickerView.swift */; };
 		105050000000000000000001 /* ComposerModelPickerSectionExpansionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105050000000000000000002 /* ComposerModelPickerSectionExpansionState.swift */; };
@@ -145,6 +146,7 @@
 		4552E8F399E8A1F6B8109B14 /* NAShareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA53FFEAA333ED2573267D7 /* NAShareService.swift */; };
 		4960DD6462DF323A10449A31 /* NAUnifiedInboxService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8104AFCD32302FA1B4A2BBB /* NAUnifiedInboxService.swift */; };
 		4C78B1D4EE15FB7E5D769A60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
+		4E11DB2F95F05D53D1A39E47 /* NFileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9B114BE092C9EE9C5F586C /* NFileViewer.swift */; };
 		4F03681B186A527196C86616 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E98807793634CF90E84BBCC9 /* ChatView.swift */; };
 		530A31DFAB00FE64EF2CDD5D /* TimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A57EFEEBF94F038FC1A64D /* TimelineCard.swift */; };
 		5417A7400000000000000092 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = 5417A7400000000000000091 /* SwiftMath */; };
@@ -168,6 +170,7 @@
 		7FF37F6D9C9B057134756504 /* NAWatchConnectivityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B53E4CC244DC057BD275B2 /* NAWatchConnectivityHandler.swift */; };
 		8138ACC9F93ED95D6EDA3A13 /* NAiceWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776B627862ADD0FEF5D658A /* NAiceWatchApp.swift */; };
 		821707D29B1D51857BFCF78A /* NAJournalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D067B3957F4996F92E721A /* NAJournalService.swift */; };
+		82EDA225F24FB28ACF19F305 /* NFileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE8E1211D48916FAC30844 /* NFileViewer.swift */; };
 		840D30CDEF25A0255AFABB1E /* NABiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */; };
 		8618A9261B8047CEA6084798 /* SlashCommandAutocompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2A37872AC842629FBDDFA4 /* SlashCommandAutocompleteView.swift */; };
 		8A041BD2035129703F266316 /* NAMacAgentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED34C29439AE2FB042C4E32 /* NAMacAgentService.swift */; };
@@ -422,6 +425,7 @@
 		E8DFEE26F289B67519C1B11B /* NAIntentRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */; };
 		EC747220B70C04046C53B984 /* NAServiceStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F1916762962D32049688D5 /* NAServiceStatusView.swift */; };
 		EF5BC9AB35AC8000C306BCE6 /* TrendCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21AE11BD3EC9267D81AB2C1 /* TrendCard.swift */; };
+		F056C1A9404F4D2A58856DD1 /* NFileUploadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08DF01C1A92A65626CD1E84F /* NFileUploadSheet.swift */; };
 		F2410366F553E993A5D8E8FC /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */; };
 		F53F3D0362CB8D531884E6DA /* NAPushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B195E23D236271E714A93 /* NAPushService.swift */; };
 		F6551043CA62FF975F0B1CA1 /* NAProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C79BEDE9514510E611214 /* NAProfileView.swift */; };
@@ -492,6 +496,7 @@
 		04F1916762962D32049688D5 /* NAServiceStatusView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAServiceStatusView.swift; sourceTree = "<group>"; };
 		0802A246300B4557A878E4FC /* CardsOfTheMoment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardsOfTheMoment.swift; sourceTree = "<group>"; };
 		0886BC48EE93A143B89604AA /* NAUnifiedInboxView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAUnifiedInboxView.swift; sourceTree = "<group>"; };
+		08DF01C1A92A65626CD1E84F /* NFileUploadSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileUploadSheet.swift; sourceTree = "<group>"; };
 		0D1CE5F12B9E4D4D9E5A01C1 /* SlashCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandExecutor.swift; sourceTree = "<group>"; };
 		0D575BE31D14E1C683726EB3 /* NAUpdateService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAUpdateService.swift; sourceTree = "<group>"; };
 		103200000000000000000001 /* DefaultProfilePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultProfilePickerView.swift; sourceTree = "<group>"; };
@@ -626,6 +631,7 @@
 		5D9DCD6C3FAEA0D39B31AE55 /* AgentHubView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubView.swift; path = AgentHub/AgentHubView.swift; sourceTree = "<group>"; };
 		5DA59130ED4141049177576C /* SlashCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommand.swift; sourceTree = "<group>"; };
 		5E5BD397F558FB67C3996059 /* NANumberPad.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANumberPad.swift; sourceTree = "<group>"; };
+		5FBB02C0E8EE9F23CDB11FBF /* FileActionLabel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileActionLabel.swift; sourceTree = "<group>"; };
 		611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubModels.swift; path = AgentHub/Models/AgentHubModels.swift; sourceTree = "<group>"; };
 		629E8754B1AD2675BB5492E2 /* NANotesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANotesView.swift; sourceTree = "<group>"; };
 		63F7BCFA84BB0E549E0CE361 /* NAContactService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAContactService.swift; sourceTree = "<group>"; };
@@ -635,6 +641,7 @@
 		6B5ACB472A3949B1B4D161F6 /* JournalCheckinCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalCheckinCard.swift; sourceTree = "<group>"; };
 		6D2E2D0145071523FC3BD8F2 /* NAWeatherService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWeatherService.swift; sourceTree = "<group>"; };
 		6D6494E16316B5A3EF6754CA /* NAFolderRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFolderRowView.swift; sourceTree = "<group>"; };
+		6DDE8E1211D48916FAC30844 /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
 		72846051BC37F009F54442FD /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
 		72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		735FA79E0914CEA8F3736236 /* NASmartHomeService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASmartHomeService.swift; sourceTree = "<group>"; };
@@ -658,6 +665,7 @@
 		9AA036E99684473D66599039 /* NAHabitsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAHabitsService.swift; sourceTree = "<group>"; };
 		9C2C79BEDE9514510E611214 /* NAProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAProfileView.swift; sourceTree = "<group>"; };
 		9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIntentRouter.swift; sourceTree = "<group>"; };
+		9F9B114BE092C9EE9C5F586C /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
 		9FD16A5D77FEFA20B17DC8A3 /* BriefingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingView.swift; sourceTree = "<group>"; };
 		A02400000000000000000002 /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		A040C0DE0000000000000002 /* ProjectCreationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCreationSheet.swift; sourceTree = "<group>"; };
@@ -1749,6 +1757,10 @@
 				52FF02C2B97FD2A89D629DC3 /* FilesFilterBar.swift */,
 				231EEFF567EB880AA9B5DE47 /* FilesSection.swift */,
 				ED410AFFE754F099252B8715 /* FilesSheets.swift */,
+				9F9B114BE092C9EE9C5F586C /* NFileViewer.swift */,
+				08DF01C1A92A65626CD1E84F /* NFileUploadSheet.swift */,
+				6DDE8E1211D48916FAC30844 /* NFileViewer.swift */,
+				5FBB02C0E8EE9F23CDB11FBF /* FileActionLabel.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2376,6 +2388,10 @@
 				3C46C6791CD95AD7F71DEF9F /* FilesFilterBar.swift in Sources */,
 				CC5948AC658BEEE44FAD5F3E /* FilesSection.swift in Sources */,
 				696986BB46DE4FE6A34B81DC /* FilesSheets.swift in Sources */,
+				4E11DB2F95F05D53D1A39E47 /* NFileViewer.swift in Sources */,
+				F056C1A9404F4D2A58856DD1 /* NFileUploadSheet.swift in Sources */,
+				82EDA225F24FB28ACF19F305 /* NFileViewer.swift in Sources */,
+				0D91F45ACFE63FC57896F234 /* FileActionLabel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

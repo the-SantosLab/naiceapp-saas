@@ -71,7 +71,7 @@ class NAPushService: ObservableObject {
                         id: "\(n.id)",
                         title: n.title,
                         body: n.body,
-                        type: "briefing",
+                        type: n.type ?? "briefing",
                         createdAt: n.created_at,
                         isRead: false
                     )
@@ -83,7 +83,12 @@ class NAPushService: ObservableObject {
                     unreadCount += newItems.count
                     // Show local notification for latest
                     if let latest = newItems.last {
-                        showLocalNotification(title: latest.title, body: latest.body, id: latest.id)
+                        if latest.type == "calendar" {
+                            // Handle calendar push - auto-create event
+                            await handleCalendarPush(latest)
+                        } else {
+                            showLocalNotification(title: latest.title, body: latest.body, id: latest.id)
+                        }
                         lastBriefing = latest.body
                         lastBriefingType = latest.type
                     }
@@ -98,6 +103,44 @@ class NAPushService: ObservableObject {
         } catch {
             print("[Push] Poll error: \(error)")
         }
+    }
+
+    /// Handle a push notification of type "calendar" — parse body as JSON and create the event silently (no local notification).
+    private func handleCalendarPush(_ notification: NAPushNotification) async {
+        // Try to parse body as JSON with calendar event fields
+        if let data = notification.body.data(using: .utf8),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+           let title = json["title"], !title.isEmpty {
+
+            await NACalendarService.shared.requestAccess()
+
+            // Extract event details from JSON body
+            var params = json
+            if params["start"] == nil {
+                params["start"] = ISO8601DateFormatter().string(from: Date().addingTimeInterval(3600))
+            }
+            if params["duration"] == nil && params["end"] == nil {
+                params["duration"] = "60"
+            }
+
+            if NACalendarService.shared.createEvent(from: params) {
+                print("[Push] Calendar event created from push: \(title)")
+            }
+        } else if let dataJson = try? JSONSerialization.jsonObject(with: notification.body.data(using: .utf8) ?? Data()) as? [String: Any] {
+            // JSON with non-string values
+            let title = dataJson["title"] as? String ?? notification.title
+            var params: [String: String] = ["title": title]
+            if let start = dataJson["start"] as? String { params["start"] = start }
+            if let end = dataJson["end"] as? String { params["end"] = end }
+            if let duration = dataJson["duration"] { params["duration"] = "\(duration)" }
+            if let notes = dataJson["notes"] as? String { params["notes"] = notes }
+
+            await NACalendarService.shared.requestAccess()
+            if NACalendarService.shared.createEvent(from: params) {
+                print("[Push] Calendar event created from push: \(title)")
+            }
+        }
+        // Don't show a local notification for calendar events — the event just appears
     }
 
     // MARK: - Local Notification
@@ -169,6 +212,8 @@ struct NAPushQueueItem: Codable {
     let id: Int
     let title: String
     let body: String
+    let type: String?
+    let data: [String: String]?
     let created_at: String
     let tokens: [String]?
 }

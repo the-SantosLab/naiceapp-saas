@@ -4,7 +4,7 @@ import Observation
 
 // MARK: - Agent Action Types
 enum NAgentActionType: String, Codable {
-    case logMood, logExpense, createNote, createTask, openCalendar, openURL
+    case logMood, logExpense, createNote, createTask, openCalendar, openURL, createCalendar
 }
 
 struct NAgentAction: Identifiable, Codable {
@@ -39,7 +39,9 @@ final class NAgentActionHandler {
                 if parts.count == 2 { params[String(parts[0])] = String(parts[1]) }
             }
             let title = actionTitle(type, params)
-            actions.append(NAgentAction(type: type, title: title, params: params, autoExecute: type == .logMood))
+            // Calendar events always need confirmation (destructive-ish action)
+            let autoExec = type == .logMood
+            actions.append(NAgentAction(type: type, title: title, params: params, autoExecute: autoExec))
         }
         return actions
     }
@@ -69,6 +71,14 @@ final class NAgentActionHandler {
                 return "Geoffnet: \(urlStr)"
             }
             return "Keine URL"
+        case .createCalendar:
+            // Ensure calendar access, then create event
+            await NACalendarService.shared.requestAccess()
+            if NACalendarService.shared.createEvent(from: action.params) {
+                return "📅 Termin erstellt: \(action.params["title"] ?? "")"
+            } else {
+                return "❌ Termin konnte nicht erstellt werden"
+            }
         }
     }
 
@@ -111,6 +121,10 @@ final class NAgentActionHandler {
         case .createTask: return "Aufgabe: \(params["title"] ?? "?")"
         case .openCalendar: return "Kalender"
         case .openURL: return "Link: \(params["url"] ?? "?")"
+        case .createCalendar:
+            let title = params["title"] ?? "?"
+            let start = params["start"] ?? "?"
+            return "📅 \(title) am \(start)"
         }
     }
 }
