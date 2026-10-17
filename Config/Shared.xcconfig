@@ -1,8 +1,10 @@
 // Shared app-identity and signing defaults
 DEVELOPMENT_TEAM = GX89CS2T99
-PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app
-APP_BUNDLE_IDENTIFIER = pro.naice.app
+PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas
+APP_BUNDLE_IDENTIFIER = pro.naice.app.saas
 MARKETING_VERSION = 1.0
+APP_DISPLAY_NAME = nAIce Business
+CURRENT_PROJECT_VERSION = 20260922.1615
 
 // Optional per-machine overrides
 #include? "Local.xcconfig"

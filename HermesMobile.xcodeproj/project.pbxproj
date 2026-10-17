@@ -26,6 +26,7 @@
 		0D82B28493C6401D98DA9C0E /* SlashCommandExecutorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6809B8F1391248A4AA77C453 /* SlashCommandExecutorTests.swift */; };
 		0D91F45ACFE63FC57896F234 /* FileActionLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FBB02C0E8EE9F23CDB11FBF /* FileActionLabel.swift */; };
 		0DE1B30EF6B91B5A9D543B33 /* NAiceContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B22429E07FCB1A1DB490B70 /* NAiceContext.swift */; };
+		0FFC560740255447E120DD81 /* NFileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB33FD1D62EB29C64729D47 /* NFileViewer.swift */; };
 		103200000000000000000002 /* DefaultProfilePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103200000000000000000001 /* DefaultProfilePickerView.swift */; };
 		105050000000000000000001 /* ComposerModelPickerSectionExpansionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105050000000000000000002 /* ComposerModelPickerSectionExpansionState.swift */; };
 		105050000000000000000003 /* ComposerModelPickerSectionExpansionStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105050000000000000000004 /* ComposerModelPickerSectionExpansionStateTests.swift */; };
@@ -148,6 +149,7 @@
 		4C78B1D4EE15FB7E5D769A60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */; };
 		4E11DB2F95F05D53D1A39E47 /* NFileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9B114BE092C9EE9C5F586C /* NFileViewer.swift */; };
 		4F03681B186A527196C86616 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E98807793634CF90E84BBCC9 /* ChatView.swift */; };
+		4F0AD3A891765EC0456D0C1B /* NAJWTInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9647FC6E7D7959EE2B24593E /* NAJWTInterceptor.swift */; };
 		530A31DFAB00FE64EF2CDD5D /* TimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A57EFEEBF94F038FC1A64D /* TimelineCard.swift */; };
 		5417A7400000000000000092 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = 5417A7400000000000000091 /* SwiftMath */; };
 		545C8D3258D235795A7D9B03 /* HermesLiveActivityWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A04500000000000000000017 /* HermesLiveActivityWidget.appex */; };
@@ -160,12 +162,14 @@
 		64AE36FBAE436BF5C5083453 /* AgentHubModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */; };
 		696986BB46DE4FE6A34B81DC /* FilesSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED410AFFE754F099252B8715 /* FilesSheets.swift */; };
 		708ACE39102FB2329C1BE411 /* ContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6ED7B24D7511807FD577DDD /* ContactDetailView.swift */; };
+		73772D55F7B5B086D8B7CF84 /* NASaaSEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1531E302E31457469F50CBDB /* NASaaSEntryView.swift */; };
 		73BE635E8562DE5B19E89C39 /* FilesHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AF6E96E7F0D352A7D47E00 /* FilesHeader.swift */; };
 		742527D98488776B43538E3B /* NAContactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F7BCFA84BB0E549E0CE361 /* NAContactService.swift */; };
 		764ED3EA6812F61C780D9BB1 /* NAKnowledgeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E365F20F0536DB4D9D3A61D /* NAKnowledgeSheet.swift */; };
 		76CD17639690EAA2C5BC8E2F /* NAWeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2E2D0145071523FC3BD8F2 /* NAWeatherService.swift */; };
 		7C90AF22A6DA860227E17A22 /* RadarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436754903A7D2D553102C754 /* RadarChart.swift */; };
 		7E7421CD5B04A7CFDBDEFF2C /* NAiceDynamicIsland.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADB9E04B379AA12C4DD6097 /* NAiceDynamicIsland.swift */; };
+		7EC97FD145EBE4F1A6F2DC2A /* NASaaSAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DB988B82E638FB21D84E /* NASaaSAuth.swift */; };
 		7FAF5864359B87671F705FCC /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E60361AE67F0263A3CBE6B2 /* ComplicationController.swift */; };
 		7FF37F6D9C9B057134756504 /* NAWatchConnectivityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B53E4CC244DC057BD275B2 /* NAWatchConnectivityHandler.swift */; };
 		8138ACC9F93ED95D6EDA3A13 /* NAiceWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776B627862ADD0FEF5D658A /* NAiceWatchApp.swift */; };
@@ -402,6 +406,7 @@
 		C23400000000000000000005 /* StreamingLabReplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23400000000000000000006 /* StreamingLabReplayTests.swift */; };
 		C304890DE9AE530C44C7F369 /* MoodLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE82E7B318BEB5668A6CB26B /* MoodLogView.swift */; };
 		C3F0829E2D769F36F2573F94 /* DealDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82626C6BEC28AF7D30A136F6 /* DealDetailView.swift */; };
+		C4ACA44B0B3BC79BED2AB57E /* NAWhaleWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C693B237E0EBB76E9FCD99 /* NAWhaleWatchView.swift */; };
 		C5A0D8F5502048B6B9258B01 /* InsightsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0D8F5502048B6B9258B00 /* InsightsViewModelTests.swift */; };
 		C6B992E62A18CA61F6BE36F5 /* NALocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3CC1C2B875235B55609590 /* NALocationService.swift */; };
 		C755A63E50CBC45ABAC897B3 /* NARenameFolderSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1AB4DB00FAA3D7BAD01B3A /* NARenameFolderSheet.swift */; };
@@ -420,6 +425,7 @@
 		DAB04A05CDE42B1E2E445AB6 /* APIClient+AgentHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486FB27ABE466047F4F46E16 /* APIClient+AgentHub.swift */; };
 		DD1EA83C6E631DE1F6489645 /* NACsvImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E7C1C8494E00A95ADFB08 /* NACsvImportService.swift */; };
 		DFA8D9E7EFD1722A9B554C83 /* NANumberPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5BD397F558FB67C3996059 /* NANumberPad.swift */; };
+		E303E94721F08B47E06F45AB /* NAReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0274D179DB0EDFFF7DA3E7D /* NAReflectionView.swift */; };
 		E38FCF95DB2BBF351033F108 /* NADonutChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15990341BD10919D01CE86C /* NADonutChart.swift */; };
 		E39D048B8C5C4AC5BBDAE93A /* WhatsAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568EFAACBFF8FE1621B75A6A /* WhatsAppViewModel.swift */; };
 		E8DFEE26F289B67519C1B11B /* NAIntentRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */; };
@@ -429,6 +435,7 @@
 		F2410366F553E993A5D8E8FC /* NAiceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */; };
 		F53F3D0362CB8D531884E6DA /* NAPushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B195E23D236271E714A93 /* NAPushService.swift */; };
 		F6551043CA62FF975F0B1CA1 /* NAProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C79BEDE9514510E611214 /* NAProfileView.swift */; };
+		F9D635A825188F25758DB41E /* NALoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3549282EA385A9B7BD07CDA4 /* NALoginView.swift */; };
 		FA241F0762A962A9FCD334BF /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7680D72A0B1646090D1AE45E /* ActivityKit.framework */; };
 		FB54FE269D1028591833C6E5 /* NACompanyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9301C21F08024C31D70572B9 /* NACompanyService.swift */; };
 		FD5513154661E6D9D0E6B84D /* NAWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402AA464975A9B246B36F88 /* NAWorkflowService.swift */; };
@@ -505,6 +512,7 @@
 		10CA110C0DE000000000B002 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		10CA110C0DE000000000C002 /* LocalizationCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationCatalogTests.swift; sourceTree = "<group>"; };
 		1246FC643044090F00789374 /* NaiceWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NaiceWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1531E302E31457469F50CBDB /* NASaaSEntryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASaaSEntryView.swift; sourceTree = "<group>"; };
 		1732059E8DEB2951D7B9E803 /* NAgentActionHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAgentActionHandler.swift; sourceTree = "<group>"; };
 		19C1150000000000000000A2 /* CliSessionsSyncModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliSessionsSyncModel.swift; sourceTree = "<group>"; };
 		19C1150000000000000000A4 /* CliSessionsSyncModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliSessionsSyncModelTests.swift; sourceTree = "<group>"; };
@@ -603,6 +611,7 @@
 		30D067B3957F4996F92E721A /* NAJournalService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAJournalService.swift; sourceTree = "<group>"; };
 		340C69C3296E2F5F3446B040 /* WhatsAppView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatsAppView.swift; sourceTree = "<group>"; };
 		351C0F1600000000000000A1 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Shared.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
+		3549282EA385A9B7BD07CDA4 /* NALoginView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NALoginView.swift; sourceTree = "<group>"; };
 		36213E5489BFD53A961F208D /* NAIceChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIceChatView.swift; sourceTree = "<group>"; };
 		374A0792027787A3F8498E03 /* NAiceWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAiceWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B309F61E3B80BDB41121439 /* NAFinanceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFinanceService.swift; sourceTree = "<group>"; };
@@ -612,6 +621,7 @@
 		3F91D2A54B9A4F66A2C01013 /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01014 /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		3F91D2A54B9A4F66A2C01015 /* TaskDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailViewModel.swift; sourceTree = "<group>"; };
+		3FB33FD1D62EB29C64729D47 /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
 		420A477786E3BA812C88B80B /* NAiceWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAiceWidget.swift; sourceTree = "<group>"; };
 		432C87D4DC3AC8697B8A09D0 /* NAiceWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAiceWidgetBundle.swift; path = HermesMobileWidgets/NAiceWidgetBundle.swift; sourceTree = "<group>"; };
 		436754903A7D2D553102C754 /* RadarChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RadarChart.swift; sourceTree = "<group>"; };
@@ -635,6 +645,7 @@
 		611B95AF57FB9A53B5F9195C /* AgentHubModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubModels.swift; path = AgentHub/Models/AgentHubModels.swift; sourceTree = "<group>"; };
 		629E8754B1AD2675BB5492E2 /* NANotesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NANotesView.swift; sourceTree = "<group>"; };
 		63F7BCFA84BB0E549E0CE361 /* NAContactService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAContactService.swift; sourceTree = "<group>"; };
+		66A1DB988B82E638FB21D84E /* NASaaSAuth.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASaaSAuth.swift; sourceTree = "<group>"; };
 		6809B8F1391248A4AA77C453 /* SlashCommandExecutorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashCommandExecutorTests.swift; sourceTree = "<group>"; };
 		693B195E23D236271E714A93 /* NAPushService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAPushService.swift; sourceTree = "<group>"; };
 		6AAD217C8D5B5106E2DDD187 /* NASortPickerSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASortPickerSheet.swift; sourceTree = "<group>"; };
@@ -643,12 +654,14 @@
 		6D6494E16316B5A3EF6754CA /* NAFolderRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFolderRowView.swift; sourceTree = "<group>"; };
 		6DDE8E1211D48916FAC30844 /* NFileViewer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NFileViewer.swift; sourceTree = "<group>"; };
 		72846051BC37F009F54442FD /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
+		72C693B237E0EBB76E9FCD99 /* NAWhaleWatchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAWhaleWatchView.swift; path = AgentHub/NAWhaleWatchView.swift; sourceTree = "<group>"; };
 		72CFEC96F7CE5C3509C1EB89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		735FA79E0914CEA8F3736236 /* NASmartHomeService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASmartHomeService.swift; sourceTree = "<group>"; };
 		73ECDC4712E939C03B6C7893 /* NACreateFolderSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NACreateFolderSheet.swift; sourceTree = "<group>"; };
 		7680D72A0B1646090D1AE45E /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = SDKROOT; };
 		7C25C1CD56AAC96FB4481A5F /* HermesMobileWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HermesMobileWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C7D1624F5969A82C2827AAF /* NAMoveSheetView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAMoveSheetView.swift; sourceTree = "<group>"; };
+		7CB42640954319F182589FAF /* NAWhaleWatchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAWhaleWatchView.swift; sourceTree = "<group>"; };
 		7D44D7F9BE950C922C96F905 /* NAIceRelationsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NAIceRelationsView.swift; path = AgentHub/DetailViews/NAIceRelationsView.swift; sourceTree = "<group>"; };
 		7E018D70351AEC3931DAA303 /* NASearchBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NASearchBar.swift; sourceTree = "<group>"; };
 		82626C6BEC28AF7D30A136F6 /* DealDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DealDetailView.swift; path = AgentHub/DetailViews/DealDetailView.swift; sourceTree = "<group>"; };
@@ -662,6 +675,7 @@
 		931EC010A2D940B0E42287A4 /* InsightsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
 		933A6607F4CECE363F5D06DC /* NAInsightsChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAInsightsChart.swift; sourceTree = "<group>"; };
 		9560C4E6382D78890C8F7F74 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = WidgetKit.framework; sourceTree = SDKROOT; };
+		9647FC6E7D7959EE2B24593E /* NAJWTInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAJWTInterceptor.swift; sourceTree = "<group>"; };
 		9AA036E99684473D66599039 /* NAHabitsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAHabitsService.swift; sourceTree = "<group>"; };
 		9C2C79BEDE9514510E611214 /* NAProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAProfileView.swift; sourceTree = "<group>"; };
 		9ECAD8AB12CE147764A39890 /* NAIntentRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAIntentRouter.swift; sourceTree = "<group>"; };
@@ -881,6 +895,7 @@
 		C6047979F180DA160B490470 /* NAFilesService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAFilesService.swift; sourceTree = "<group>"; };
 		CC3CC1C2B875235B55609590 /* NALocationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NALocationService.swift; sourceTree = "<group>"; };
 		CD34F4B5C90F1AC9E3F79FEA /* NABriefingDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NABriefingDetailView.swift; path = AgentHub/DetailViews/NABriefingDetailView.swift; sourceTree = "<group>"; };
+		D0274D179DB0EDFFF7DA3E7D /* NAReflectionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NAReflectionView.swift; sourceTree = "<group>"; };
 		D0M1C000000000000000000A /* MarkdownMathLayoutCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMathLayoutCacheTests.swift; sourceTree = "<group>"; };
 		D21AE11BD3EC9267D81AB2C1 /* TrendCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrendCard.swift; sourceTree = "<group>"; };
 		D3B9DECD19660A3282C1F47B /* AgentHubViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AgentHubViewModel.swift; path = AgentHub/AgentHubViewModel.swift; sourceTree = "<group>"; };
@@ -1209,6 +1224,7 @@
 				1A2B3C4D5E6F7000000000B1 /* AuthManager.swift */,
 				1A2B3C4D5E6F7000000000B0 /* KeychainStore.swift */,
 				F0698CD688A72575CF2AF1DC /* NABiometricAuth.swift */,
+				66A1DB988B82E638FB21D84E /* NASaaSAuth.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -1238,6 +1254,7 @@
 				C0FF000000000000000000A2 /* CustomHeader.swift */,
 				1A2B3C4D5E6F7000000000B3 /* APIError.swift */,
 				C04400000000000000000002 /* CacheFallbackPolicy.swift */,
+				9647FC6E7D7959EE2B24593E /* NAJWTInterceptor.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1565,6 +1582,9 @@
 				5D9DCD6C3FAEA0D39B31AE55 /* AgentHubView.swift */,
 				D3B9DECD19660A3282C1F47B /* AgentHubViewModel.swift */,
 				01960B512D344D69450CF659 /* BriefingPlaceholder.swift */,
+				7CB42640954319F182589FAF /* NAWhaleWatchView.swift */,
+				72C693B237E0EBB76E9FCD99 /* NAWhaleWatchView.swift */,
+				D0274D179DB0EDFFF7DA3E7D /* NAReflectionView.swift */,
 			);
 			name = AgentHub;
 			sourceTree = "<group>";
@@ -1761,6 +1781,9 @@
 				08DF01C1A92A65626CD1E84F /* NFileUploadSheet.swift */,
 				6DDE8E1211D48916FAC30844 /* NFileViewer.swift */,
 				5FBB02C0E8EE9F23CDB11FBF /* FileActionLabel.swift */,
+				3FB33FD1D62EB29C64729D47 /* NFileViewer.swift */,
+				3549282EA385A9B7BD07CDA4 /* NALoginView.swift */,
+				1531E302E31457469F50CBDB /* NASaaSEntryView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2392,6 +2415,13 @@
 				F056C1A9404F4D2A58856DD1 /* NFileUploadSheet.swift in Sources */,
 				82EDA225F24FB28ACF19F305 /* NFileViewer.swift in Sources */,
 				0D91F45ACFE63FC57896F234 /* FileActionLabel.swift in Sources */,
+				C4ACA44B0B3BC79BED2AB57E /* NAWhaleWatchView.swift in Sources */,
+				0FFC560740255447E120DD81 /* NFileViewer.swift in Sources */,
+				E303E94721F08B47E06F45AB /* NAReflectionView.swift in Sources */,
+				7EC97FD145EBE4F1A6F2DC2A /* NASaaSAuth.swift in Sources */,
+				F9D635A825188F25758DB41E /* NALoginView.swift in Sources */,
+				73772D55F7B5B086D8B7CF84 /* NASaaSEntryView.swift in Sources */,
+				4F0AD3A891765EC0456D0C1B /* NAJWTInterceptor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2581,7 +2611,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -2595,10 +2625,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.5;
-			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
 			};
 			name = Debug;
 		};
@@ -2623,7 +2649,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -2636,10 +2662,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.5;
-			};
-			SystemCapabilities = {
-				com.apple.HomeKit = 1;
-				com.apple.Siri = 1;
 			};
 			name = Release;
 		};
@@ -2895,7 +2917,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.5;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.watchkitapp;
 				PRODUCT_NAME = NAiceWatch;
 				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2914,7 +2936,7 @@
 				INFOPLIST_FILE = HermesMobileWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MODULE_NAME = HermesMobileWidgets;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.widgets;
 				PRODUCT_MODULE_NAME = HermesMobileWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -2940,7 +2962,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.5;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.watchkitapp;
 				PRODUCT_NAME = NAiceWatch;
 				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2959,7 +2981,7 @@
 				INFOPLIST_FILE = HermesMobileWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MODULE_NAME = HermesMobileWidgets;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.widgets;
 				PRODUCT_MODULE_NAME = HermesMobileWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -2980,7 +3002,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NAiceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.widget;
 				PRODUCT_NAME = NAiceWidget;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -3055,7 +3077,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NAiceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.naice.app.saas.widget;
 				PRODUCT_NAME = NAiceWidget;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

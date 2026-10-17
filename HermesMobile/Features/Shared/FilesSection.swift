@@ -79,7 +79,7 @@ struct FilesListSection: View {
     func computeFiles() -> [NFile] {
         var r = fs.files
         if let f = fs.selectedFolder, !f.isEmpty { r = r.filter { $0.folder == f || $0.folder == "uploads/"+f } }
-        else { r = r.filter { $0.folder == nil || $0.folder!.isEmpty || !fs.serverFolders.contains($0.folder!) } }
+        else { r = r.filter { $0.folder == nil || $0.folder!.isEmpty || $0.folder! == "uploads" } }
         switch fs.typeFilter {
         case .pdf: r = r.filter { $0.type.lowercased() == "pdf" }
         case .image: r = r.filter { ["jpg", "jpeg", "png", "gif", "webp"].contains($0.type.lowercased()) }

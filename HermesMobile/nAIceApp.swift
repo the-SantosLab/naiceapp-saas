@@ -165,7 +165,7 @@ struct nAIceApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                ContentView(authManager: authManager)
+                NASaaSEntryView(authManager: authManager)
                     .preferredColorScheme(.dark)
 
                 if biometricAuth.isLocked {
